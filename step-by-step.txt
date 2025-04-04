@@ -5,6 +5,8 @@
 5: sail artisan install:api
 6: sail composer require filament/filament:"^3.3" -W
 7: sail php artisan filament:install --panels
+   sail artisan make:filament-user
+   sail artisan make:filament-resource User --generate
 8: sail composer require laravel/pint --dev
 9: sail composer require rector/rector --dev
 10: sail composer require laradumps/laradumps ^4.0 --dev -W
