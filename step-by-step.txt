@@ -1,0 +1,53 @@
+1: curl -s "https://laravel.build/learning-api?with=pgsql,redis,mailpit,minio" | bash
+2: sail up  
+3: sail artisan sail:publish (publicar a estrutura do docker/sail para customização)
+4: sail artisan stub:publish (publicar os arquivos stub para customização )
+5: sail artisan install:api
+6: sail composer require filament/filament:"^3.3" -W
+7: sail composer require filament/filament:"^3.3" -W
+   sail artisan filament:install --panels
+   sail artisan make:filament-user
+   sail artisan make:filament-resource User --generate
+   sail composer require filament/notifications:"^3.3" -W
+   sail artisan filament:install --notifications
+   sail composer require filament/actions:"^3.3" -W
+   sail artisan filament:install --actions
+   sail artisan vendor:publish --tag=filament-config
+   sail artisan storage:link
+8: sail composer require laravel/pint --dev
+9: sail composer require rector/rector --dev
+10: sail composer require laradumps/laradumps ^4.0 --dev -W
+    sail artisan ds:init $(pwd)
+11: sail composer require barryvdh/laravel-debugbar --dev
+    sail artisan vendor:publish --provider="Barryvdh\Debugbar\ServiceProvider"
+12: sail composer require timwassenburg/laravel-service-generator --dev
+13: sail composer require mrmarchone/laravel-auto-crud --dev
+14: php artisan vendor:publish --provider="Mrmarchone\\LaravelAutoCrud\\LaravelAutoCrudServiceProvider" --tag="auto-crud-config"
+15: sail artisan auto-crud:generate --model=User --type=api --repository
+16: sail composer require "larastan/larastan:^3.0" --dev 
+17: sail composer remove phpunit/phpunit
+18: sail composer require pestphp/pest --dev --with-all-dependencies
+19: sail composer require laravel/telescope --dev
+    sail artisan telescope:install
+    sail artisan migrate
+20: sail composer require laravel/pulse --dev
+    sail artisan vendor:publish --provider="Laravel\Pulse\PulseServiceProvider"
+    sail artisan migrate
+    sail artisan vendor:publish --tag=pulse-config
+
+22: sail composer require "maatwebsite/excel:^3.1"
+23: sail composer require prism-php/prism
+    sail artisan vendor:publish --tag=prism-config
+
+25: Configurar minio para uso local
+AWS_ACCESS_KEY_ID=sail
+AWS_SECRET_ACCESS_KEY=password
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=local
+AWS_ENDPOINT=http://minio:9000
+AWS_URL=http://localhost:9000/local
+AWS_USE_PATH_STYLE_ENDPOINT=true
+
+
+
+
