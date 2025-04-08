@@ -5,8 +5,9 @@ declare(strict_types = 1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Models\Scopes\TenantScope;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -64,17 +65,7 @@ class User extends Authenticatable implements Auditable
     #[\Override]
     protected static function booted()
     {
-        static::addGlobalScope('tenant', function (Builder $builder): void {
-            if (app()->has('currentTenant')) {
-                $builder->where('tenant_id', app('currentTenant')->id);
-            }
-        });
-
-        static::creating(function ($user): void {
-            if (app()->has('currentTenant')) {
-                $user->tenant_id = app('currentTenant')->id;
-            }
-        });
+        static::addGlobalScope(new TenantScope());
     }
 
     /**
