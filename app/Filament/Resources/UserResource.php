@@ -42,9 +42,10 @@ class UserResource extends Resource
     #[\Override]
     public static function table(Table $table): Table
     {
-        ds($table);
-
         return $table
+            ->extremePaginationLinks()
+            ->defaultPaginationPageOption(20)
+            ->paginated([20, 40, 60, 80, 'all'])
             ->columns([
                 TextColumn::make('name')
                     ->label('Nome')
@@ -73,7 +74,9 @@ class UserResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-            ])->defaultSort('name', 'asc')
+            ])
+
+            ->defaultSort('name', 'asc')
             ->filters([
                 //
             ])
