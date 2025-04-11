@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Providers\Filament;
 
+use Filament\Enums\ThemeMode;
 use Filament\Forms\Components\Field;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -35,6 +36,8 @@ class AdminPanelProvider extends PanelProvider
                     $column->translateLabel();
                 });
             })
+            ->darkMode(false)
+            ->defaultThemeMode(ThemeMode::Light)
             ->default()
             ->id('admin')
             ->path('admin')
@@ -49,6 +52,7 @@ class AdminPanelProvider extends PanelProvider
                 'info'      => '#4398e0',
                 'light'     => '#f7f8fc',
             ])
+
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -59,7 +63,6 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
-
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
