@@ -39,6 +39,9 @@
 23: sail composer require prism-php/prism
     sail artisan vendor:publish --tag=prism-config
 
+24: sail composer require lucascudo/laravel-pt-br-localization --dev
+    sail artisan vendor:publish --tag=laravel-pt-br-localization
+
 25: Configurar minio para uso local
 AWS_ACCESS_KEY_ID=sail
 AWS_SECRET_ACCESS_KEY=password
