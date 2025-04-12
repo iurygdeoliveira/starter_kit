@@ -27,12 +27,12 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->bootUsing(function () {
-                Field::configureUsing(function (Field $field) {
+            ->bootUsing(function (): void {
+                Field::configureUsing(function (Field $field): void {
                     $field->translateLabel();
                 });
 
-                Column::configureUsing(function (Column $column) {
+                Column::configureUsing(function (Column $column): void {
                     $column->translateLabel();
                 });
             })
@@ -52,7 +52,8 @@ class AdminPanelProvider extends PanelProvider
                 'info'      => '#4398e0',
                 'light'     => '#f7f8fc',
             ])
-
+            ->sidebarWidth('15rem')
+            // ->theme(asset('css/filament/admin/theme.css'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
