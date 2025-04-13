@@ -10,7 +10,6 @@ class Tenant extends BaseModel
 {
     protected $fillable = [
         'name',
-        'domain',
     ];
 
     /**

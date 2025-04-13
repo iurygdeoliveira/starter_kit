@@ -30,17 +30,15 @@
 19: sail composer require laravel/telescope --dev
     sail artisan telescope:install
     sail artisan migrate
-20: sail composer require laravel/pulse --dev
-    sail artisan vendor:publish --provider="Laravel\Pulse\PulseServiceProvider"
-    sail artisan migrate
-    sail artisan vendor:publish --tag=pulse-config
 
-22: sail composer require "maatwebsite/excel:^3.1"
-23: sail composer require prism-php/prism
+21: sail composer require "maatwebsite/excel:^3.1"
+22: sail composer require prism-php/prism
     sail artisan vendor:publish --tag=prism-config
 
-24: sail composer require lucascudo/laravel-pt-br-localization --dev
+23: sail composer require lucascudo/laravel-pt-br-localization --dev
     sail artisan vendor:publish --tag=laravel-pt-br-localization
+
+24: sail artisan vendor:publish --tag=livewire:config
 
 25: npx tailwindcss@3 --input ./resources/css/filament/admin/theme.css --output ./public/css/filament/admin/theme.css --config ./resources/css/filament/admin/tailwind.config.js --minify --force
 

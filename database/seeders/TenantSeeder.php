@@ -17,12 +17,11 @@ class TenantSeeder extends Seeder
         // Cria tenant admin para testes
         Tenant::factory()->create([
             'name'   => 'Admin Tenant',
-            'domain' => 'admin.localhost.com.br',
             'email'  => 'admin@localhost.com.br',
+            'code' => fake('pt_BR')->unique()->uuid()
         ]);
         // Cria 5 tenants de exemplo
         Tenant::factory()
-            ->count(20)
-            ->create();
+            ->count(20);
     }
 }

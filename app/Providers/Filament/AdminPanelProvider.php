@@ -10,7 +10,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Tables\Columns\Column;
@@ -21,16 +20,10 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Models\Tenant;
 
 class AdminPanelProvider extends PanelProvider
 {
-    protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
-
-    public static function getNavigationIcon(): ?string
-    {
-        return 'heroicon-o-presentation-chart-line';
-    }
-
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -50,6 +43,8 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->registration()
+            ->passwordReset()
+            ->emailVerification()
             ->colors([
                 'primary'   => '#076fd1',
                 'secondary' => '#6b7a91',
