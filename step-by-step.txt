@@ -42,7 +42,9 @@
 24: sail composer require lucascudo/laravel-pt-br-localization --dev
     sail artisan vendor:publish --tag=laravel-pt-br-localization
 
-25: Configurar minio para uso local
+25: npx tailwindcss@3 --input ./resources/css/filament/admin/theme.css --output ./public/css/filament/admin/theme.css --config ./resources/css/filament/admin/tailwind.config.js --minify --force
+
+26: Configurar minio para uso local
 AWS_ACCESS_KEY_ID=sail
 AWS_SECRET_ACCESS_KEY=password
 AWS_DEFAULT_REGION=us-east-1

@@ -13,5 +13,4 @@ git add .
 commit_message="$*"
 
 # Realiza o commit com o comentário fornecido
-git commit -m "$commit_message"#!/bin/bash
-
+git commit -m "$commit_message"

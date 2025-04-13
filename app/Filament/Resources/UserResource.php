@@ -32,8 +32,9 @@ class UserResource extends Resource
      * Define o ícone de navegação para este recurso no menu lateral.
      * Utiliza o ícone 'rectangle-stack' da biblioteca Heroicons.
      */
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-s-users';
 
+    #[\Override]
     public static function getModelLabel(): string
     {
         return __('User');
@@ -89,9 +90,9 @@ class UserResource extends Resource
                 TextColumn::make('verified')
                     ->badge()
                     ->formatStateUsing(
-                        fn (string $state) => $state ? 'Sim' : 'Não'
+                        fn (string $state): string => $state !== '' && $state !== '0' ? 'Sim' : 'Não'
                     )
-                    ->color(fn (string $state) => $state ? 'success' : 'danger')
+                    ->color(fn (string $state): string => $state !== '' && $state !== '0' ? 'success' : 'danger')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime('d/m/Y H:i')
