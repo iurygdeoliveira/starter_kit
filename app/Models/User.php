@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Scopes\TenantScope;
+use App\Trait\TenantScopeTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +18,7 @@ class User extends Authenticatable implements Auditable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
     use Notifiable;
+    use TenantScopeTrait;
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = [
@@ -59,12 +60,6 @@ class User extends Authenticatable implements Auditable
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
-    }
-
-    #[\Override]
-    protected static function booted()
-    {
-        static::addGlobalScope(new TenantScope());
     }
 
     /**

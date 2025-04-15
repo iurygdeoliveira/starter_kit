@@ -2,9 +2,14 @@
 
 namespace {{ namespace }};
 
+use App\Trait\TenantScopeTrait;
+use OwenIt\Auditing\Contracts\Auditable;
+
 {{ factoryImport }}
 
-class {{ class }} extends BaseModel
+class {{ class }} Model implements Auditable
 {
     {{ factory }}
+    use TenantScopeTrait;
+    use \OwenIt\Auditing\Auditable;
 }

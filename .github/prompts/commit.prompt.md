@@ -1,6 +1,6 @@
 # Analisador de Commits
 
-Por favor analise o contexto fornecido e sugira uma mensagem de commit seguindo o formato Conventional Commits:
+Por favor analise o contexto fornecido e sugira uma mensagem de commit seguindo o formato Conventional Commits, após aplique um git push:
 
 ## Formato esperado
 

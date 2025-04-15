@@ -4,19 +4,18 @@ declare(strict_types = 1);
 
 namespace App\Models\Scopes;
 
-use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
+use Illuminate\Support\Facades\Auth;
 
 class TenantScope implements Scope
 {
-    /**
-     * Apply the scope to a given Eloquent query builder.
-     */
     public function apply(Builder $builder, Model $model): void
     {
-        
-        $builder->where('tenant_id', 1);
+        if (Auth::check()) {
+            $user = Auth::user();
+            $builder->where('tenant_id', $user->tenant_id);
+        }
     }
 }
