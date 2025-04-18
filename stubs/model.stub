@@ -2,6 +2,7 @@
 
 namespace {{ namespace }};
 
+use App\Trait\BelongsToTenantTrait;
 use App\Trait\TenantScopeTrait;
 use OwenIt\Auditing\Contracts\Auditable;
 
@@ -10,6 +11,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class {{ class }} Model implements Auditable
 {
     {{ factory }}
+    use BelongsToTenantTrait;
     use TenantScopeTrait;
     use \OwenIt\Auditing\Auditable;
 }

@@ -1,5 +1,5 @@
 1: curl -s "https://laravel.build/learning-api?with=pgsql,redis,mailpit,minio" | bash
-2: sail up  
+2: sail up
 3: sail artisan sail:publish (publicar a estrutura do docker/sail para customização)
 4: sail artisan stub:publish (publicar os arquivos stub para customização )
 5: sail artisan install:api
@@ -24,11 +24,13 @@
 13: sail composer require mrmarchone/laravel-auto-crud --dev
 14: php artisan vendor:publish --provider="Mrmarchone\\LaravelAutoCrud\\LaravelAutoCrudServiceProvider" --tag="auto-crud-config"
 15: sail artisan auto-crud:generate --model=User --type=api --repository
-16: sail composer require "larastan/larastan:^3.0" --dev 
+16: sail composer require "larastan/larastan:^3.0" --dev
 17: sail composer remove phpunit/phpunit
 18: sail composer require pestphp/pest --dev --with-all-dependencies
-19: sail composer require laravel/telescope --dev
-    sail artisan telescope:install
+19: sail composer require laravel/pulse
+    sail artisan vendor:publish --provider="Laravel\Pulse\PulseServiceProvider"
+    sail artisan vendor:publish --tag=pulse-config
+    sail artisan vendor:publish --tag=pulse-dashboard
     sail artisan migrate
 
 21: sail composer require "maatwebsite/excel:^3.1"

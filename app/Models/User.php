@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Trait\BelongsToTenantTrait;
 use App\Trait\TenantScopeTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,6 +20,7 @@ class User extends Authenticatable implements Auditable
     use HasFactory;
     use Notifiable;
     use TenantScopeTrait;
+    use BelongsToTenantTrait;
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = [
@@ -38,16 +40,11 @@ class User extends Authenticatable implements Auditable
         return [
             'email_verified_at' => 'datetime:d/m/Y H:i',
             'password'          => 'hashed',
-            'suspended_until'   => 'datetime:d/m/Y H:i',
             'created_at'        => 'datetime:d/m/Y H:i',
             'updated_at'        => 'datetime:d/m/Y H:i',
-            'deleted_at'        => 'datetime:d/m/Y H:i',
+            'suspended_at'      => 'datetime:d/m/Y H:i',
+            'suspended_until'   => 'datetime:d/m/Y H:i',
         ];
-    }
-
-    public function setCreatedAtAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
-    {
-        $this->attributes['created_at'] = Carbon::parse($value)->toDateTimeString();
     }
 
     /**
@@ -70,5 +67,25 @@ class User extends Authenticatable implements Auditable
     public function suspended(): bool
     {
         return ! is_null($this->suspended_until) && Carbon::now()->lessThan($this->suspended_until);
+    }
+
+    public function setCreatedAtAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
+    {
+        $this->attributes['created_at'] = Carbon::parse($value)->toDateTimeString();
+    }
+
+    public function setSuspendedAtAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
+    {
+        $this->attributes['suspended_at'] = Carbon::parse($value)->toDateTimeString();
+    }
+
+    public function setSuspendedUntilAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
+    {
+        $this->attributes['suspended_until'] = Carbon::parse($value)->toDateTimeString();
+    }
+
+    public function setUpdatedAtAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
+    {
+        $this->attributes['updated_at'] = Carbon::parse($value)->toDateTimeString();
     }
 }
