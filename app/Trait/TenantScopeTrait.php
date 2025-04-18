@@ -6,6 +6,7 @@ namespace App\Trait;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 // Objetivo da trait:
 // Esta trait adiciona um escopo global para todas as consultas realizadas no modelo que a utiliza.
@@ -17,9 +18,11 @@ trait TenantScopeTrait
     public static function bootTenantScopeTrait(): void
     {
         static::addGlobalScope('tenant_id', function (Builder $builder): void {
-            if (Auth::check() && Auth::user()->tenant_id) {
-                $builder->where('tenant_id', Auth::user()->tenant_id);
+            if (! Auth::user()) {
+                throw new UnauthorizedHttpException('Bearer', 'Operação não permitida: Usuário não autenticado');
             }
+
+            $builder->where('tenant_id', Auth::user()->tenant_id);
         });
     }
 }
