@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\SetTenantMiddleware;
 use Filament\Enums\ThemeMode;
 use Filament\Forms\Components\Field;
 use Filament\Http\Middleware\Authenticate;
@@ -76,6 +77,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SetTenantMiddleware::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

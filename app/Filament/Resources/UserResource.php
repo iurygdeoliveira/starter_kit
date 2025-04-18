@@ -14,6 +14,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Leandrocfe\FilamentPtbrFormFields\Document;
 
 /**
  * Recurso do Filament para gerenciamento de usuários.
@@ -56,6 +57,16 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true),
+                Document::make('cpf')
+                    ->cpf('999.999.999-99')
+                    ->required()
+                    ->unique(),
+                Document::make('cnpj')
+                    ->cnpj('99.999.999/9999-99')
+                    ->default(session('tenant.cnpj'))
+                    ->disabled()
+                    ->dehydrated(true)
+                    ->required(),
                 TextInput::make('password')
                     ->password()
                     ->required(fn (string $operation): bool => $operation === 'create')
@@ -69,8 +80,7 @@ class UserResource extends Resource
     }
 
     /**
-     * Define a tabela para exibição e gerenciamento de usuários.
-     * Este método configura a tabela com paginação, colunas, filtros, ações individuais e em massa.
+     * Define a tabela para exibição e gerenciamento de usuários. ma tabela com paginação, colunas, filtros, ações individuais e em massa.
      * Inclui colunas para nome, email, status de verificação e timestamps, com opções de busca e ordenação.
      */
     #[\Override]
