@@ -17,7 +17,7 @@ trait BelongsToTenantTrait
     public static function bootBelongsToTenantTrait(): void
     {
         static::creating(function ($model): void {
-            if (! Auth::user()) {
+            if (! Auth::check()) {
                 throw new UnauthorizedHttpException('Bearer', 'Operação não permitida: Usuário não autenticado');
             }
 
@@ -25,7 +25,7 @@ trait BelongsToTenantTrait
         });
 
         static::updating(function ($model): void {
-            if (! Auth::user()) {
+            if (! Auth::check()) {
                 throw new UnauthorizedHttpException('Bearer', 'Operação não permitida: Usuário não autenticado');
             }
 
@@ -35,7 +35,7 @@ trait BelongsToTenantTrait
         });
 
         static::deleting(function (): void {
-            if (! Auth::user()) {
+            if (! Auth::check()) {
                 throw new UnauthorizedHttpException('Bearer', 'Operação não permitida: Usuário não autenticado');
             }
         });
