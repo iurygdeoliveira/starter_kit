@@ -14,9 +14,10 @@ class TenantFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'   => fake('pt_BR')->unique()->company(),
-            'code'   => fake('pt_BR')->unique()->uuid(),
-            'email'  => fake('pt_BR')->unique()->companyEmail(),
-            ];
+            'name'  => fake('pt_BR')->unique()->company(),
+            'cnpj'  => fake('pt_BR')->unique()->cnpj(),
+            'code'  => fake('pt_BR')->unique()->uuid(),
+            'email' => fake('pt_BR')->unique()->companyEmail(),
+        ];
     }
 }

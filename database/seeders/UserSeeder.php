@@ -27,13 +27,14 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name'      => 'Admin User',
             'email'     => 'admin@localhost.com.br',
+            'cpf'       => fake('pt_BR')->unique()->cpf(),
             'password'  => bcrypt('password'),
             'verified'  => true,
             'tenant_id' => $adminTenant->id,
         ]);
 
         // Cria 2 usuários para cada tenant
-        $tenants->each(function ($tenant) {
+        $tenants->each(function ($tenant): void {
             User::factory()
                 ->count(2)
                 ->forTenant($tenant)

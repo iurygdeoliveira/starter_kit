@@ -14,6 +14,7 @@
    sail artisan filament:install --actions
    sail artisan vendor:publish --tag=filament-config
    sail artisan storage:link
+   sail artisan filament:optimize
 8: sail composer require laravel/pint --dev
 9: sail composer require rector/rector --dev
 10: sail composer require laradumps/laradumps ^4.0 --dev -W

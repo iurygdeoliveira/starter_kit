@@ -18,6 +18,7 @@ class TenantSeeder extends Seeder
         Tenant::factory()->create([
             'name'  => 'Admin Tenant',
             'email' => 'admin@localhost.com.br',
+            'cnpj'  => fake('pt_BR')->unique()->cnpj(),
             'code'  => fake('pt_BR')->unique()->uuid(),
         ]);
 

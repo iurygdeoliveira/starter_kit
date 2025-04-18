@@ -41,22 +41,26 @@ class UserFactory extends Factory
         }
 
         // Se não tiver partes suficientes, usa um fallback
-        if (empty($emailName)) {
+        if ($emailName === '' || $emailName === '0') {
             $emailName = Str::lower($nameParts[0]);
         }
 
         return [
             'name'      => $name,
             'email'     => $emailName . '@' . fake('pt_BR')->domainName(),
+            'cpf'       => fake('pt_BR')->unique()->cpf(),
             'password'  => static::$password ??= Hash::make('password'),
             'verified'  => false,
             'tenant_id' => Tenant::factory(),
         ];
     }
 
+    // Este método permite associar explicitamente um usuário a um tenant específico durante a criação via factory.
+    // Ao receber uma instância do modelo Tenant, ele utiliza o método state para definir o campo 'tenant_id'
+    // com o ID do tenant fornecido, garantindo que o usuário criado seja vinculado corretamente ao tenant desejado.
     public function forTenant(Tenant $tenant): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'tenant_id' => $tenant->id,
         ]);
     }

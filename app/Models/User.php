@@ -26,6 +26,7 @@ class User extends Authenticatable implements Auditable
     protected $fillable = [
         'name',
         'email',
+        'cpf',
         'password',
         'tenant_id',
     ];
@@ -69,23 +70,28 @@ class User extends Authenticatable implements Auditable
         return ! is_null($this->suspended_until) && Carbon::now()->lessThan($this->suspended_until);
     }
 
+    private function formatDate(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): string
+    {
+        return Carbon::parse($value)->toDateTimeString();
+    }
+
     public function setCreatedAtAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
     {
-        $this->attributes['created_at'] = Carbon::parse($value)->toDateTimeString();
+        $this->attributes['created_at'] = $this->formatDate($value);
     }
 
     public function setSuspendedAtAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
     {
-        $this->attributes['suspended_at'] = Carbon::parse($value)->toDateTimeString();
+        $this->attributes['suspended_at'] = $this->formatDate($value);
     }
 
     public function setSuspendedUntilAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
     {
-        $this->attributes['suspended_until'] = Carbon::parse($value)->toDateTimeString();
+        $this->attributes['suspended_until'] = $this->formatDate($value);
     }
 
     public function setUpdatedAtAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
     {
-        $this->attributes['updated_at'] = Carbon::parse($value)->toDateTimeString();
+        $this->attributes['updated_at'] = $this->formatDate($value);
     }
 }

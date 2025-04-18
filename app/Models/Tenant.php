@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Models;
 
 //use App\Trait\TenantScopeTrait;
+use App\Trait\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,12 +13,15 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class Tenant extends Model implements Auditable
 {
-    //use TenantScopeTrait;
+    use UuidTrait;
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = [
         'name',
+        'cnpj',
+        'email',
+        'code',
     ];
 
     /**
