@@ -1,7 +1,9 @@
 <?php
+
+declare(strict_types = 1);
+
 namespace App\Services;
 
-use App\Models\User;
 use App\Repositories\UserRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -9,7 +11,7 @@ use InvalidArgumentException;
 
 class UserService
 {
-	/**
+    /**
      * @var UserRepository $userRepository
      */
     protected $userRepository;
@@ -67,13 +69,16 @@ class UserService
     public function update(array $data, int $id)
     {
         DB::beginTransaction();
+
         try {
             $userRepository = $this->userRepository->update($data, $id);
             DB::commit();
+
             return $userRepository;
         } catch (Exception $e) {
             DB::rollBack();
             report($e);
+
             throw new InvalidArgumentException('Unable to update post data');
         }
     }
@@ -87,15 +92,17 @@ class UserService
     public function deleteById(int $id)
     {
         DB::beginTransaction();
+
         try {
             $userRepository = $this->userRepository->delete($id);
             DB::commit();
+
             return $userRepository;
         } catch (Exception $e) {
             DB::rollBack();
             report($e);
+
             throw new InvalidArgumentException('Unable to delete post data');
         }
     }
-
 }

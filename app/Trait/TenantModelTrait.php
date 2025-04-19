@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Trait;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Tenant;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Trait para aplicar em qualquer modelo que precise suportar multi-tenancy.

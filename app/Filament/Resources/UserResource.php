@@ -14,7 +14,6 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Leandrocfe\FilamentPtbrFormFields\Document;
 
 /**
  * Recurso do Filament para gerenciamento de usuários.
@@ -57,16 +56,20 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true),
-                Document::make('cpf')
-                    ->cpf('999.999.999-99')
+                TextInput::make('cpf')
+                    ->label('CPF')
+                    ->mask('999.999.999-99')
                     ->required()
-                    ->unique(),
-                Document::make('cnpj')
-                    ->cnpj('99.999.999/9999-99')
+                    ->unique(ignoreRecord: true)
+                    ->extraInputAttributes(['inputmode' => 'numeric']),
+                TextInput::make('cnpj')
+                    ->label('CNPJ')
+                    ->mask('99.999.999/9999-99')
                     ->default(session('tenant.cnpj'))
                     ->disabled()
                     ->dehydrated(true)
-                    ->required(),
+                    ->required()
+                    ->extraInputAttributes(['inputmode' => 'numeric']),
                 TextInput::make('password')
                     ->password()
                     ->required(fn (string $operation): bool => $operation === 'create')

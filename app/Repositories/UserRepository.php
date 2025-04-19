@@ -1,13 +1,16 @@
 <?php
+
+declare(strict_types = 1);
+
 namespace App\Repositories;
 
 use App\Models\User;
 
 class UserRepository
 {
-	 /**
-     * @var User
-     */
+    /**
+    * @var User
+    */
     protected User $user;
 
     /**
@@ -30,12 +33,12 @@ class UserRepository
         return $this->user->get();
     }
 
-     /**
-     * Get user by id
-     *
-     * @param $id
-     * @return mixed
-     */
+    /**
+    * Get user by id
+    *
+    * @param $id
+    * @return mixed
+    */
     public function getById(int $id)
     {
         return $this->user->find($id);
@@ -47,21 +50,22 @@ class UserRepository
      * @param $data
      * @return User
      */
-     public function save(array $data)
+    public function save(array $data)
     {
         return User::create($data);
     }
 
-     /**
-     * Update User
-     *
-     * @param $data
-     * @return User
-     */
+    /**
+    * Update User
+    *
+    * @param $data
+    * @return User
+    */
     public function update(array $data, int $id)
     {
         $user = $this->user->find($id);
         $user->update($data);
+
         return $user;
     }
 
@@ -71,10 +75,11 @@ class UserRepository
      * @param $data
      * @return User
      */
-   	 public function delete(int $id)
+    public function delete(int $id)
     {
         $user = $this->user->find($id);
         $user->delete();
+
         return $user;
     }
 }
