@@ -23,8 +23,9 @@ return new class () extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('cpf')->unique();
+            $table->string('phone')->nullable();
             $table->string('password');
-            $table->boolean('verified');
+            $table->boolean('verified')->default(false);
             $table->rememberToken();
 
             $table->timestamp('suspended_at')->nullable();

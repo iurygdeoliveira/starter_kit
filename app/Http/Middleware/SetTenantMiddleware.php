@@ -18,7 +18,7 @@ class SetTenantMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->tenant) {
+        if (Auth::check() && Auth::user()->tenant_id) {
             // Armazena dados do tenant na sessão
             session([
                 'tenant' => [

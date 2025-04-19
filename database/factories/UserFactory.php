@@ -49,6 +49,7 @@ class UserFactory extends Factory
             'name'      => $name,
             'email'     => $emailName . '@' . fake('pt_BR')->domainName(),
             'cpf'       => fake('pt_BR')->unique()->cpf(),
+            'phone'     => fake('pt_BR')->unique()->phoneNumber(),
             'password'  => static::$password ??= Hash::make('password'),
             'verified'  => false,
             'tenant_id' => Tenant::factory(),

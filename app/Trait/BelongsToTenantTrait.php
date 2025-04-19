@@ -16,8 +16,17 @@ trait BelongsToTenantTrait
 {
     public static function bootBelongsToTenantTrait(): void
     {
+        // Pula a execução se estiver rodando comandos de migração ou seeding
+        if (app()->runningInConsole() &&
+            (in_array('migrate', $_SERVER['argv']) ||
+             in_array('db:seed', $_SERVER['argv']) ||
+             in_array('migrate:fresh', $_SERVER['argv']))) {
+            return;
+        }
+
         static::creating(function ($model): void {
-            if (! Auth::check()) {
+            // Lança exceção se o usuário NÃO está autenticado ou não tem tenant_id
+            if (! Auth::check() || ! Auth::user()->tenant_id) {
                 throw new UnauthorizedHttpException('Bearer', 'Operação não permitida: Usuário não autenticado');
             }
 
@@ -25,7 +34,8 @@ trait BelongsToTenantTrait
         });
 
         static::updating(function ($model): void {
-            if (! Auth::check()) {
+            // Lança exceção se o usuário NÃO está autenticado ou não tem tenant_id
+            if (! Auth::check() || ! Auth::user()->tenant_id) {
                 throw new UnauthorizedHttpException('Bearer', 'Operação não permitida: Usuário não autenticado');
             }
 
@@ -35,7 +45,8 @@ trait BelongsToTenantTrait
         });
 
         static::deleting(function (): void {
-            if (! Auth::check()) {
+            // Lança exceção se o usuário NÃO está autenticado ou não tem tenant_id
+            if (! Auth::check() || ! Auth::user()->tenant_id) {
                 throw new UnauthorizedHttpException('Bearer', 'Operação não permitida: Usuário não autenticado');
             }
         });

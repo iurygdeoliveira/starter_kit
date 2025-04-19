@@ -62,14 +62,25 @@ class UserResource extends Resource
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->extraInputAttributes(['inputmode' => 'numeric']),
+                TextInput::make('phone')
+                    ->label('Telefone')
+                    ->mask('(99) 99999-9999')  // Máscara para celular brasileiro
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->extraInputAttributes(['inputmode' => 'numeric']),
                 TextInput::make('cnpj')
                     ->label('CNPJ')
                     ->mask('99.999.999/9999-99')
                     ->default(session('tenant.cnpj'))
                     ->disabled()
-                    ->dehydrated(true)
+                    ->dehydrated(false)
                     ->required()
                     ->extraInputAttributes(['inputmode' => 'numeric']),
+                TextInput::make('Empresa')
+                    ->default(session('tenant.name'))
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->required(),
                 TextInput::make('password')
                     ->password()
                     ->required(fn (string $operation): bool => $operation === 'create')

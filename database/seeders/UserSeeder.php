@@ -28,6 +28,7 @@ class UserSeeder extends Seeder
             'name'      => 'Admin User',
             'email'     => 'admin@localhost.com.br',
             'cpf'       => fake('pt_BR')->unique()->cpf(),
+            'phone'     => fake('pt_BR')->unique()->phoneNumber(),
             'password'  => bcrypt('password'),
             'verified'  => true,
             'tenant_id' => $adminTenant->id,

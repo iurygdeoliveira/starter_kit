@@ -24,8 +24,10 @@ class User extends Authenticatable implements Auditable
         'name',
         'email',
         'cpf',
+        'phone',
         'password',
         'tenant_id',
+        'verified',
     ];
 
     protected $hidden = [
@@ -36,12 +38,11 @@ class User extends Authenticatable implements Auditable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime:d/m/Y H:i',
-            'password'          => 'hashed',
-            'created_at'        => 'datetime:d/m/Y H:i',
-            'updated_at'        => 'datetime:d/m/Y H:i',
-            'suspended_at'      => 'datetime:d/m/Y H:i',
-            'suspended_until'   => 'datetime:d/m/Y H:i',
+            'password'        => 'hashed',
+            'created_at'      => 'datetime:d/m/Y H:i',
+            'updated_at'      => 'datetime:d/m/Y H:i',
+            'suspended_at'    => 'datetime:d/m/Y H:i',
+            'suspended_until' => 'datetime:d/m/Y H:i',
         ];
     }
 
@@ -55,28 +56,23 @@ class User extends Authenticatable implements Auditable
         return ! is_null($this->suspended_until) && Carbon::now()->lessThan($this->suspended_until);
     }
 
-    private function formatDate(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): string
+    public function setCreatedAtAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
     {
-        return Carbon::parse($value)->toDateTimeString();
+        $this->attributes['created_at'] = $value;
     }
 
-    public function setCreatedAtAttribute($value): void
+    public function setSuspendedAtAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
     {
-        $this->attributes['created_at'] = $this->formatDate($value);
+        $this->attributes['suspended_at'] = $value;
     }
 
-    public function setSuspendedAtAttribute($value): void
+    public function setSuspendedUntilAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
     {
-        $this->attributes['suspended_at'] = $this->formatDate($value);
+        $this->attributes['suspended_until'] = $value;
     }
 
-    public function setSuspendedUntilAttribute($value): void
+    public function setUpdatedAtAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
     {
-        $this->attributes['suspended_until'] = $this->formatDate($value);
-    }
-
-    public function setUpdatedAtAttribute($value): void
-    {
-        $this->attributes['updated_at'] = $this->formatDate($value);
+        $this->attributes['updated_at'] = $value;
     }
 }
