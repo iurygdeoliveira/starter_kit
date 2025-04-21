@@ -40,6 +40,12 @@ class UserResource extends Resource
         return __('User');
     }
 
+    #[\Override]
+    public static function getRecordRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
     /**
      * Define o formulário para criar e editar registros de usuários.
      * Este método configura os campos do formulário, suas validações e comportamentos.
@@ -71,13 +77,17 @@ class UserResource extends Resource
                 TextInput::make('cnpj')
                     ->label('CNPJ')
                     ->mask('99.999.999/9999-99')
-                    ->default(session('tenant.cnpj'))
+                    ->afterStateHydrated(function ($component): void {
+                        $component->state(session('tenant.cnpj'));
+                    })
                     ->disabled()
                     ->dehydrated(false)
                     ->required()
                     ->extraInputAttributes(['inputmode' => 'numeric']),
                 TextInput::make('Empresa')
-                    ->default(session('tenant.name'))
+                    ->afterStateHydrated(function ($component): void {
+                        $component->state(session('tenant.name'));
+                    })
                     ->disabled()
                     ->dehydrated(false)
                     ->required(),

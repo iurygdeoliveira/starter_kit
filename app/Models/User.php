@@ -24,6 +24,7 @@ class User extends Authenticatable implements Auditable
         'name',
         'email',
         'cpf',
+        'uuid',
         'phone',
         'password',
         'tenant_id',
@@ -44,6 +45,15 @@ class User extends Authenticatable implements Auditable
             'suspended_at'    => 'datetime:d/m/Y H:i',
             'suspended_until' => 'datetime:d/m/Y H:i',
         ];
+    }
+
+    /**
+ * Define o campo a ser usado como identificador nas rotas.
+ */
+    #[\Override]
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';  // Substitua por 'uuid' ou o nome do campo que contém seu UUID
     }
 
     /**

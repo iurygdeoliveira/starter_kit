@@ -21,7 +21,7 @@ class Tenant extends Model implements Auditable
         'name',
         'cnpj',
         'email',
-        'code',
+        'uuid',
     ];
 
     /**

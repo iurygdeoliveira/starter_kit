@@ -26,7 +26,7 @@ class SetTenantMiddleware
                     'name'  => Auth::user()->tenant->name,
                     'cnpj'  => Auth::user()->tenant->cnpj,
                     'email' => Auth::user()->tenant->email,
-                    'code'  => Auth::user()->tenant->code,
+                    'uuid'  => Auth::user()->tenant->uuid,
                 ],
             ]);
         }

@@ -46,6 +46,7 @@ class UserFactory extends Factory
         }
 
         return [
+            'uuid'      => fake('pt_BR')->unique()->uuid(),
             'name'      => $name,
             'email'     => $emailName . '@' . fake('pt_BR')->domainName(),
             'cpf'       => fake('pt_BR')->unique()->cpf(),

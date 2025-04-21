@@ -25,6 +25,8 @@ class UserSeeder extends Seeder
 
         $adminTenant = Tenant::find(1);
         User::factory()->create([
+
+            'uuid'      => fake('pt_BR')->uuid(),
             'name'      => 'Admin User',
             'email'     => 'admin@localhost.com.br',
             'cpf'       => fake('pt_BR')->unique()->cpf(),

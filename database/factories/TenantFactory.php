@@ -16,7 +16,7 @@ class TenantFactory extends Factory
         return [
             'name'  => fake('pt_BR')->unique()->company(),
             'cnpj'  => fake('pt_BR')->unique()->cnpj(),
-            'code'  => fake('pt_BR')->unique()->uuid(),
+            'uuid'  => fake('pt_BR')->unique()->uuid(),
             'email' => fake('pt_BR')->unique()->companyEmail(),
         ];
     }
