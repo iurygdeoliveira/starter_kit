@@ -33,12 +33,12 @@ class UserResource extends Resource
      * Define o ícone de navegação para este recurso no menu lateral.
      * Utiliza o ícone 'rectangle-stack' da biblioteca Heroicons.
      */
-    protected static ?string $navigationIcon = 'heroicon-s-users';
+    protected static ?string $navigationIcon = 'heroicon-s-user-group';
 
     protected static ?string $navigationGroup = 'Administração';
 
     // Opcional: Definir a ordem do item no grupo
-    protected static ?int $navigationSort = 1;
+    // protected static ?int $navigationSort = 1;
 
     #[\Override]
     public static function getModelLabel(): string

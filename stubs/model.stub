@@ -2,16 +2,15 @@
 
 namespace {{ namespace }};
 
-use App\Trait\BelongsToTenantTrait;
-use App\Trait\TenantScopeTrait;
+use Illuminate\Database\Eloquent\Model;
+use App\Trait\TenantModelTrait;
 use OwenIt\Auditing\Contracts\Auditable;
 
 {{ factoryImport }}
 
-class {{ class }} Model implements Auditable
+class {{ class }} extends Model implements Auditable
 {
     {{ factory }}
-    use BelongsToTenantTrait;
-    use TenantScopeTrait;
+    use TenantModelTrait;
     use \OwenIt\Auditing\Auditable;
 }

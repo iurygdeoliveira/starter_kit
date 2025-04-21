@@ -69,12 +69,9 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
-            ->navigationGroups([
-                'Administração',
-                'Cadastros',
-                'Financeiro',
-                'Configurações',
-            ])
+            // ->navigationGroups([
+            //     'Administração',
+            // ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
