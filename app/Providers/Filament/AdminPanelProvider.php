@@ -29,6 +29,7 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+
             ->bootUsing(function (): void {
                 Field::configureUsing(function (Field $field): void {
                     $field->translateLabel();
@@ -67,6 +68,12 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+            ])
+            ->navigationGroups([
+                'Administração',
+                'Cadastros',
+                'Financeiro',
+                'Configurações',
             ])
             ->middleware([
                 EncryptCookies::class,

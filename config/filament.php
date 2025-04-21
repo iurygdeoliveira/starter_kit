@@ -86,5 +86,5 @@ return [
     |
     */
 
-    'livewire_loading_delay' => 'default',
+    'livewire_loading_delay' => 'none',
 ];

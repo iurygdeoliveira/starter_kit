@@ -10,6 +10,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -33,6 +34,11 @@ class UserResource extends Resource
      * Utiliza o ícone 'rectangle-stack' da biblioteca Heroicons.
      */
     protected static ?string $navigationIcon = 'heroicon-s-users';
+
+    protected static ?string $navigationGroup = 'Administração';
+
+    // Opcional: Definir a ordem do item no grupo
+    protected static ?int $navigationSort = 1;
 
     #[\Override]
     public static function getModelLabel(): string
@@ -118,7 +124,8 @@ class UserResource extends Resource
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('email')
+                TextColumn::make('cpf')
+                    ->label('CPF')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('verified')
@@ -127,16 +134,8 @@ class UserResource extends Resource
                         fn (string $state): string => $state !== '' && $state !== '0' ? 'Sim' : 'Não'
                     )
                     ->color(fn (string $state): string => $state !== '' && $state !== '0' ? 'success' : 'danger')
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime('d/m/Y H:i')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('updated_at')
-                    ->dateTime('d/m/Y H:i')
-                    ->searchable()
-                    ->sortable(),
-
+                    ->sortable()
+                    ->searchable(),
             ])
 
             ->defaultSort('name', 'asc')
@@ -145,6 +144,7 @@ class UserResource extends Resource
             ])
             ->actions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
