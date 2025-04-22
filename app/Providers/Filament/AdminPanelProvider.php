@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\Providers\Filament;
 
 use App\Http\Middleware\SetTenantMiddleware;
-use App\Models\Tenant;
 use Filament\Enums\ThemeMode;
 use Filament\Forms\Components\Field;
 use Filament\Http\Middleware\Authenticate;
@@ -58,7 +57,7 @@ class AdminPanelProvider extends PanelProvider
                 'light'     => '#f7f8fc',
             ])
             ->sidebarWidth('15rem')
-            // ->tenant(Tenant::class)
+
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -69,9 +68,6 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
-            // ->navigationGroups([
-            //     'Administração',
-            // ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

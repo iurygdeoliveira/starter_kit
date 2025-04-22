@@ -6,7 +6,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\RoleResource\Pages;
 use App\Models\Role;
-use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -35,11 +35,18 @@ class RoleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('tenant_id')
-                    ->relationship('tenant', 'name')
+                TextInput::make('Empresa')
+                    ->afterStateHydrated(function ($component): void {
+                        $component->state(session('tenant.name'));
+                    })
+                    ->disabled()
+                    ->dehydrated()
                     ->required(),
-                Forms\Components\TextInput::make('name')
-                    ->required(),
+                TextInput::make('name')
+                    ->label('Nome da Função')
+                    ->required()
+                    ->unique(ignoreRecord: true),
+
             ]);
     }
 

@@ -38,7 +38,7 @@ class UserResource extends Resource
     protected static ?string $navigationGroup = 'Administração';
 
     // Opcional: Definir a ordem do item no grupo
-    // protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     #[\Override]
     public static function getModelLabel(): string
