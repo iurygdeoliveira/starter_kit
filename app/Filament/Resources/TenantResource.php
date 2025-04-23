@@ -3,15 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TenantResource\Pages;
-use App\Filament\Resources\TenantResource\RelationManagers;
 use App\Models\Tenant;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 
 class TenantResource extends Resource
 {
@@ -28,6 +26,8 @@ class TenantResource extends Resource
     protected static ?int $navigationSort = 1;
 
     protected static ?string $navigationBadgeTooltip = 'Preencher dados';
+
+    protected static bool $showTableBulkActions = false;
 
     #[\Override]
     public static function getModelLabel(): string
@@ -91,6 +91,7 @@ class TenantResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -109,9 +110,8 @@ class TenantResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTenants::route('/'),
+            'index' =>  Pages\ListTenants::route('/'),
             'create' => Pages\CreateTenant::route('/create'),
-            'view' => Pages\ViewTenant::route('/{record}'),
             'edit' => Pages\EditTenant::route('/{record}/edit'),
         ];
     }
