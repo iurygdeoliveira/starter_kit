@@ -5,14 +5,17 @@ declare(strict_types = 1);
 namespace App\Models;
 
 //use App\Trait\TenantScopeTrait;
+
 use App\Trait\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use OwenIt\Auditing\Contracts\Auditable;
+use Illuminate\Support\Facades\Auth;
 
 class Tenant extends Model implements Auditable
 {
+    
     use UuidTrait;
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
@@ -23,6 +26,15 @@ class Tenant extends Model implements Auditable
         'email',
         'uuid',
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('tenant', function ($query) {
+            if (Auth::check() && Auth::user()->tenant_id && session('tenant')) {
+                $query->where('id', session('tenant.id'));
+            }
+        });
+    }
 
     /**
      * Obtém todos os usuários pertencentes a este inquilino (tenant).

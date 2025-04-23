@@ -4,13 +4,16 @@ declare(strict_types = 1);
 
 namespace App\Http\Middleware;
 
+use App\Trait\LoggedUserTrait;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Psr\Log\LoggerTrait;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetTenantMiddleware
 {
+    use LoggedUserTrait;
     /**
      * Handle an incoming request.
      *
@@ -18,8 +21,8 @@ class SetTenantMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-       // dd(Auth::user());
-        if (Auth::check() && Auth::user()->tenant_id && !session('tenant')) {
+       
+        if ($this->LoggedUser()) {
             // Armazena dados do tenant na sessão
             session([
                 'tenant' => [
