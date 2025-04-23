@@ -18,6 +18,7 @@ class TenantFactory extends Factory
             'cnpj'  => fake('pt_BR')->unique()->cnpj(),
             'uuid'  => fake('pt_BR')->unique()->uuid(),
             'email' => fake('pt_BR')->unique()->companyEmail(),
+            'phone' => fake('pt_BR')->unique()->phoneNumber(),
         ];
     }
 }
