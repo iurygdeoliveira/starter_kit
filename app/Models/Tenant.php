@@ -10,12 +10,11 @@ use App\Trait\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Support\Facades\Auth;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class Tenant extends Model implements Auditable
 {
-    
     use UuidTrait;
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
@@ -24,16 +23,26 @@ class Tenant extends Model implements Auditable
         'name',
         'cnpj',
         'email',
+        'phone',
         'uuid',
     ];
 
     protected static function booted()
     {
         static::addGlobalScope('tenant', function ($query) {
-            if (Auth::check() && Auth::user()->tenant_id && session('tenant')) {
+            if (Auth::check() && session('tenant')) {
                 $query->where('id', session('tenant.id'));
             }
         });
+    }
+
+    /**
+ * Define o campo a ser usado como identificador nas rotas.
+ */
+    #[\Override]
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';  // Substitua por 'uuid' ou o nome do campo que contém seu UUID
     }
 
     /**

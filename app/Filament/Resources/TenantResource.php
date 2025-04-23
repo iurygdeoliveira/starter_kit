@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TenantResource\Pages;
@@ -9,7 +11,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-
 
 class TenantResource extends Resource
 {
@@ -43,6 +44,12 @@ class TenantResource extends Resource
     public static function getNavigationBadgeColor(): ?string
     {
         return 'danger';
+    }
+
+    #[\Override]
+    public static function getRecordRouteKeyName(): string
+    {
+        return 'uuid';
     }
 
     public static function form(Form $form): Form
@@ -91,7 +98,7 @@ class TenantResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -110,9 +117,9 @@ class TenantResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' =>  Pages\ListTenants::route('/'),
+            'index'  => Pages\ListTenants::route('/'),
             'create' => Pages\CreateTenant::route('/create'),
-            'edit' => Pages\EditTenant::route('/{record}/edit'),
+            'edit'   => Pages\EditTenant::route('/{record}/edit'),
         ];
     }
 }
