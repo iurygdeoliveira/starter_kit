@@ -16,6 +16,7 @@ class Permission extends Model implements Auditable
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = ['name'];
+    public $timestamps = false;
 
     public function roles(): BelongsToMany
     {
