@@ -21,7 +21,8 @@ class SetTenantMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $this->LoggedUser()) {
+        
+        if ($this->LoggedUser()) {
             // Armazena dados do tenant na sessão
             session([
                 'tenant' => [
