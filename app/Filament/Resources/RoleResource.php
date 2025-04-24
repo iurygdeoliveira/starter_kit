@@ -42,7 +42,7 @@ class RoleResource extends Resource
             ->schema([
                 TextInput::make('Empresa')
                     ->afterStateHydrated(function ($component): void {
-                        $component->state(session('tenant.name'));
+                        $component->state(Auth::user()->);
                     })
                     ->disabled()
                     ->dehydrated()
