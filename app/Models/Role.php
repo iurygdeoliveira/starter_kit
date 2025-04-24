@@ -17,6 +17,7 @@ class Role extends Model implements Auditable
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = ['tenant_id', 'name'];
+
     public $timestamps = false;
 
     public function permissions(): BelongsToMany

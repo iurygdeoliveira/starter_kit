@@ -16,6 +16,7 @@ class Task extends Model implements Auditable
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = ['role_id', 'name'];
+
     public $timestamps = false;
 
     public function permissions(): BelongsToMany

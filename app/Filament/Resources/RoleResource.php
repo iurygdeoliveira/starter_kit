@@ -30,6 +30,11 @@ class RoleResource extends Resource
         return __('Roles');
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     #[\Override]
     public static function form(Form $form): Form
     {
