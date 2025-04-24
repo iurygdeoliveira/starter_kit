@@ -30,8 +30,8 @@ class Tenant extends Model implements Auditable
     protected static function booted()
     {
         static::addGlobalScope('tenant', function ($query) {
-            if (Auth::check() && session('tenant')) {
-                $query->where('id', session('tenant.id'));
+            if (Auth::check() && Auth::user()->tenant_id) {
+                $query->where('id', Auth::user()->tenant_id);
             }
         });
     }
