@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Trait;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -26,13 +27,24 @@ trait BelongsToTenantTrait
         }
 
         static::creating(function ($model): void {
-            // Lança exceção se o usuário NÃO está autenticado ou não tem tenant_id
+            // EXCEÇÃO ESPECIAL: Permite criar usuários sem tenant_id
+            if ($model instanceof User) {
+                // Se já existir um tenant_id, mantenha-o
+                if (Auth::check() && Auth::user()->tenant_id) {
+                    $model->tenant_id = Auth::user()->tenant_id;
+                }
+                // Se não existir, permite a criação sem tenant
+                static::logModelAction($model, 'criação de usuário');
+
+                return;
+            }
+
+            // Para OUTROS modelos, continua exigindo tenant_id
             if (! Auth::check() || ! Auth::user()->tenant_id) {
-                throw new UnauthorizedHttpException('Bearer', 'Operação não permitida: Usuário não autenticado');
+                throw new UnauthorizedHttpException('Bearer', 'Operação não permitida: Usuário não autenticado ou sem tenant');
             }
 
             $model->tenant_id = Auth::user()->tenant_id;
-
             static::logModelAction($model, 'criação');
         });
 

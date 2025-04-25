@@ -27,11 +27,17 @@ class Tenant extends Model implements Auditable
         'uuid',
     ];
 
+    #[\Override]
     protected static function booted()
     {
-        static::addGlobalScope('tenant', function ($query) {
+        static::addGlobalScope('tenant', function ($query): void {
             if (Auth::check() && Auth::user()->tenant_id) {
-                $query->where('id', Auth::user()->tenant_id);
+                $isSupportUser = Auth::user()->email === 'suporte@elshamahtec.com.br';
+
+                // Verifica se NÃO é o usuário de suporte da Elshamah
+                if (! $isSupportUser) {
+                    $query->where('tenant_id', Auth::user()->tenant_id);
+                }
             }
         });
     }

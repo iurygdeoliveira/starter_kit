@@ -17,29 +17,12 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Obtém todos os tenants ou cria um se não existir nenhum
-        $tenants = Tenant::all();
-
-        if ($tenants->isEmpty()) {
-            $tenants = Tenant::factory()->count(20)->create();
-        }
-
-        $adminTenant = Tenant::find(1);
-        User::factory()->create([
-
-            'uuid'      => fake('pt_BR')->uuid(),
-            'name'      => 'Admin User',
-            'email'     => 'admin@localhost.com.br',
-            'cpf'       => fake('pt_BR')->unique()->cpf(),
-            'phone'     => fake('pt_BR')->unique()->phoneNumber(),
-            'password'  => bcrypt('password'),
-            'verified'  => true,
-            'tenant_id' => $adminTenant->id,
-        ]);
+        $tenants = Tenant::where('name', '!=', 'Elshamah Tecnologia LTDA')->get();
 
         // Cria 2 usuários para cada tenant
         $tenants->each(function ($tenant): void {
             User::factory()
-                ->count(2)
+                ->count(3)
                 ->forTenant($tenant)
                 ->create();
         });

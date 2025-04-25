@@ -20,11 +20,11 @@ return new class () extends Migration
                 ->constrained('tenants')
                 ->cascadeOnDelete();
 
-            $table->uuid('uuid')->unique();
+            $table->uuid('uuid')->nullable()->unique();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('cpf')->unique();
-            $table->string('phone')->nullable();
+            $table->string('cpf')->nullable()->unique();
+            $table->string('phone')->nullable()->unique();
             $table->string('password');
             $table->boolean('verified')->default(false);
             $table->rememberToken();

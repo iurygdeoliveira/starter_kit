@@ -15,7 +15,6 @@ trait LoggedUserTrait
      */
     public function LoggedUser(): bool
     {
-      
         return (Auth::check() && session('tenant'));
     }
 }

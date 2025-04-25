@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class TenantResource extends Resource
 {
@@ -26,8 +27,6 @@ class TenantResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $navigationBadgeTooltip = 'Preencher dados';
-
     protected static bool $showTableBulkActions = false;
 
     #[\Override]
@@ -38,12 +37,38 @@ class TenantResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
+        $user = Auth::user();
+
+        if ($user && $user->tenant_id) {
+            // Se tem tenant, mostrar contagem
+            return (string) Tenant::count();
+        }
+
         return '?';
     }
 
     public static function getNavigationBadgeColor(): ?string
     {
+        $user = Auth::user();
+
+        if ($user && $user->tenant_id) {
+            return 'primary';
+        }
+
+        // Vermelho quando não tem tenant
         return 'danger';
+    }
+
+    #[\Override]
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        $user = Auth::user();
+
+        if ($user && $user->tenant_id) {
+            return null;
+        }
+
+        return 'Preencher Dados';
     }
 
     #[\Override]
@@ -52,6 +77,7 @@ class TenantResource extends Resource
         return 'uuid';
     }
 
+    #[\Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -71,6 +97,7 @@ class TenantResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -78,20 +105,16 @@ class TenantResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('cnpj')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('uuid')
-                    ->label('UUID')
+                    ->label('CNPJ')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                Tables\Columns\TextColumn::make('phone')
+                    ->label('Fone')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
             ])
             ->filters([
                 //
@@ -107,6 +130,7 @@ class TenantResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -114,6 +138,7 @@ class TenantResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [

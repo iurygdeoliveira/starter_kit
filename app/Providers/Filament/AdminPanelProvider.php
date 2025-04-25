@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Providers\Filament;
 
-use App\Http\Middleware\SetTenantMiddleware;
+use App\Filament\Pages\Auth\Register;
 use Filament\Enums\ThemeMode;
 use Filament\Forms\Components\Field;
 use Filament\Http\Middleware\Authenticate;
@@ -44,9 +44,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->registration()
+            ->registration(Register::class)
             ->passwordReset()
-            ->emailVerification()
             ->colors([
                 'primary'   => '#076fd1',
                 'secondary' => '#6b7a91',

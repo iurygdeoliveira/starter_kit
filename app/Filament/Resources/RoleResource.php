@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class RoleResource extends Resource
 {
@@ -30,10 +31,11 @@ class RoleResource extends Resource
         return __('Roles');
     }
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
+    // #[\Override]
+    // public static function shouldRegisterNavigation(): bool
+    // {
+    //     return false;
+    // }
 
     #[\Override]
     public static function form(Form $form): Form
@@ -42,7 +44,7 @@ class RoleResource extends Resource
             ->schema([
                 TextInput::make('Empresa')
                     ->afterStateHydrated(function ($component): void {
-                        $component->state(Auth::user()->);
+                        $component->state(Auth::user()->tenant?->name ?? 'Empresa não cadastrada');
                     })
                     ->disabled()
                     ->dehydrated()

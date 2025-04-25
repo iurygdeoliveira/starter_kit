@@ -17,7 +17,15 @@ trait TenantScopeTrait
     public static function bootTenantScopeTrait(): void
     {
         if (Auth::check() && Auth::user()->tenant_id) {
-            static::addGlobalScope('tenant_id', fn (Builder $builder) => $builder->where('tenant_id', Auth::user()->tenant_id));
+            // Verifica se NÃO é o usuário de suporte da Elshamah
+            $isSupportUser = Auth::user()->email === 'suporte@elshamahtec.com.br';
+
+            if (! $isSupportUser) {
+                static::addGlobalScope(
+                    'tenant_id',
+                    fn (Builder $builder) => $builder->where('tenant_id', Auth::user()->tenant_id)
+                );
+            }
         }
     }
 }
