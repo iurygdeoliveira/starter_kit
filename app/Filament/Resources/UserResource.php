@@ -73,39 +73,43 @@ class UserResource extends Resource
                 TextInput::make('cpf')
                     ->label('CPF')
                     ->mask('999.999.999-99')
-                    ->required()
+                    ->placeholder('CPF não cadastrado')
                     ->unique(ignoreRecord: true)
                     ->extraInputAttributes(['inputmode' => 'numeric']),
                 TextInput::make('phone')
-                    ->label('Telefone')
+                    ->label('Fone')
                     ->mask('(99) 99999-9999')  // Máscara para celular brasileiro
-                    ->required()
                     ->unique(ignoreRecord: true)
+                    ->placeholder('Fone não cadastrado')
                     ->extraInputAttributes(['inputmode' => 'numeric']),
                 TextInput::make('cnpj')
                     ->label('CNPJ')
                     ->mask('99.999.999/9999-99')
-                    ->afterStateHydrated(function ($component): void {
-                        $component->state(session('tenant.cnpj'));
+                    ->afterStateHydrated(function ($component, $state, $record): void {
+                        $record->load('tenant');
+                        $component->state($record->tenant->cnpj);
                     })
+                    ->placeholder('CNPJ não cadastrado')
                     ->disabled()
                     ->dehydrated(false)
-                    ->required()
                     ->extraInputAttributes(['inputmode' => 'numeric']),
                 TextInput::make('Empresa')
-                    ->afterStateHydrated(function ($component): void {
-                        $component->state(session('tenant.name'));
+                    ->afterStateHydrated(function ($component, $state, $record): void {
+                        $record->load('tenant');
+                        $component->state($record->tenant->name);
                     })
                     ->disabled()
                     ->dehydrated(false)
                     ->required(),
                 TextInput::make('password')
                     ->password()
+                    ->revealable()
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (?string $state) => filled($state))
                     ->confirmed(),
                 TextInput::make('password_confirmation')
                     ->password()
+                    ->revealable()
                     ->requiredWith('password')
                     ->dehydrated(false),
             ]);

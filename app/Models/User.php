@@ -5,7 +5,9 @@ declare(strict_types = 1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Trait\TenantModelTrait;
+
+use App\Trait\BelongsToTenantTrait;
+use App\Trait\UuidTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -17,7 +19,9 @@ class User extends Authenticatable implements Auditable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
     use Notifiable;
-    use TenantModelTrait;
+    use UuidTrait;
+    use BelongsToTenantTrait;
+
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = [
@@ -45,6 +49,11 @@ class User extends Authenticatable implements Auditable
             'suspended_at'    => 'datetime:d/m/Y H:i',
             'suspended_until' => 'datetime:d/m/Y H:i',
         ];
+    }
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
     }
 
     /**

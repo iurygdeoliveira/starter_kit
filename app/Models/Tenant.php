@@ -4,8 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Models;
 
-//use App\Trait\TenantScopeTrait;
-
+use App\Trait\SupportUserTrait;
 use App\Trait\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +15,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class Tenant extends Model implements Auditable
 {
     use UuidTrait;
+    use SupportUserTrait;
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
 
@@ -31,13 +31,9 @@ class Tenant extends Model implements Auditable
     protected static function booted()
     {
         static::addGlobalScope('tenant', function ($query): void {
-            if (Auth::check() && Auth::user()->tenant_id) {
-                $isSupportUser = Auth::user()->email === 'suporte@elshamahtec.com.br';
-
-                // Verifica se NÃO é o usuário de suporte da Elshamah
-                if (! $isSupportUser) {
-                    $query->where('tenant_id', Auth::user()->tenant_id);
-                }
+            // Verifica se NÃO é o usuário de suporte
+            if (! static::isSupportUser()) {
+                $query->where('id', Auth::user()->tenant_id);
             }
         });
     }

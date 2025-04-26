@@ -6,15 +6,20 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TenantResource\Pages;
 use App\Models\Tenant;
-use Filament\Forms;
+use App\Trait\SupportUserTrait;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Leandrocfe\FilamentPtbrFormFields\Document;
+use Leandrocfe\FilamentPtbrFormFields\PhoneNumber;
 
 class TenantResource extends Resource
 {
+    use SupportUserTrait;
+
     protected static ?string $model = Tenant::class;
 
     protected static ?string $navigationIcon = 'heroicon-m-building-office-2';
@@ -37,38 +42,55 @@ class TenantResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $user = Auth::user();
-
-        if ($user && $user->tenant_id) {
-            // Se tem tenant, mostrar contagem
+        // Se é o usuário de suporte, mostrar contagem de tenants
+        if (static::isSupportUser()) {
             return (string) Tenant::count();
         }
 
-        return '?';
+        $tenant = Tenant::first();
+
+        // Verificar campos incompletos
+        if ($tenant->cnpj === null || $tenant->phone === null || $tenant->email === null) {
+            return '!';
+        }
+
+        // Todos os campos estão preenchidos
+        return null;
     }
 
     public static function getNavigationBadgeColor(): ?string
     {
-        $user = Auth::user();
-
-        if ($user && $user->tenant_id) {
+        if (static::isSupportUser()) {
             return 'primary';
         }
 
-        // Vermelho quando não tem tenant
-        return 'danger';
+        $tenant = Tenant::first();
+
+        // Verificar campos incompletos
+        if ($tenant->cnpj === null || $tenant->phone === null || $tenant->email === null) {
+            return 'danger';
+        }
+
+        // Todos os campos estão preenchidos
+        return 'primary';
     }
 
     #[\Override]
     public static function getNavigationBadgeTooltip(): ?string
     {
-        $user = Auth::user();
-
-        if ($user && $user->tenant_id) {
+        if (static::isSupportUser()) {
             return null;
         }
 
-        return 'Preencher Dados';
+        $tenant = Tenant::first();
+
+        // Verificar campos incompletos
+        if ($tenant->cnpj === null || $tenant->phone === null || $tenant->email === null) {
+            return 'Preencher dados da empresa';
+        }
+
+        // Todos os campos estão preenchidos
+        return null;
     }
 
     #[\Override]
@@ -82,18 +104,32 @@ class TenantResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->label('Razão Social')
-                    ->required(),
-                Forms\Components\TextInput::make('cnpj')
+                    ->required()
+                    ->afterStateHydrated(function ($component): void {
+                        $component->state(Auth::user()->tenant->name);
+                    })
+                    ->dehydrated(),
+                Document::make('cnpj')
                     ->label('CNPJ')
-                    ->required(),
-                Forms\Components\TextInput::make('phone')
+                    ->mask('99.999.999/9999-99')
+                    ->validation(true)
+                    ->placeholder('CNPJ não cadastrado')
+                    ->dehydrated()
+                    ->extraInputAttributes(['inputmode' => 'numeric'])
+                    ->unique(ignoreRecord: true),
+                PhoneNumber::make('phone')
                     ->label('Fone')
-                    ->required(),
-                Forms\Components\TextInput::make('email')
+                    ->mask('(99) 99999-9999')
+                    ->dehydrated()
+                    ->placeholder('Fone não cadastrado')
+                    ->extraInputAttributes(['inputmode' => 'numeric'])
+                    ->unique(ignoreRecord: true),
+                TextInput::make('email')
                     ->email()
-                    ->required(),
+                    ->dehydrated()
+                    ->unique(ignoreRecord: true),
             ]);
     }
 

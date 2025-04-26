@@ -20,7 +20,7 @@ return new class () extends Migration
                 ->constrained('tenants')
                 ->cascadeOnDelete();
 
-            $table->uuid('uuid')->nullable()->unique();
+            $table->uuid('uuid')->unique();
             $table->string('name');
             $table->string('email')->unique();
             $table->string('cpf')->nullable()->unique();
