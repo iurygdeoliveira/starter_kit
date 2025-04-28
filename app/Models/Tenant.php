@@ -31,6 +31,11 @@ class Tenant extends Model implements Auditable
     protected static function booted()
     {
         static::addGlobalScope('tenant', function ($query): void {
+            // Verifica primeiro se existe um usuário autenticado
+            if (! Auth::check()) {
+                return; // Retorna sem aplicar o filtro durante seed/migrations
+            }
+
             // Verifica se NÃO é o usuário de suporte
             if (! static::isSupportUser()) {
                 $query->where('id', Auth::user()->tenant_id);

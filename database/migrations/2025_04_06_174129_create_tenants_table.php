@@ -17,10 +17,11 @@ return new class () extends Migration
             $table->id();
 
             $table->string('name')->unique();
-            $table->string('cnpj')->unique()->nullable();
-            $table->string('phone')->unique()->nullable();
+            $table->string('crc')->unique();
+            $table->string('cnpj')->unique();
+            $table->string('phone')->unique();
             $table->uuid('uuid')->unique();
-            $table->string('email')->unique()->nullable();
+            $table->string('email')->unique();
 
             $table->timestamps();
         });

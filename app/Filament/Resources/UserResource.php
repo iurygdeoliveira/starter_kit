@@ -5,7 +5,10 @@ declare(strict_types = 1);
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
+use App\Models\Tenant;
 use App\Models\User;
+use App\Trait\SupportUserTrait;
+use App\Trait\UserLoogedTrait;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -23,6 +26,9 @@ use Filament\Tables\Table;
  */
 class UserResource extends Resource
 {
+    use SupportUserTrait;
+    use UserLoogedTrait;
+
     /**
      * Define o modelo associado a este recurso.
      * Neste caso, o recurso gerencia o modelo User.
@@ -41,6 +47,27 @@ class UserResource extends Resource
 
     // Opcional: Definir a ordem do item no grupo
     protected static ?int $navigationSort = 1;
+
+    // Armazena o resultado em uma propriedade estática
+    protected static $cachedTenant;
+
+    /**
+    * Busca o tenant do usuário atual usando cache estático
+    */
+    protected static function getUserTenant(): Tenant
+    {
+        // Se já temos o resultado em cache, retorna imediatamente
+        if (self::$cachedTenant !== null) {
+            return self::$cachedTenant;
+        }
+
+        if (self::isUserLoggedIn()) {
+            // Para usuários normais, pega diretamente da relação
+            self::$cachedTenant = Tenant::first();
+        }
+
+        return self::$cachedTenant;
+    }
 
     #[\Override]
     public static function getModelLabel(): string
@@ -82,25 +109,6 @@ class UserResource extends Resource
                     ->unique(ignoreRecord: true)
                     ->placeholder('Fone não cadastrado')
                     ->extraInputAttributes(['inputmode' => 'numeric']),
-                TextInput::make('cnpj')
-                    ->label('CNPJ')
-                    ->mask('99.999.999/9999-99')
-                    ->afterStateHydrated(function ($component, $state, $record): void {
-                        $record->load('tenant');
-                        $component->state($record->tenant->cnpj);
-                    })
-                    ->placeholder('CNPJ não cadastrado')
-                    ->disabled()
-                    ->dehydrated(false)
-                    ->extraInputAttributes(['inputmode' => 'numeric']),
-                TextInput::make('Empresa')
-                    ->afterStateHydrated(function ($component, $state, $record): void {
-                        $record->load('tenant');
-                        $component->state($record->tenant->name);
-                    })
-                    ->disabled()
-                    ->dehydrated(false)
-                    ->required(),
                 TextInput::make('password')
                     ->password()
                     ->revealable()

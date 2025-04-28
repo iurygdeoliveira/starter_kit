@@ -7,18 +7,22 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TenantResource\Pages;
 use App\Models\Tenant;
 use App\Trait\SupportUserTrait;
+use App\Trait\UserLoogedTrait;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Leandrocfe\FilamentPtbrFormFields\Document;
-use Leandrocfe\FilamentPtbrFormFields\PhoneNumber;
 
 class TenantResource extends Resource
 {
     use SupportUserTrait;
+    use UserLoogedTrait;
 
     protected static ?string $model = Tenant::class;
 
@@ -34,10 +38,31 @@ class TenantResource extends Resource
 
     protected static bool $showTableBulkActions = false;
 
+    // Armazena o resultado em uma propriedade estática
+    protected static $cachedTenant;
+
     #[\Override]
     public static function getModelLabel(): string
     {
         return __('Empresa');
+    }
+
+    /**
+ * Busca o tenant do usuário atual usando cache estático
+ */
+    protected static function getUserTenant(): ?Tenant
+    {
+        // Se já temos o resultado em cache, retorna imediatamente
+        if (self::$cachedTenant !== null) {
+            return self::$cachedTenant;
+        }
+
+        if (self::isUserLoggedIn()) {
+            // Para usuários normais, pega diretamente da relação
+            self::$cachedTenant = Tenant::first();
+        }
+
+        return self::$cachedTenant;
     }
 
     public static function getNavigationBadge(): ?string
@@ -47,10 +72,12 @@ class TenantResource extends Resource
             return (string) Tenant::count();
         }
 
-        $tenant = Tenant::first();
+        $tenant = self::getUserTenant();
 
         // Verificar campos incompletos
-        if ($tenant->cnpj === null || $tenant->phone === null || $tenant->email === null) {
+        if (
+            is_null($tenant) || is_null($tenant->cnpj) || is_null($tenant->phone) ||
+            is_null($tenant->email) || is_null($tenant->name) || is_null($tenant->crc)) {
             return '!';
         }
 
@@ -64,10 +91,12 @@ class TenantResource extends Resource
             return 'primary';
         }
 
-        $tenant = Tenant::first();
+        $tenant = self::getUserTenant();
 
         // Verificar campos incompletos
-        if ($tenant->cnpj === null || $tenant->phone === null || $tenant->email === null) {
+        if (
+            is_null($tenant) || is_null($tenant->cnpj) || is_null($tenant->phone) ||
+            is_null($tenant->email) || is_null($tenant->name) || is_null($tenant->crc)) {
             return 'danger';
         }
 
@@ -82,10 +111,12 @@ class TenantResource extends Resource
             return null;
         }
 
-        $tenant = Tenant::first();
+        $tenant = self::getUserTenant();
 
         // Verificar campos incompletos
-        if ($tenant->cnpj === null || $tenant->phone === null || $tenant->email === null) {
+        if (
+            is_null($tenant) || is_null($tenant->cnpj) || is_null($tenant->phone) ||
+            is_null($tenant->email) || is_null($tenant->name) || is_null($tenant->crc)) {
             return 'Preencher dados da empresa';
         }
 
@@ -111,15 +142,14 @@ class TenantResource extends Resource
                         $component->state(Auth::user()->tenant->name);
                     })
                     ->dehydrated(),
-                Document::make('cnpj')
+                TextInput::make('cnpj')
                     ->label('CNPJ')
                     ->mask('99.999.999/9999-99')
-                    ->validation(true)
                     ->placeholder('CNPJ não cadastrado')
                     ->dehydrated()
                     ->extraInputAttributes(['inputmode' => 'numeric'])
                     ->unique(ignoreRecord: true),
-                PhoneNumber::make('phone')
+                TextInput::make('phone')
                     ->label('Fone')
                     ->mask('(99) 99999-9999')
                     ->dehydrated()
@@ -138,16 +168,17 @@ class TenantResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('cnpj')
+                TextColumn::make('name')
+                    ->searchable()
+                    ->weight(FontWeight::Bold),
+                TextColumn::make('cnpj')
                     ->label('CNPJ')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
+                TextColumn::make('phone')
                     ->label('Fone')
                     ->sortable()
                     ->searchable(),
@@ -156,12 +187,12 @@ class TenantResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
 
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

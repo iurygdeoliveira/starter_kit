@@ -50,6 +50,8 @@ class TaskResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->emptyStateDescription('Uma vez que você cadastre sua primeira tarefa, ela aparecerá aqui.')
+            ->emptyStateIcon('heroicon-o-exclamation-triangle')
             ->columns([
                 Tables\Columns\TextColumn::make('role_id')
                     ->numeric()

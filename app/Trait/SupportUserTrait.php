@@ -15,10 +15,6 @@ trait SupportUserTrait
      */
     public static function isSupportUser(): bool
     {
-        if (! static::isUserLoggedIn()) {
-            return false;
-        }
-
-        return Auth::user()->email === 'suporte@elshamahtec.com.br';
+        return Auth::check() && (Auth::user()->email === 'suporte@elshamahtec.com.br');
     }
 }
