@@ -12,12 +12,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 
 class TenantResource extends Resource
 {
@@ -138,9 +138,6 @@ class TenantResource extends Resource
                 TextInput::make('name')
                     ->label('Razão Social')
                     ->required()
-                    ->afterStateHydrated(function ($component): void {
-                        $component->state(Auth::user()->tenant->name);
-                    })
                     ->dehydrated(),
                 TextInput::make('cnpj')
                     ->label('CNPJ')
@@ -167,21 +164,24 @@ class TenantResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->emptyStateDescription('Uma vez que você cadastre os dados de sua empresa, eles aparecerão aqui.')
+            ->emptyStateIcon('heroicon-s-exclamation-triangle')
+            ->emptyStateActions([
+                Action::make('create')
+                    ->label('Registrar Empresa')
+                    ->url(TenantResource::getUrl('create'))
+                    ->icon('heroicon-m-plus')
+                    ->button(),
+            ])
             ->columns([
                 TextColumn::make('name')
-                    ->searchable()
+                    ->label('Razão Social')
                     ->weight(FontWeight::Bold),
                 TextColumn::make('cnpj')
-                    ->label('CNPJ')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->sortable()
-                    ->searchable(),
+                    ->label('CNPJ'),
+                TextColumn::make('email'),
                 TextColumn::make('phone')
-                    ->label('Fone')
-                    ->sortable()
-                    ->searchable(),
+                    ->label('Fone'),
             ])
             ->filters([
                 //

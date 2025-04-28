@@ -10,8 +10,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 
 class RoleResource extends Resource
 {
@@ -43,9 +43,6 @@ class RoleResource extends Resource
         return $form
             ->schema([
                 TextInput::make('Empresa')
-                    ->afterStateHydrated(function ($component): void {
-                        $component->state(Auth::user()->tenant?->name ?? 'Empresa não cadastrada');
-                    })
                     ->disabled()
                     ->dehydrated()
                     ->required(),
@@ -63,6 +60,13 @@ class RoleResource extends Resource
         return $table
             ->emptyStateDescription('Uma vez que você cadastre sua primeira função, ela aparecerá aqui.')
             ->emptyStateIcon('heroicon-s-exclamation-triangle')
+            ->emptyStateActions([
+                Action::make('create')
+                    ->label('Registrar Função')
+                    ->url(RoleResource::getUrl('create'))
+                    ->icon('heroicon-m-plus')
+                    ->button(),
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('tenant.name')
                     ->numeric()

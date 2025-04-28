@@ -10,6 +10,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 
 class TaskResource extends Resource
@@ -51,7 +52,14 @@ class TaskResource extends Resource
     {
         return $table
             ->emptyStateDescription('Uma vez que você cadastre sua primeira tarefa, ela aparecerá aqui.')
-            ->emptyStateIcon('heroicon-o-exclamation-triangle')
+            ->emptyStateIcon('heroicon-s-exclamation-triangle')
+            ->emptyStateActions([
+                Action::make('create')
+                    ->label('Registrar Tarefa')
+                    ->url(TaskResource::getUrl('create'))
+                    ->icon('heroicon-m-plus')
+                    ->button(),
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('role_id')
                     ->numeric()
