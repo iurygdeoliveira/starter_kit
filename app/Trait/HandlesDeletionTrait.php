@@ -4,18 +4,18 @@ declare(strict_types = 1);
 
 namespace App\Trait;
 
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 trait HandlesDeletionTrait
 {
     use LogsModelActionsTrait;
+    use UserLoogedTrait;
 
     public static function bootHandlesDeletionTrait(): void
     {
         static::deleting(function ($model): void {
             // Lança exceção se o usuário NÃO está autenticado ou não tem tenant_id
-            if (! Auth::check() || ! Auth::user()->tenant_id) {
+            if (! self::isUserLoggedIn()) {
                 throw new UnauthorizedHttpException('Bearer', 'Operação não permitida: Usuário não autenticado');
             }
 

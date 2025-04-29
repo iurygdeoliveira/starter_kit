@@ -4,12 +4,16 @@ declare(strict_types = 1);
 
 namespace App\Trait;
 
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 trait HandlesCreationTrait
 {
+    use LogsModelActionsTrait;
+    use UserLoogedTrait;
+
     public static function bootHandlesCreationTrait(): void
     {
         static::creating(function ($model): void {
@@ -26,8 +30,8 @@ trait HandlesCreationTrait
             }
 
             // Para OUTROS modelos, continua exigindo tenant_id
-            if (! Auth::check() || ! Auth::user()->tenant_id) {
-                throw new UnauthorizedHttpException('Bearer', 'Operação não permitida: Usuário não autenticado ou sem tenant');
+            if (! self::isUserLoggedIn()) {
+                throw new UnauthorizedHttpException('Bearer', 'Operação não permitida: Usuário não autenticado');
             }
 
             $model->tenant_id = Auth::user()->tenant_id;
@@ -45,6 +49,17 @@ trait HandlesCreationTrait
      */
     protected static function handleCreated($model): void
     {
+        // Caso especial para quando um Tenant é criado
+        if ($model instanceof Tenant && Auth::check()) {
+            $user = Auth::user();
+
+            // Associa o Tenant recém-criado ao usuário que o criou
+            $user->tenant_id = $model->id;
+            $user->save();
+
+            static::logModelAction($model, 'associação de tenant ao usuário');
+        }
+
         // Esta função pode ser sobrescrita por modelos específicos
         // Exemplo para User:
         // - Enviar email de boas-vindas

@@ -9,6 +9,7 @@ use App\Models\Tenant;
 use App\Trait\SupportUserTrait;
 use App\Trait\UserLoogedTrait;
 use Filament\Forms\Components\TextInput;
+
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
@@ -138,25 +139,40 @@ class TenantResource extends Resource
                 TextInput::make('name')
                     ->label('Razão Social')
                     ->required()
-                    ->dehydrated(),
+                    ->maxLength(255)
+                    ->dehydrated()
+                    ->validationMessages([
+                        'maxLength' => 'O nome não pode ter mais de 255 caracteres.',
+                    ]),
                 TextInput::make('cnpj')
+                    ->placeholder('CNPJ não cadastrado')
                     ->label('CNPJ')
                     ->mask('99.999.999/9999-99')
-                    ->placeholder('CNPJ não cadastrado')
+                    ->required()
+                    ->unique('tenants', 'cnpj')
+                    ->validationMessages([
+                        'unique' => 'Este CNPJ já está cadastrado no sistema.',
+                    ])
                     ->dehydrated()
-                    ->extraInputAttributes(['inputmode' => 'numeric'])
-                    ->unique(ignoreRecord: true),
+                    ->extraInputAttributes(['inputmode' => 'numeric']),
                 TextInput::make('phone')
                     ->label('Fone')
                     ->mask('(99) 99999-9999')
                     ->dehydrated()
                     ->placeholder('Fone não cadastrado')
                     ->extraInputAttributes(['inputmode' => 'numeric'])
-                    ->unique(ignoreRecord: true),
+                    ->unique(),
                 TextInput::make('email')
                     ->email()
+                    ->placeholder('Email não cadastrado')
                     ->dehydrated()
-                    ->unique(ignoreRecord: true),
+                    ->unique('tenants', 'email')
+                    ->required()
+                    ->maxLength(255)
+                    ->validationMessages([
+                        'unique'   => 'Este email já está cadastrado no sistema.',
+                        'required' => 'O email é obrigatório.',
+                    ]),
             ]);
     }
 

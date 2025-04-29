@@ -17,7 +17,6 @@ return new class () extends Migration
             $table->id();
 
             $table->string('name')->unique();
-            $table->string('crc')->unique();
             $table->string('cnpj')->unique();
             $table->string('phone')->unique();
             $table->uuid('uuid')->unique();

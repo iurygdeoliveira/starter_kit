@@ -12,6 +12,7 @@ use App\Trait\UserLoogedTrait;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -96,18 +97,18 @@ class UserResource extends Resource
                 TextInput::make('email')
                     ->email()
                     ->required()
-                    ->unique(ignoreRecord: true),
+                    ->unique(),
                 TextInput::make('cpf')
                     ->label('CPF')
                     ->mask('999.999.999-99')
-                    ->placeholder('CPF não cadastrado')
-                    ->unique(ignoreRecord: true)
+                    ->required()
+                    ->unique()
                     ->extraInputAttributes(['inputmode' => 'numeric']),
                 TextInput::make('phone')
                     ->label('Fone')
-                    ->mask('(99) 99999-9999')  // Máscara para celular brasileiro
-                    ->unique(ignoreRecord: true)
-                    ->placeholder('Fone não cadastrado')
+                    ->mask('(99) 99999-9999')
+                    ->required()
+                    ->unique()
                     ->extraInputAttributes(['inputmode' => 'numeric']),
                 TextInput::make('password')
                     ->password()
@@ -137,7 +138,8 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->weight(FontWeight::Bold),
                 TextColumn::make('cpf')
                     ->label('CPF')
                     ->searchable()
@@ -157,7 +159,7 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                EditAction::make(),
+                EditAction::make()->hidden(fn () => self::isSupportUser()),
                 DeleteAction::make(),
             ])
             ->bulkActions([
