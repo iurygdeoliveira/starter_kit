@@ -150,8 +150,7 @@ class UserResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->weight(FontWeight::Bold),
-                TextColumn::make('cpf')
-                    ->label('CPF')
+                TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('verified')

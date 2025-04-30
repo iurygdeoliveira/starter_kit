@@ -78,7 +78,7 @@ class TenantResource extends Resource
         // Verificar campos incompletos
         if (
             is_null($tenant) || is_null($tenant->cnpj) || is_null($tenant->phone) ||
-            is_null($tenant->email) || is_null($tenant->name) || is_null($tenant->crc)) {
+            is_null($tenant->email)) {
             return '!';
         }
 
@@ -97,7 +97,7 @@ class TenantResource extends Resource
         // Verificar campos incompletos
         if (
             is_null($tenant) || is_null($tenant->cnpj) || is_null($tenant->phone) ||
-            is_null($tenant->email) || is_null($tenant->name) || is_null($tenant->crc)) {
+            is_null($tenant->email)) {
             return 'danger';
         }
 
@@ -117,7 +117,7 @@ class TenantResource extends Resource
         // Verificar campos incompletos
         if (
             is_null($tenant) || is_null($tenant->cnpj) || is_null($tenant->phone) ||
-            is_null($tenant->email) || is_null($tenant->name) || is_null($tenant->crc)) {
+            is_null($tenant->email)) {
             return 'Preencher dados da empresa';
         }
 
