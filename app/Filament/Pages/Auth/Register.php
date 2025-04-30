@@ -4,44 +4,34 @@ declare(strict_types = 1);
 
 namespace App\Filament\Pages\Auth;
 
+use App\Models\Tenant;
 use App\Models\User;
-use App\Trait\ValidateCpfTrait;
-use Closure;
+use Exception;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\Register as BaseRegister;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class Register extends BaseRegister
 {
-    use ValidateCpfTrait;
-
     #[\Override]
     public function form(Form $form): Form
     {
         return $form
             ->schema([
+                TextInput::make('empresa')
+                    ->label('Empresa')
+                    ->required()
+                    ->maxLength(255),
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255)
                     ->rule('regex:/^[^\d]*$/')
                     ->validationMessages([
                         'regex' => 'O nome não pode conter números.',
-                    ]),
-                TextInput::make('cpf')
-                    ->label('CPF')
-                    ->mask('999.999.999-99')
-                    ->required()
-                    ->dehydrated()
-                    ->extraInputAttributes(['inputmode' => 'numeric'])
-                    ->unique('users', 'cpf')
-                    ->rules([
-                        fn (): Closure => self::getCpfValidationRule(),
-                    ])
-                    ->validationMessages([
-                        'unique' => 'Este CPF já está cadastrado no sistema.',
                     ]),
                 TextInput::make('email')
                     ->email()
@@ -68,24 +58,6 @@ class Register extends BaseRegister
     #[\Override]
     protected function handleRegistration(array $data): User
     {
-        // Verifica manualmente se o CPF já existe
-        if (User::where('cpf', $data['cpf'])->exists()) {
-            // Usa o sistema de validação do Laravel para retornar o erro adequadamente
-            // Envia notificação de sucesso
-            Notification::make()
-                ->title('CPF já registrado')
-                ->body('Por favor, corrija o CPF informado para continuar.')
-                ->icon('heroicon-c-no-symbol')
-                ->iconColor('danger')
-                ->color('danger')
-                ->persistent()
-                ->send();
-
-            throw ValidationException::withMessages([
-                'cpf' => 'Este CPF já está em uso.',
-            ]);
-        }
-
         if (User::where('email', $data['email'])->exists()) {
             // Usa o sistema de validação do Laravel para retornar o erro adequadamente
             // Envia notificação de sucesso
@@ -103,24 +75,48 @@ class Register extends BaseRegister
             ]);
         }
 
-        $user = User::create([
-            'name'      => $data['name'],
-            'email'     => $data['email'],
-            'cpf'       => $data['cpf'],
-            'password'  => Hash::make($data['password']),
-            'tenant_id' => null,
-        ]);
+        DB::beginTransaction();
 
-        // Envia notificação de sucesso
-        Notification::make()
-            ->title('Novo usuário criado com sucesso')
-            ->color('success')
-            ->icon('heroicon-s-check-circle')
-            ->iconColor('success')
-            ->seconds(8)
-            ->success()
-            ->send();
+        try {
+            $tenant = Tenant::create([
+                'name' => $data['empresa'],
+            ]);
 
-        return $user;
+            $user = User::create([
+                'name'      => $data['name'],
+                'email'     => $data['email'],
+                'password'  => Hash::make($data['password']),
+                'tenant_id' => $tenant->id,
+            ]);
+
+            DB::commit();
+
+            // Envia notificação de sucesso
+            Notification::make()
+                ->title('Novo usuário criado com sucesso')
+                ->color('success')
+                ->icon('heroicon-s-check-circle')
+                ->iconColor('success')
+                ->seconds(8)
+                ->success()
+                ->send();
+
+            return $user;
+        } catch (Exception $e) {
+            // Se qualquer exceção ocorrer, faz o rollback explícito
+            DB::rollBack();
+
+            // Notifica o erro
+            Notification::make()
+                ->title('Erro ao criar usuário')
+                ->body('Ocorreu um erro ao criar o usuário e a empresa. Por favor, tente novamente.')
+                ->icon('heroicon-c-no-symbol')
+                ->iconColor('danger')
+                ->color('danger')
+                ->persistent()
+                ->send();
+
+            throw $e; // Re-lança a exceção para ser tratada pelo framework
+        }
     }
 }

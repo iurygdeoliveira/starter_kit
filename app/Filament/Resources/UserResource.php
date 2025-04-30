@@ -9,6 +9,8 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Trait\SupportUserTrait;
 use App\Trait\UserLoogedTrait;
+use App\Trait\ValidateCpfTrait;
+use Closure;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -29,6 +31,7 @@ class UserResource extends Resource
 {
     use SupportUserTrait;
     use UserLoogedTrait;
+    use ValidateCpfTrait;
 
     /**
      * Define o modelo associado a este recurso.
@@ -102,8 +105,15 @@ class UserResource extends Resource
                     ->label('CPF')
                     ->mask('999.999.999-99')
                     ->required()
-                    ->unique()
-                    ->extraInputAttributes(['inputmode' => 'numeric']),
+                    ->dehydrated()
+                    ->extraInputAttributes(['inputmode' => 'numeric'])
+                    ->unique('users', 'cpf')
+                    ->rules([
+                        fn (): Closure => self::getCpfValidationRule(),
+                    ])
+                    ->validationMessages([
+                        'unique' => 'Este CPF já está cadastrado no sistema.',
+                    ]),
                 TextInput::make('phone')
                     ->label('Fone')
                     ->mask('(99) 99999-9999')

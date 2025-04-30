@@ -2,7 +2,6 @@
 
 declare(strict_types = 1);
 
-use App\Http\Middleware\SetTenantMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,11 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // $middleware->group('web', [
-        //     SetTenantMiddleware::class,
-        // ]);
+
+        //]);
 
         $middleware->group('api', [
-            SetTenantMiddleware::class,
+
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

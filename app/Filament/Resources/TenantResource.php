@@ -176,6 +176,11 @@ class TenantResource extends Resource
             ]);
     }
 
+    public static function shouldShowTable(): bool
+    {
+        return static::isSupportUser();
+    }
+
     #[\Override]
     public static function table(Table $table): Table
     {
