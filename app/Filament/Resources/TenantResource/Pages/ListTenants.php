@@ -34,7 +34,7 @@ class ListTenants extends ListRecords
         if (! static::isSupportUser()) {
             $tenant = Tenant::first();
 
-            $this->redirect(TenantResource::getUrl('edit', ['record' => $tenant]));
+            $this->redirect(TenantResource::getUrl('view', ['record' => $tenant]));
         }
     }
 }

@@ -11,6 +11,7 @@ use App\Trait\UserLoogedTrait;
 use Filament\Forms\Components\TextInput;
 
 use Filament\Forms\Form;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Actions\Action;
@@ -144,6 +145,7 @@ class TenantResource extends Resource
                     ->validationMessages([
                         'maxLength' => 'O nome não pode ter mais de 255 caracteres.',
                     ]),
+                    
                 TextInput::make('cnpj')
                     ->placeholder('CNPJ não cadastrado')
                     ->label('CNPJ')
@@ -233,6 +235,7 @@ class TenantResource extends Resource
             'index'  => Pages\ListTenants::route('/'),
             'create' => Pages\CreateTenant::route('/create'),
             'edit'   => Pages\EditTenant::route('/{record}/edit'),
+            'view'   => Pages\ViewTenant::route('/{record}'),
         ];
     }
 }

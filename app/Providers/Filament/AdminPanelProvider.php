@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Auth\CustomLogin;
 use App\Filament\Pages\Auth\Register;
 use Filament\Enums\ThemeMode;
 use Filament\Forms\Components\Field;
@@ -44,7 +43,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login(CustomLogin::class)
+            ->login()
             ->registration(Register::class)
             ->passwordReset()
             ->colors([
