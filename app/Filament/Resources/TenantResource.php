@@ -11,7 +11,6 @@ use App\Trait\UserLoogedTrait;
 use Filament\Forms\Components\TextInput;
 
 use Filament\Forms\Form;
-use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Actions\Action;
@@ -139,38 +138,44 @@ class TenantResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->label('Razão Social')
+                    ->dehydrated()
                     ->required()
                     ->maxLength(255)
-                    ->dehydrated()
                     ->validationMessages([
                         'maxLength' => 'O nome não pode ter mais de 255 caracteres.',
                     ]),
-                    
+
                 TextInput::make('cnpj')
                     ->placeholder('CNPJ não cadastrado')
                     ->label('CNPJ')
-                    ->mask('99.999.999/9999-99')
+                    ->dehydrated()
                     ->required()
+                    ->mask('99.999.999/9999-99')
                     ->unique('tenants', 'cnpj')
                     ->validationMessages([
-                        'unique' => 'Este CNPJ já está cadastrado no sistema.',
+                        'unique'   => 'Este CNPJ já está cadastrado no sistema.',
+                        'required' => 'O CNPJ é obrigatório.',
                     ])
-                    ->dehydrated()
                     ->extraInputAttributes(['inputmode' => 'numeric']),
                 TextInput::make('phone')
-                    ->label('Fone')
-                    ->mask('(99) 99999-9999')
-                    ->dehydrated()
                     ->placeholder('Fone não cadastrado')
-                    ->extraInputAttributes(['inputmode' => 'numeric'])
-                    ->unique(),
-                TextInput::make('email')
-                    ->email()
-                    ->placeholder('Email não cadastrado')
+                    ->label('Fone')
+                    ->required()
                     ->dehydrated()
-                    ->unique('tenants', 'email')
+                    ->mask('(99) 99999-9999')
+                    ->extraInputAttributes(['inputmode' => 'numeric'])
+                    ->unique('tenants', 'phone')
+                    ->validationMessages([
+                        'unique'   => 'Este Telefone já está cadastrado no sistema.',
+                        'required' => 'O telefone é obrigatório.',
+                    ]),
+                TextInput::make('email')
+                    ->placeholder('Email não cadastrado')
+                    ->email()
+                    ->dehydrated()
                     ->required()
                     ->maxLength(255)
+                    ->unique('tenants', 'email')
                     ->validationMessages([
                         'unique'   => 'Este email já está cadastrado no sistema.',
                         'required' => 'O email é obrigatório.',
