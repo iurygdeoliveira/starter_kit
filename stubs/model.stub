@@ -2,8 +2,9 @@
 
 namespace {{ namespace }};
 
+use App\Trait\BelongsToTenantTrait;
+use App\Trait\UuidTrait;
 use Illuminate\Database\Eloquent\Model;
-use App\Trait\TenantModelTrait;
 use OwenIt\Auditing\Contracts\Auditable;
 
 {{ factoryImport }}
@@ -11,6 +12,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class {{ class }} extends Model implements Auditable
 {
     {{ factory }}
-    use TenantModelTrait;
+    use BelongsToTenantTrait;
+    use UuidTrait;
     use \OwenIt\Auditing\Auditable;
 }

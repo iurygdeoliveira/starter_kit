@@ -15,19 +15,17 @@ return new class () extends Migration
     {
         Schema::create('roles', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('tenant_id')
+                ->constrained('tenants')
+                ->cascadeOnDelete();
+            $table->uuid('uuid')->unique();
+
             $table->string('name');
         });
 
         Schema::create('permissions', function (Blueprint $table): void {
             $table->id();
-            $table->string('name'); // create, edit, view, delete
-        });
-
-        Schema::create('role_permission', function (Blueprint $table): void {
-            $table->id();
-            $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
-            $table->foreignId('permission_id')->constrained('permissions')->cascadeOnDelete();
+            $table->string('name');
         });
 
         Schema::create('tasks', function (Blueprint $table): void {
@@ -35,6 +33,13 @@ return new class () extends Migration
             $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->string('name');
+            $table->string('description')->nullable();
+        });
+
+        Schema::create('role_permission', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
+            $table->foreignId('permission_id')->constrained('permissions')->cascadeOnDelete();
         });
 
         Schema::create('task_permission', function (Blueprint $table): void {
@@ -47,6 +52,13 @@ return new class () extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
+        });
+
+        Schema::create('role_task', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
+            $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
+            $table->unique(['role_id', 'task_id']);
         });
     }
 
@@ -61,5 +73,6 @@ return new class () extends Migration
         Schema::dropIfExists('role_permission');
         Schema::dropIfExists('permissions');
         Schema::dropIfExists('roles');
+        Schema::dropIfExists('role_task');
     }
 };

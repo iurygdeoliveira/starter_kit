@@ -22,6 +22,13 @@ class CreateUser extends CreateRecord
     }
 
     #[\Override]
+    protected function getRedirectUrl(): string
+    {
+        // Redireciona para a página de listagem (index) após criar o usuário
+        return UserResource::getUrl('index');
+    }
+
+    #[\Override]
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()

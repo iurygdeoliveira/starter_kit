@@ -196,6 +196,9 @@ class TenantResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->extremePaginationLinks()
+            ->defaultPaginationPageOption(20)
+            ->paginated([20, 40, 60, 80, 'all'])
             ->emptyStateDescription('Uma vez que você cadastre os dados de sua empresa, eles aparecerão aqui.')
             ->emptyStateIcon('heroicon-s-exclamation-triangle')
             ->emptyStateActions([

@@ -63,4 +63,16 @@ class Tenant extends Model implements Auditable
     {
         return $this->hasMany(User::class);
     }
+
+    /**
+     * Obtém todos os clientes pertencentes a este inquilino (tenant).
+     * Este método estabelece um relacionamento um-para-muitos onde:
+     * - Um inquilino pode ter múltiplos clientes
+     * - Cada cliente pertence a um inquilino
+     * - A chave estrangeira 'tenant_id' na tabela clients referencia este inquilino
+     */
+    public function clients(): HasMany
+    {
+        return $this->hasMany(Client::class);
+    }
 }

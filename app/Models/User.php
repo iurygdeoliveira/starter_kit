@@ -10,6 +10,8 @@ use App\Trait\BelongsToTenantTrait;
 use App\Trait\UuidTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use OwenIt\Auditing\Contracts\Auditable;
@@ -24,13 +26,14 @@ class User extends Authenticatable implements Auditable
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = [
+        'tenant_id',
+        'uuid',
+
         'name',
         'email',
         'cpf',
-        'uuid',
         'phone',
         'password',
-        'tenant_id',
         'verified',
     ];
 
@@ -50,9 +53,14 @@ class User extends Authenticatable implements Auditable
         ];
     }
 
-    public function tenant()
+    public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'user_role');
     }
 
     /**

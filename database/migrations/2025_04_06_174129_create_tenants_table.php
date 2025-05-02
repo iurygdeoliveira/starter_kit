@@ -15,11 +15,11 @@ return new class () extends Migration
     {
         Schema::create('tenants', function (Blueprint $table): void {
             $table->id();
+            $table->uuid('uuid')->unique();
 
             $table->string('name')->unique();
             $table->string('cnpj')->unique()->nullable();
             $table->string('phone')->unique()->nullable();
-            $table->uuid('uuid')->unique();
             $table->string('email')->unique()->nullable();
 
             $table->timestamps();
