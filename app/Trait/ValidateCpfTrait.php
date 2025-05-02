@@ -8,12 +8,10 @@ trait ValidateCpfTrait
 {
     /**
      * Obtém regra de validação para CPF válido.
-     *
-     * @return \Closure
      */
     public static function getCpfValidationRule(): \Closure
     {
-        return function ($attribute, $value, $fail) {
+        return function ($attribute, $value, $fail): void {
             // Remove caracteres não numéricos
             $cpf = preg_replace('/[^0-9]/', '', $value);
 

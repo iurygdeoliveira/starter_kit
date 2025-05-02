@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Models;
 
+use App\Trait\BelongsToTenantTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +12,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class Role extends Model implements Auditable
 {
+    use BelongsToTenantTrait;
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = ['tenant_id', 'name'];

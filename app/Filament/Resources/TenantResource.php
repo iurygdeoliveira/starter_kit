@@ -8,8 +8,9 @@ use App\Filament\Resources\TenantResource\Pages;
 use App\Models\Tenant;
 use App\Trait\SupportUserTrait;
 use App\Trait\UserLoogedTrait;
+use App\Trait\ValidateCnpjTrait;
+use Closure;
 use Filament\Forms\Components\TextInput;
-
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
@@ -24,6 +25,7 @@ class TenantResource extends Resource
 {
     use SupportUserTrait;
     use UserLoogedTrait;
+    use ValidateCnpjTrait;
 
     protected static ?string $model = Tenant::class;
 
@@ -144,7 +146,6 @@ class TenantResource extends Resource
                     ->validationMessages([
                         'maxLength' => 'O nome não pode ter mais de 255 caracteres.',
                     ]),
-
                 TextInput::make('cnpj')
                     ->placeholder('CNPJ não cadastrado')
                     ->label('CNPJ')
@@ -152,6 +153,9 @@ class TenantResource extends Resource
                     ->required()
                     ->mask('99.999.999/9999-99')
                     ->unique('tenants', 'cnpj')
+                    ->rules([
+                        fn (): Closure => self::getCnpjValidationRule(),
+                    ])
                     ->validationMessages([
                         'unique'   => 'Este CNPJ já está cadastrado no sistema.',
                         'required' => 'O CNPJ é obrigatório.',

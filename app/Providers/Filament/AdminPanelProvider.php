@@ -38,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
                     $column->translateLabel();
                 });
             })
+            ->databaseTransactions()
             ->darkMode(false)
             ->defaultThemeMode(ThemeMode::Light)
             ->default()

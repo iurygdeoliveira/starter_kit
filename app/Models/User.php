@@ -21,7 +21,6 @@ class User extends Authenticatable implements Auditable
     use Notifiable;
     use UuidTrait;
     use BelongsToTenantTrait;
-
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = [

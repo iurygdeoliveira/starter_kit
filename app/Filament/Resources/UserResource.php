@@ -168,7 +168,7 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                EditAction::make()->hidden(fn () => self::isSupportUser()),
+                EditAction::make()->hidden(fn (): bool => self::isSupportUser()),
                 DeleteAction::make(),
             ])
             ->bulkActions([

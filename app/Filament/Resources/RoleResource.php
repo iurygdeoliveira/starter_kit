@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class RoleResource extends Resource
 {
@@ -42,16 +43,21 @@ class RoleResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('Empresa')
-                    ->disabled()
-                    ->dehydrated()
-                    ->required(),
+
                 TextInput::make('name')
                     ->label('Nome da Função')
                     ->required()
-                    ->unique(ignoreRecord: true),
+                    ->unique(
+                        'roles',
+                        'name',
+                        ignoreRecord: true,
+                        modifyRuleUsing: function ($rule) {
+                            return $rule->where('tenant_id', Auth::user()->tenant_id);
+                        }
+                    ),
 
-            ]);
+            ])
+            ->columns(1);
     }
 
     #[\Override]

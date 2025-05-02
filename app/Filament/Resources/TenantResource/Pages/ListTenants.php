@@ -27,6 +27,7 @@ class ListTenants extends ListRecords
         return [];
     }
 
+    #[\Override]
     public function mount(): void
     {
         parent::mount();
