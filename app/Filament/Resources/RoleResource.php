@@ -30,9 +30,7 @@ class RoleResource extends Resource
 
     protected static ?string $navigationGroup = 'Administração';
 
-    protected static ?string $navigationParentItem = 'Minha Empresa';
-
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     #[\Override]
     public static function getModelLabel(): string

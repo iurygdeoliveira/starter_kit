@@ -4,8 +4,14 @@ declare(strict_types = 1);
 
 namespace App\Filament\Resources;
 
+use App\Enums\Activity;
+use App\Enums\Regime;
 use App\Filament\Resources\ClientResource\Pages;
 use App\Models\Client;
+use App\Trait\ValidateCnpjTrait;
+use Closure;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
@@ -17,13 +23,13 @@ use Filament\Tables\Table;
 
 class ClientResource extends Resource
 {
+    use ValidateCnpjTrait;
+
     protected static ?string $model = Client::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'icon-clients';
 
     protected static ?string $navigationGroup = 'Administração';
-
-    protected static ?string $navigationParentItem = 'Minha Empresa';
 
     protected static ?int $navigationSort = 2;
 
@@ -33,11 +39,54 @@ class ClientResource extends Resource
         return __('Clients');
     }
 
+    // $table->string('city');
+    // $table->string('state', 2);
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name')
+                    ->placeholder('Razão Social não cadastrada')
+                    ->label('Razão Social')
+                    ->dehydrated()
+                    ->required()
+                    ->unique('clients', 'name')
+                    ->maxLength(255)
+                    ->validationMessages([
+                        'maxLength' => 'O nome não pode ter mais de 255 caracteres.',
+                        'unique'    => 'Este nome já está cadastrado no sistema.',
+                        'required'  => 'O nome é obrigatório.',
+                    ]),
+                TextInput::make('cnpj')
+                    ->placeholder('CNPJ não cadastrado')
+                    ->label('CNPJ')
+                    ->dehydrated()
+                    ->required()
+                    ->mask('99.999.999/9999-99')
+                    ->unique('clients', 'cnpj')
+                    ->rules([
+                        fn (): Closure => self::getCnpjValidationRule(),
+                    ])
+                    ->validationMessages([
+                        'unique'   => 'Este CNPJ já está cadastrado no sistema.',
+                        'required' => 'O CNPJ é obrigatório.',
+                    ])
+                    ->extraInputAttributes(['inputmode' => 'numeric']),
+                Select::make('activity')
+                    ->label('Atividade')
+                    ->required()
+                    ->options(collect(Activity::cases())->pluck('value', 'value'))
+                    ->validationMessages([
+                        'required' => 'A atividade é obrigatória.',
+                    ]),
+                Select::make('regime')
+                    ->label('Regime')
+                    ->required()
+                    ->options(collect(Regime::cases())->pluck('value', 'value'))
+                    ->validationMessages([
+                        'required' => 'O regime é obrigatório.',
+                    ]),
             ]);
     }
 
@@ -52,7 +101,7 @@ class ClientResource extends Resource
             ->emptyStateActions([
                 Action::make('create')
                     ->label('Registrar Cliente')
-                    ->url(TaskResource::getUrl('create'))
+                    ->url(ClientResource::getUrl('create'))
                     ->icon('heroicon-m-plus')
                     ->button(),
             ])
@@ -70,14 +119,6 @@ class ClientResource extends Resource
                     ->label('Atividade')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('city')
-                    ->label('Cidade')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('state')
-                    ->label('Estado')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('regime')
                     ->label('Regime')
                     ->searchable()
@@ -89,6 +130,7 @@ class ClientResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

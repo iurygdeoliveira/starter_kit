@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Models;
 
+use App\Enums\Activity;
+use App\Enums\Regime;
 use App\Trait\BelongsToTenantTrait;
 use App\Trait\UuidTrait;
 use Illuminate\Database\Eloquent\Model;
@@ -24,8 +26,6 @@ class Client extends Model implements Auditable
         'name',
         'cnpj',
         'activity',
-        'city',
-        'state',
         'regime',
     ];
 
@@ -35,6 +35,8 @@ class Client extends Model implements Auditable
     protected function casts(): array
     {
         return [
+            'activity'   => Activity::class,
+            'regime'     => Regime::class,
             'created_at' => 'datetime:d/m/Y H:i',
             'updated_at' => 'datetime:d/m/Y H:i',
         ];

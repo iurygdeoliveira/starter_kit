@@ -35,8 +35,6 @@ class TenantResource extends Resource
 
     protected static ?string $navigationLabel = 'Minha Empresa';
 
-    protected static ?string $title = 'Minha Empresa';
-
     protected static ?int $navigationSort = 1;
 
     protected static bool $showTableBulkActions = false;

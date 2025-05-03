@@ -17,13 +17,11 @@ class TaskResource extends Resource
 {
     protected static ?string $model = Task::class;
 
-    protected static ?string $navigationIcon = 'heroicon-s-user-plus';
+    protected static ?string $navigationIcon = 'heroicon-s-clipboard-document-list';
 
     protected static ?string $navigationGroup = 'Administração';
 
-    protected static ?string $navigationParentItem = 'Minha Empresa';
-
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 5;
 
     #[\Override]
     public static function getModelLabel(): string

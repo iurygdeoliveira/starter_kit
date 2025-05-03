@@ -24,8 +24,6 @@ return new class () extends Migration
             $table->string('name')->unique();
             $table->string('cnpj')->unique();
             $table->string('activity');
-            $table->string('city');
-            $table->string('state', 2);
             $table->string('regime');
 
             $table->timestamps();
