@@ -30,7 +30,7 @@ class Role extends Model implements Auditable
     // e cada permissão pode ter muitas roles
     public function permissions(): BelongsToMany
     {
-        return $this->belongsToMany(Permission::class, 'role_permission');
+        return $this->belongsToMany(Permission::class, 'permission_role');
     }
 
     // Cada role pode ter muitos usuários
@@ -44,6 +44,6 @@ class Role extends Model implements Auditable
     // e cada cliente pode ter muitas roles
     public function clients(): BelongsToMany
     {
-        return $this->belongsToMany(Client::class, 'role_client');
+        return $this->belongsToMany(Client::class, 'client_role');
     }
 }

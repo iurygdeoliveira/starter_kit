@@ -9,5 +9,6 @@ enum Regime: string
     case SimplesNacional = 'Simples Nacional';
     case LucroPresumido  = 'Lucro Presumido';
     case LucroReal       = 'Lucro Real';
-    case Mei             = 'Mei';
+    case LucroArbitrado  = 'Lucro Arbitrado';
+    case Mei             = 'Micro Empreendedor Individual';
 }

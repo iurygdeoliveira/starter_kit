@@ -69,7 +69,7 @@ class Task extends Model implements Auditable
     // e cada permissão pode ter muitas tarefas
     public function permissions(): BelongsToMany
     {
-        return $this->belongsToMany(Permission::class, 'task_permission');
+        return $this->belongsToMany(Permission::class, 'permission_task');
     }
 
     // Cada tarefa pode ter muitos usuários

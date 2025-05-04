@@ -21,13 +21,13 @@ class Permission extends Model implements Auditable
     // e cada role pode ter muitas permissões
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'role_permission');
+        return $this->belongsToMany(Role::class, 'permission_role');
     }
 
     // Cada permissão pode ter muitas tarefas
     // e cada tarefa pode ter muitas permissões
     public function tasks(): BelongsToMany
     {
-        return $this->belongsToMany(Task::class, 'task_permission');
+        return $this->belongsToMany(Task::class, 'permission_task');
     }
 }

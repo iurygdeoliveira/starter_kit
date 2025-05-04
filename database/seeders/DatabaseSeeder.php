@@ -32,7 +32,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SupportTenantSeeder::class,
             SupportUserSeeder::class,
-            PermissionSeeder::class,
         ]);
     }
 
@@ -44,6 +43,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             TenantSeeder::class,
             UserSeeder::class,
+            PermissionSeeder::class,
+            RoleSeeder::class,
+            AdminPermissionsSeeder::class,
         ]);
     }
 }

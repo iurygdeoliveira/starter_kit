@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Filament\Pages\Auth;
 
+use App\Enums\Role as RoleEnum;
+use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\User;
 use Exception;
@@ -11,7 +13,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\Register as BaseRegister;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -90,6 +91,12 @@ class Register extends BaseRegister
                 'tenant_id' => $tenant->id,
             ]);
 
+            // Busca a role de Administração (ou cria se não existir)
+            $adminRole = Role::firstOrCreate(['name' => RoleEnum::Administração->value]);
+
+            // Atribui a role ao usuário
+            $user->roles()->attach($adminRole->id);
+
             DB::commit();
 
             // Envia notificação de sucesso
@@ -120,27 +127,4 @@ class Register extends BaseRegister
             throw $e; // Re-lança a exceção para ser tratada pelo framework
         }
     }
-
-    // #[\Override]
-    // protected function registerUser(User $user): void
-    // {
-    //     // Faz o login automático do usuário
-    //     Auth::login($user);
-
-    //     // Atualiza o estado interno do Filament para reconhecer o usuário
-    //     $this->fillForm();
-
-    //     // Notificação aqui (MOVA sua notificação para cá em vez de handleRegistration)
-    //     Notification::make()
-    //         ->title('Novo usuário criado com sucesso!')
-    //         ->color('success')
-    //         ->icon('heroicon-s-check-circle')
-    //         ->iconColor('success')
-    //         ->seconds(8)
-    //         ->success()
-    //         ->send();
-
-    //     // Redireciona para a dashboard ou uma página de boas-vindas
-    //     $this->redirect(config('filament.home_url', '/dashboard'));
-    // }
 }

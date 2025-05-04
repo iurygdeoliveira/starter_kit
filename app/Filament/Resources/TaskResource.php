@@ -21,7 +21,7 @@ class TaskResource extends Resource
 
     protected static ?string $navigationGroup = 'Administração';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 4;
 
     #[\Override]
     public static function getModelLabel(): string

@@ -68,7 +68,7 @@ class Client extends Model implements Auditable
     // e cada role pode ter muitos clientes
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'role_client');
+        return $this->belongsToMany(Role::class, 'client_role');
     }
 
     // Cada cliente pode ter muitos usuários

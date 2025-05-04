@@ -41,30 +41,30 @@ class ViewTenant extends ViewRecord
             ->schema([
                 Section::make([
                     TextEntry::make('name')
-                        ->label('Razão Social')
+                        ->label('Razão Social:')
                         ->placeholder(fn ($record): ?string => empty($record->name) ? 'Não cadastrado' : null),
 
                     TextEntry::make('email')
-                        ->label('E-mail')
+                        ->label('E-mail:')
 
                         ->placeholder(fn ($record): ?string => empty($record->email) ? 'Email não cadastrado' : null),
 
                     TextEntry::make('cnpj')
-                        ->label('CNPJ')
+                        ->label('CNPJ:')
                         ->placeholder(fn ($record): ?string => empty($record->cnpj) ? 'CNPJ não cadastrado' : null),
 
                     TextEntry::make('phone')
-                        ->label('Telefone')
+                        ->label('Telefone:')
                         ->placeholder(fn ($record): ?string => empty($record->phone) ? 'Telefone não cadastrado' : null),
 
                 ])->columnSpan(2),
                 Section::make([
                     TextEntry::make('created_at')
-                        ->label('Criado em')
+                        ->label('Criado em:')
                         ->dateTime(),
 
                     TextEntry::make('updated_at')
-                        ->label('Última Atualização')
+                        ->label('Última Atualização:')
                         ->dateTime(),
                 ])->columnSpan(1),
             ])->columns(3);
