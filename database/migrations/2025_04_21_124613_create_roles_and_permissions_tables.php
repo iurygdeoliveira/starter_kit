@@ -15,11 +15,6 @@ return new class () extends Migration
     {
         Schema::create('roles', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('tenant_id')
-                ->constrained('tenants')
-                ->cascadeOnDelete();
-            $table->uuid('uuid')->unique();
-
             $table->string('name');
         });
 
@@ -30,35 +25,66 @@ return new class () extends Migration
 
         Schema::create('tasks', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->string('name');
+            $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
+            $table->foreignId('client_id')->nullable()->constrained('clients')->cascadeOnDelete();
+            $table->uuid('uuid')->unique();
+            $table->string('name')->unique();
             $table->string('description')->nullable();
+            $table->boolean('done')->default(false);
+            $table->string('status')->nullable();
+            $table->string('attach')->nullable();
+            $table->timestamp('due')->nullable();
+            $table->string('time')->nullable();
+            $table->string('portal')->nullable();
+            $table->text('notes')->nullable();
+            $table->timestamps();
         });
 
         Schema::create('role_permission', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
             $table->foreignId('permission_id')->constrained('permissions')->cascadeOnDelete();
+            $table->unique(['role_id', 'permission_id']);
         });
 
         Schema::create('task_permission', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
             $table->foreignId('permission_id')->constrained('permissions')->cascadeOnDelete();
+            $table->unique(['task_id', 'permission_id']);
         });
 
-        Schema::create('user_role', function (Blueprint $table): void {
+        Schema::create('task_user', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->unique(['task_id', 'user_id']);
+            $table->timestamps();
+        });
+
+        Schema::create('role_user', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
+            $table->unique(['user_id', 'role_id']);
+            $table->timestamps();
         });
 
-        Schema::create('role_task', function (Blueprint $table): void {
+        Schema::create('role_client', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
-            $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
-            $table->unique(['role_id', 'task_id']);
+            $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+            $table->unique(['role_id', 'client_id']);
+            $table->timestamps();
+        });
+
+        Schema::create('client_user', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->unique(['client_id', 'user_id']);
+            $table->timestamps();
         });
     }
 
@@ -67,12 +93,14 @@ return new class () extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_role');
+        Schema::dropIfExists('client_user');
+        Schema::dropIfExists('role_client');
+        Schema::dropIfExists('role_user');
+        Schema::dropIfExists('task_user');
         Schema::dropIfExists('task_permission');
-        Schema::dropIfExists('tasks');
         Schema::dropIfExists('role_permission');
+        Schema::dropIfExists('tasks');
         Schema::dropIfExists('permissions');
         Schema::dropIfExists('roles');
-        Schema::dropIfExists('role_task');
     }
 };

@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace App\Models;
 
-use App\Trait\BelongsToTenantTrait;
-use App\Trait\UuidTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,31 +11,39 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class Role extends Model implements Auditable
 {
-    use BelongsToTenantTrait;
-    use UuidTrait;
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = [
-        'tenant_id',
-        'uuid',
-
         'name',
     ];
 
     public $timestamps = false;
 
-    public function permissions(): BelongsToMany
-    {
-        return $this->belongsToMany(Permission::class, 'role_permission');
-    }
-
+    // Cada role pode ter muitas tarefas
+    // e cada tarefa pertence a uma role
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
     }
 
+    // Cada role pode ter muitas permissões
+    // e cada permissão pode ter muitas roles
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'role_permission');
+    }
+
+    // Cada role pode ter muitos usuários
+    // e cada usuário pode ter muitas roles
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'user_role');
+        return $this->belongsToMany(User::class, 'role_user');
+    }
+
+    // Cada role pode ter muitos clientes
+    // e cada cliente pode ter muitas roles
+    public function clients(): BelongsToMany
+    {
+        return $this->belongsToMany(Client::class, 'role_client');
     }
 }

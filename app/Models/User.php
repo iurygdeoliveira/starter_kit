@@ -53,19 +53,36 @@ class User extends Authenticatable implements Auditable
         ];
     }
 
+    // RELACIONAMENTOS
+
+    // Cada usuário pertence a um tenant
+    // e um tenant pode ter muitos usuários
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
     }
 
+    // Cada usuário pode ter muitas roles
+    // e cada role pode ter muitos usuários
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'user_role');
+        return $this->belongsToMany(Role::class, 'role_user');
     }
 
-    /**
- * Define o campo a ser usado como identificador nas rotas.
- */
+    // Cada usuário pode ter muitas tasks
+    // e cada task pode ter muitos usuários
+    public function tasks(): BelongsToMany
+    {
+        return $this->belongsToMany(Task::class, 'task_user');
+    }
+
+    // Cada usuário pode ter muitos clientes
+    // e cada cliente pode ter muitos usuários
+    public function clients(): BelongsToMany
+    {
+        return $this->belongsToMany(Client::class, 'client_user');
+    }
+
     #[\Override]
     public function getRouteKeyName(): string
     {

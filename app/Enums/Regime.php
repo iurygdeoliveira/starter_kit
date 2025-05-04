@@ -10,5 +10,4 @@ enum Regime: string
     case LucroPresumido  = 'Lucro Presumido';
     case LucroReal       = 'Lucro Real';
     case Mei             = 'Mei';
-    // Adicione outros regimes conforme necessário
 }

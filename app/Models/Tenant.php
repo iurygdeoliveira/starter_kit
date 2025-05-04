@@ -52,25 +52,24 @@ class Tenant extends Model implements Auditable
         return 'uuid';  // Substitua por 'uuid' ou o nome do campo que contém seu UUID
     }
 
-    /**
-     * Obtém todos os usuários pertencentes a este inquilino (tenant).
-     * Este método estabelece um relacionamento um-para-muitos onde:
-     * - Um inquilino pode ter múltiplos usuários
-     * - Cada usuário pertence a um inquilino
-     * - A chave estrangeira 'tenant_id' na tabela users referencia este inquilino
-     */
+    // RELACIONAMENTOS
+
+    // Cada tenant pode ter muitos usuários
+    // e cada usuário pertence a um tenant
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }
 
-    /**
-     * Obtém todos os clientes pertencentes a este inquilino (tenant).
-     * Este método estabelece um relacionamento um-para-muitos onde:
-     * - Um inquilino pode ter múltiplos clientes
-     * - Cada cliente pertence a um inquilino
-     * - A chave estrangeira 'tenant_id' na tabela clients referencia este inquilino
-     */
+    // Cada tenant pode ter muitas tasks
+    // e cada task pertence a um tenant
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    // Cada tenant pode ter muitos clients
+    // e cada client pertence a um tenant
     public function clients(): HasMany
     {
         return $this->hasMany(Client::class);
