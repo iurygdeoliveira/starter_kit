@@ -37,6 +37,7 @@ class Task extends Model implements Auditable
         'updated_at',
     ];
 
+    #[\Override]
     public function getRouteKeyName(): string
     {
         return 'uuid';

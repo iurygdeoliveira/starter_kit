@@ -18,7 +18,7 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
-
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class ClientResource extends Resource
@@ -39,9 +39,9 @@ class ClientResource extends Resource
         return __('Clients');
     }
 
-    // $table->string('city');
-    // $table->string('state', 2);
+    // lembrar de limitar associação do cliente com apenas a role portal do cliente
 
+    #[\Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -90,6 +90,7 @@ class ClientResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -126,7 +127,15 @@ class ClientResource extends Resource
             ])
             ->defaultSort('name', 'asc')
             ->filters([
-                //
+                SelectFilter::make('regime')
+                    ->label('Regime')
+                    ->options(collect(Regime::cases())->pluck('value', 'value'))
+                    ->multiple(),
+
+                SelectFilter::make('activity')
+                    ->label('Atividade')
+                    ->options(collect(Activity::cases())->pluck('value', 'value'))
+                    ->multiple(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -139,6 +148,7 @@ class ClientResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -146,6 +156,7 @@ class ClientResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [

@@ -23,6 +23,7 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 /**
@@ -99,7 +100,11 @@ class UserResource extends Resource
                 Section::make('Informações Pessoais')
                     ->schema([
                         TextInput::make('name')
-                            ->required(),
+                            ->required()
+                            ->rules(['regex:/^[\pL\s\-\'\.]+$/u'])
+                            ->validationMessages([
+                                'regex' => 'O nome deve conter apenas letras, espaços e caracteres especiais (como acentos ou hífens).',
+                            ]),
                         TextInput::make('email')
                             ->email()
                             ->required()
@@ -193,7 +198,11 @@ class UserResource extends Resource
 
             ->defaultSort('name', 'asc')
             ->filters([
-                //
+                SelectFilter::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->label('Funções'),
             ])
             ->actions([
                 EditAction::make()->hidden(fn (): bool => self::isSupportUser()),

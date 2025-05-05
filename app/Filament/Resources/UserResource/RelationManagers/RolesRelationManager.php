@@ -14,6 +14,7 @@ class RolesRelationManager extends RelationManager
 {
     protected static string $relationship = 'roles';
 
+    #[\Override]
     public function form(Form $form): Form
     {
         return $form

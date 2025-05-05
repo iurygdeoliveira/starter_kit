@@ -43,6 +43,7 @@ class Client extends Model implements Auditable
         ];
     }
 
+    #[\Override]
     public function getRouteKeyName(): string
     {
         return 'uuid';

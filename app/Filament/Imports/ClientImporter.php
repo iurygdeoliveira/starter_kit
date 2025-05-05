@@ -19,6 +19,7 @@ class ClientImporter extends Importer
         ];
     }
 
+    #[\Override]
     public function resolveRecord(): ?Client
     {
         // return Client::firstOrNew([
@@ -33,7 +34,7 @@ class ClientImporter extends Importer
     {
         $body = 'Your client import has completed and ' . number_format($import->successful_rows) . ' ' . str('row')->plural($import->successful_rows) . ' imported.';
 
-        if ($failedRowsCount = $import->getFailedRowsCount()) {
+        if (($failedRowsCount = $import->getFailedRowsCount()) !== 0) {
             $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to import.';
         }
 
