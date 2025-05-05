@@ -11,10 +11,10 @@ enum Role: string
     case Portal        = 'Portal do Cliente';
     case Cliente       = 'Cliente';
     case Administração = 'Administração';
-    case CND           = 'Certidão Negativa de Débito';
+    case CND           = 'Certidão Negativa de Débito (CND)';
     case Pessoal       = 'Pessoal';
     case Financeiro    = 'Financeiro';
     case Processos     = 'Processos';
     case Suporte       = 'Suporte';
-    case Dashboard     = 'Dashboard';
+    case Dashboard     = 'Painel de Controle';
 }

@@ -19,15 +19,23 @@ class EditUser extends EditRecord
         ];
     }
 
-    // #[\Override]
-    // protected function getCreatedNotification(): ?Notification
-    // {
-    //     return Notification::make()
-    //         ->title('Usuário editado com sucesso!')
-    //         ->color('success')
-    //         ->icon('heroicon-s-check-circle')
-    //         ->iconColor('success')
-    //         ->seconds(8)
-    //         ->success();
-    // }
+    #[\Override]
+    protected function getRedirectUrl(): string
+    {
+        // Redireciona para a página de listagem (index) após editar o usuário
+        return UserResource::getUrl('index');
+    }
+
+    #[\Override]
+    protected function getSavedNotification(): ?Notification
+    {
+        // Retorne sua notificação personalizada
+        return Notification::make()
+            ->title('Usuário atualizado com sucesso!')
+            ->color('success')
+            ->icon('heroicon-s-check-circle')
+            ->iconColor('success')
+            ->seconds(8)
+            ->success();
+    }
 }

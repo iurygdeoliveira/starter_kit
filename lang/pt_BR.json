@@ -204,5 +204,6 @@
   "Roles": "Funções",
   "Tenant": "Empresa",
   "Phone": "Fone",
-  "Clients": "Clientes"
+  "Clients": "Clientes",
+  "dashboard": "painel de controle"
 }

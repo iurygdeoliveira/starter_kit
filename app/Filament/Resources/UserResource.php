@@ -5,12 +5,15 @@ declare(strict_types = 1);
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers\RolesRelationManager;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Trait\SupportUserTrait;
 use App\Trait\UserLoogedTrait;
 use App\Trait\ValidateCpfTrait;
 use Closure;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -93,42 +96,61 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->required(),
-                TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->unique(),
-                TextInput::make('cpf')
-                    ->label('CPF')
-                    ->mask('999.999.999-99')
-                    ->required()
-                    ->dehydrated()
-                    ->extraInputAttributes(['inputmode' => 'numeric'])
-                    ->unique('users', 'cpf')
-                    ->rules([
-                        fn (): Closure => self::getCpfValidationRule(),
+                Section::make('Informações Pessoais')
+                    ->schema([
+                        TextInput::make('name')
+                            ->required(),
+                        TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->unique('users', 'email', ignoreRecord: true)
+                            ->dehydrated()
+                            ->validationMessages([
+                                'unique' => 'Este e-mail já está cadastrado no sistema.',
+                            ]),
+                        TextInput::make('cpf')
+                            ->label('CPF')
+                            ->mask('999.999.999-99')
+                            ->required()
+                            ->dehydrated()
+                            ->extraInputAttributes(['inputmode' => 'numeric'])
+                            ->unique('users', 'cpf', ignoreRecord: true)
+                            ->rules([
+                                fn (): Closure => self::getCpfValidationRule(),
+                            ])
+                            ->validationMessages([
+                                'unique' => 'Este CPF já está cadastrado no sistema.',
+                            ]),
+                        TextInput::make('phone')
+                            ->label('Fone')
+                            ->mask('(99) 99999-9999')
+                            ->required()
+                            ->unique('users', 'phone', ignoreRecord: true)
+                            ->dehydrated()
+                            ->validationMessages([
+                                'unique' => 'Este telefone já está cadastrado no sistema.',
+                            ])
+                            ->extraInputAttributes(['inputmode' => 'numeric']),
+
+                        TextInput::make('password')
+                            ->password()
+                            ->revealable()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (?string $state) => filled($state))
+                            ->confirmed(),
+                        TextInput::make('password_confirmation')
+                            ->password()
+                            ->revealable()
+                            ->requiredWith('password')
+                            ->dehydrated(false),
+                        Select::make('Funções:')
+                            ->multiple()
+                            ->relationship('roles', 'name')
+                            ->preload()
+                            ->required()
+                            ->columnSpan(2),
                     ])
-                    ->validationMessages([
-                        'unique' => 'Este CPF já está cadastrado no sistema.',
-                    ]),
-                TextInput::make('phone')
-                    ->label('Fone')
-                    ->mask('(99) 99999-9999')
-                    ->required()
-                    ->unique()
-                    ->extraInputAttributes(['inputmode' => 'numeric']),
-                TextInput::make('password')
-                    ->password()
-                    ->revealable()
-                    ->required(fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(fn (?string $state) => filled($state))
-                    ->confirmed(),
-                TextInput::make('password_confirmation')
-                    ->password()
-                    ->revealable()
-                    ->requiredWith('password')
-                    ->dehydrated(false),
+                    ->columns(2),
             ]);
     }
 
@@ -151,6 +173,14 @@ class UserResource extends Resource
                 TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('roles.name')
+                    ->label('Funções')
+                    ->badge()
+                    ->searchable()
+                    ->sortable()
+                    ->formatStateUsing(
+                        fn (string $state): string => $state !== '' ? $state : 'Nenhuma função atribuída'
+                    ),
                 TextColumn::make('verified')
                     ->badge()
                     ->formatStateUsing(
@@ -184,8 +214,16 @@ class UserResource extends Resource
     #[\Override]
     public static function getRelations(): array
     {
+        $currentUrl = request()->url();
+
+        // Verificar se estamos na página de edição
+        // evitar exibir a tabela de relacionamento na página de edição
+        if (str_contains($currentUrl, '/edit')) {
+            return [];
+        }
+
         return [
-            //
+            RolesRelationManager::class,
         ];
     }
 
