@@ -16,7 +16,7 @@ class CreateClient extends CreateRecord
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
-            ->title('Client criado com sucesso!')
+            ->title('Cliente criado com sucesso!')
             ->color('success')
             ->icon('heroicon-s-check-circle')
             ->iconColor('success')

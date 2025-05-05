@@ -6,7 +6,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers\RolesRelationManager;
-use App\Models\Tenant;
 use App\Models\User;
 use App\Trait\SupportUserTrait;
 use App\Trait\UserLoogedTrait;
@@ -54,25 +53,45 @@ class UserResource extends Resource
     // Opcional: Definir a ordem do item no grupo
     protected static ?int $navigationSort = 3;
 
-    // Armazena o resultado em uma propriedade estática
-    protected static $cachedTenant;
+    protected static $countUsers;
 
-    /**
-    * Busca o tenant do usuário atual usando cache estático
-    */
-    protected static function getUserTenant(): Tenant
+    protected static function getCountUsers(): ?int
     {
         // Se já temos o resultado em cache, retorna imediatamente
-        if (self::$cachedTenant !== null) {
-            return self::$cachedTenant;
+        if (self::$countUsers !== null) {
+            return self::$countUsers;
         }
 
-        if (self::isUserLoggedIn()) {
-            // Para usuários normais, pega diretamente da relação
-            self::$cachedTenant = Tenant::first();
+        // Para usuários normais, pega diretamente da relação
+        self::$countUsers = User::count();
+
+        return self::$countUsers;
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return self::getCountUsers() > 0 ? (string) self::getCountUsers() : '0';
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        if (self::getCountUsers() === 0) {
+            return 'danger';
         }
 
-        return self::$cachedTenant;
+        // Todos os campos estão preenchidos
+        return 'primary';
+    }
+
+    #[\Override]
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        if (self::getCountUsers() === 0) {
+            return 'Adicionar usuários';
+        }
+
+        // Todos os campos estão preenchidos
+        return null;
     }
 
     #[\Override]
@@ -87,11 +106,6 @@ class UserResource extends Resource
         return 'uuid';
     }
 
-    /**
-     * Define o formulário para criar e editar registros de usuários.
-     * Este método configura os campos do formulário, suas validações e comportamentos.
-     * Inclui campos para nome, email e senha, com regras apropriadas para cada um.
-     */
     #[\Override]
     public static function form(Form $form): Form
     {
@@ -159,10 +173,6 @@ class UserResource extends Resource
             ]);
     }
 
-    /**
-     * Define a tabela para exibição e gerenciamento de usuários. ma tabela com paginação, colunas, filtros, ações individuais e em massa.
-     * Inclui colunas para nome, email, status de verificação e timestamps, com opções de busca e ordenação.
-     */
     #[\Override]
     public static function table(Table $table): Table
     {

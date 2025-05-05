@@ -6,6 +6,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TaskResource\Pages;
 use App\Filament\Resources\TaskResource\RelationManagers\RolesRelationManager;
+use App\Models\Client;
 use App\Models\Task;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -27,6 +28,54 @@ class TaskResource extends Resource
     protected static ?string $navigationGroup = 'Administração';
 
     protected static ?int $navigationSort = 4;
+
+    protected static $countTasks;
+
+    // lembrar de limitar associação do cliente com apenas a role portal do cliente
+
+    protected static function getCountTasks(): ?int
+    {
+        // Se já temos o resultado em cache, retorna imediatamente
+        if (self::$countTasks !== null) {
+            return self::$countTasks;
+        }
+
+        // Para usuários normais, pega diretamente da relação
+        self::$countTasks = Task::count();
+
+        return self::$countTasks;
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return self::getCountTasks() > 0 ? (string) self::getCountTasks() : '0';
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        if (self::getCountTasks() === 0) {
+            return 'danger';
+        }
+
+        // Todos os campos estão preenchidos
+        return 'primary';
+    }
+
+    #[\Override]
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        if (self::getCountTasks() === 0) {
+            return 'Adicionar tarefas';
+        }
+
+        // Todos os campos estão preenchidos
+        return null;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return Client::count() > 0 ? true : false;
+    }
 
     #[\Override]
     public static function getModelLabel(): string
@@ -56,7 +105,19 @@ class TaskResource extends Resource
                 // Campo de relacionamento com Role
                 Select::make('role_id')
                     ->label('Pertence a Função :')
-                    ->relationship('role', 'name')
+                    ->relationship(
+                        'role',
+                        'name',
+                        modifyQueryUsing: fn ($query) => $query->whereNotIn('name', [
+                            'Administração',
+                            'Cliente',
+                            'Certidão Negativa de Débito (CND)',
+                            'Suporte',
+                            'Painel de Controle',
+                            'Portal do Cliente',
+                            'Financeiro',
+                        ])
+                    )
                     ->required()
                     ->searchable()
                     ->preload(),

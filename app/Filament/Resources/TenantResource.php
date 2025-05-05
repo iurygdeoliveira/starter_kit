@@ -49,8 +49,8 @@ class TenantResource extends Resource
     }
 
     /**
- * Busca o tenant do usuário atual usando cache estático
- */
+    * Busca o tenant do usuário atual usando cache estático
+    */
     protected static function getUserTenant(): ?Tenant
     {
         // Se já temos o resultado em cache, retorna imediatamente

@@ -8,6 +8,7 @@ use App\Enums\Activity;
 use App\Enums\Regime;
 use App\Filament\Resources\ClientResource\Pages;
 use App\Models\Client;
+use App\Trait\UserLoogedTrait;
 use App\Trait\ValidateCnpjTrait;
 use Closure;
 use Filament\Forms\Components\Select;
@@ -24,6 +25,7 @@ use Filament\Tables\Table;
 class ClientResource extends Resource
 {
     use ValidateCnpjTrait;
+    use UserLoogedTrait;
 
     protected static ?string $model = Client::class;
 
@@ -33,13 +35,54 @@ class ClientResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    protected static $countClients;
+
+    // lembrar de limitar associação do cliente com apenas a role portal do cliente
+
+    protected static function getCountClients(): ?int
+    {
+        // Se já temos o resultado em cache, retorna imediatamente
+        if (self::$countClients !== null) {
+            return self::$countClients;
+        }
+
+        // Para usuários normais, pega diretamente da relação
+        self::$countClients = Client::count();
+
+        return self::$countClients;
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return self::getCountClients() > 0 ? (string) self::getCountClients() : '0';
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        if (self::getCountClients() === 0) {
+            return 'danger';
+        }
+
+        // Todos os campos estão preenchidos
+        return 'primary';
+    }
+
+    #[\Override]
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        if (self::getCountClients() === 0) {
+            return 'Adicionar clientes';
+        }
+
+        // Todos os campos estão preenchidos
+        return null;
+    }
+
     #[\Override]
     public static function getModelLabel(): string
     {
         return __('Clients');
     }
-
-    // lembrar de limitar associação do cliente com apenas a role portal do cliente
 
     #[\Override]
     public static function form(Form $form): Form
