@@ -27,7 +27,6 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->collapsibleNavigationGroups(true)
             ->bootUsing(function (): void {
                 Field::configureUsing(function (Field $field): void {
                     $field->translateLabel();
@@ -37,6 +36,9 @@ class AdminPanelProvider extends PanelProvider
                     $column->translateLabel();
                 });
             })
+
+            ->spa()
+            ->unsavedChangesAlerts()
             ->databaseTransactions()
             ->darkMode(false)
             ->defaultThemeMode(ThemeMode::Light)
@@ -77,7 +79,6 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-
             ])
             ->authMiddleware([
                 Authenticate::class,
