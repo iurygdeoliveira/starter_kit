@@ -72,9 +72,10 @@ class TaskResource extends Resource
         return null;
     }
 
+    #[\Override]
     public static function shouldRegisterNavigation(): bool
     {
-        return Client::count() > 0 ? true : false;
+        return Client::count() > 0;
     }
 
     #[\Override]

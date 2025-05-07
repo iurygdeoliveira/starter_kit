@@ -4,10 +4,10 @@ declare(strict_types = 1);
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Trait\BelongsToTenantTrait;
 use App\Trait\UuidTrait;
 use Carbon\Carbon;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -44,12 +44,12 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail
     protected function casts(): array
     {
         return [
-            'password'        => 'hashed',
-            'created_at'      => 'datetime:d/m/Y H:i',
-            'updated_at'      => 'datetime:d/m/Y H:i',
+            'password'          => 'hashed',
+            'created_at'        => 'datetime:d/m/Y H:i',
+            'updated_at'        => 'datetime:d/m/Y H:i',
             'email_verified_at' => 'datetime:d/m/Y H:i',
-            'suspended_at'    => 'datetime:d/m/Y H:i',
-            'suspended_until' => 'datetime:d/m/Y H:i',
+            'suspended_at'      => 'datetime:d/m/Y H:i',
+            'suspended_until'   => 'datetime:d/m/Y H:i',
         ];
     }
 

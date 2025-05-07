@@ -15,14 +15,18 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Auth\VerifyEmail;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 /**
@@ -196,12 +200,13 @@ class UserResource extends Resource
                     ->formatStateUsing(
                         fn (string $state): string => $state !== '' ? $state : 'Nenhuma função atribuída'
                     ),
-                    TextColumn::make('email_verified_at')
+                TextColumn::make('email_verified_at')
                     ->label('Email Verificado')
-                    ->dateTime('d m Y H:i')
-                    ->badge()
                     ->sortable()
-                    ->searchable(),               
+                    ->searchable()
+                    ->dateTime('d/m/Y H:i')
+                    ->placeholder('Usuário não verificado'),
+                    
             ])
 
             ->defaultSort('name', 'asc')
@@ -211,10 +216,42 @@ class UserResource extends Resource
                     ->multiple()
                     ->preload()
                     ->label('Funções'),
+
+                TernaryFilter::make('verificado')
+                    ->label('Email Verificado')
+                    ->attribute('email_verified_at')
+                    ->trueLabel('Usuários Verificados')
+                    ->falseLabel('Usários não verificados')
+                    ->nullable(),
             ])
             ->actions([
-                EditAction::make()->hidden(fn (): bool => self::isSupportUser()),
-                DeleteAction::make(),
+                EditAction::make()
+                    ->label('')
+                    ->hidden(fn (): bool => self::isSupportUser())
+                    ->icon('heroicon-s-pencil-square') // Define o ícone
+                    ->tooltip('Editar'), // Define o tooltip,,
+                DeleteAction::make()
+                ->label('')
+                ->tooltip('Excluir'),
+                Action::make('resend_verification_email')
+                    ->label('')
+                    ->tooltip('Enviar email de verificação')
+                    ->icon('icon-email-remove')
+                    ->authorize(fn (User $record): bool => ! $record->hasVerifiedEmail())
+                    ->action(function (User $record): void {
+                        $notification      = new VerifyEmail();
+                        $notification->url = filament()->getVerifyEmailUrl($record);
+                        $record->notify($notification);
+
+                        Notification::make()
+                            ->title('Email de verificação foi enviado')
+                            ->color('success')
+                            ->icon('heroicon-s-check-circle')
+                            ->iconColor('success')
+                            ->seconds(8)
+                            ->success();
+                    })
+                    ->requiresConfirmation(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
