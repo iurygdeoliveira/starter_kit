@@ -4,8 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Trait\BelongsToTenantTrait;
 use App\Trait\UuidTrait;
 use Carbon\Carbon;
@@ -16,7 +15,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class User extends Authenticatable implements Auditable
+class User extends Authenticatable implements Auditable, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -48,6 +47,7 @@ class User extends Authenticatable implements Auditable
             'password'        => 'hashed',
             'created_at'      => 'datetime:d/m/Y H:i',
             'updated_at'      => 'datetime:d/m/Y H:i',
+            'email_verified_at' => 'datetime:d/m/Y H:i',
             'suspended_at'    => 'datetime:d/m/Y H:i',
             'suspended_until' => 'datetime:d/m/Y H:i',
         ];

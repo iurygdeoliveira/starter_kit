@@ -12,14 +12,14 @@ class CreateUser extends CreateRecord
 {
     protected static string $resource = UserResource::class;
 
-    #[\Override]
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
+    //#[\Override]
+    //protected function mutateFormDataBeforeCreate(array $data): array
+    //{
         // Adiciona o campo verified como false (não verificado) por padrão
-        $data['verified'] = false;
+        //$data['verified'] = false;
 
-        return $data;
-    }
+        //return $data;
+    //}
 
     #[\Override]
     protected function getRedirectUrl(): string

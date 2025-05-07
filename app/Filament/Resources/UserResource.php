@@ -196,14 +196,12 @@ class UserResource extends Resource
                     ->formatStateUsing(
                         fn (string $state): string => $state !== '' ? $state : 'Nenhuma função atribuída'
                     ),
-                TextColumn::make('verified')
+                    TextColumn::make('email_verified_at')
+                    ->label('Email Verificado')
+                    ->dateTime('d m Y H:i')
                     ->badge()
-                    ->formatStateUsing(
-                        fn (string $state): string => $state !== '' && $state !== '0' ? 'Sim' : 'Não'
-                    )
-                    ->color(fn (string $state): string => $state !== '' && $state !== '0' ? 'success' : 'danger')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable(),               
             ])
 
             ->defaultSort('name', 'asc')

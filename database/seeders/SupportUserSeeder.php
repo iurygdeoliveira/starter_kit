@@ -21,7 +21,6 @@ class SupportUserSeeder extends Seeder
             'cpf'       => fake('pt_BR')->unique()->cpf(),
             'phone'     => fake('pt_BR')->unique()->phoneNumber(),
             'password'  => bcrypt('password'),
-            'verified'  => true,
             'tenant_id' => $suporteTenant->id,
         ]);
     }

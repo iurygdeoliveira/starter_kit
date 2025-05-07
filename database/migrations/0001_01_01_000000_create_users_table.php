@@ -27,9 +27,9 @@ return new class () extends Migration
             $table->string('cpf')->nullable()->unique();
             $table->string('phone')->nullable()->unique();
             $table->string('password');
-            $table->boolean('verified')->default(false);
             $table->rememberToken();
 
+            $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('suspended_at')->nullable();
             $table->timestamp('suspended_until')->nullable();
             $table->timestamps();

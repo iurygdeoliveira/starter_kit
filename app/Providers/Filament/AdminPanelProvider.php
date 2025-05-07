@@ -36,7 +36,6 @@ class AdminPanelProvider extends PanelProvider
                     $column->translateLabel();
                 });
             })
-
             ->spa()
             ->unsavedChangesAlerts()
             ->databaseTransactions()
@@ -48,6 +47,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->registration(Register::class)
             ->passwordReset()
+            ->emailVerification()
             ->colors([
                 'primary'   => '#076fd1',
                 'secondary' => '#6b7a91',
