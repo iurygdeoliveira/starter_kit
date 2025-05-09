@@ -15,11 +15,8 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Notifications\Auth\VerifyEmail;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -143,7 +140,8 @@ class UserResource extends Resource
                             ])
                             ->validationMessages([
                                 'unique' => 'Este CPF já está cadastrado no sistema.',
-                            ]),
+                            ])
+                            ->disabled(fn (string $operation): bool => $operation === 'edit'),
                         TextInput::make('phone')
                             ->label('Fone')
                             ->mask('(99) 99999-9999')
@@ -154,18 +152,6 @@ class UserResource extends Resource
                                 'unique' => 'Este telefone já está cadastrado no sistema.',
                             ])
                             ->extraInputAttributes(['inputmode' => 'numeric']),
-
-                        TextInput::make('password')
-                            ->password()
-                            ->revealable()
-                            ->required(fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(fn (?string $state) => filled($state))
-                            ->confirmed(),
-                        TextInput::make('password_confirmation')
-                            ->password()
-                            ->revealable()
-                            ->requiredWith('password')
-                            ->dehydrated(false),
                         Select::make('Funções:')
                             ->multiple()
                             ->relationship('roles', 'name')
@@ -233,25 +219,6 @@ class UserResource extends Resource
                 DeleteAction::make()
                     ->label('')
                     ->tooltip('Excluir'),
-                Action::make('resend_verification_email')
-                    ->label('')
-                    ->tooltip('Enviar email de verificação')
-                    ->icon('icon-email-remove')
-                    ->authorize(fn (User $record): bool => ! $record->hasVerifiedEmail())
-                    ->action(function (User $record): void {
-                        $notification      = new VerifyEmail();
-                        $notification->url = filament()->getVerifyEmailUrl($record);
-                        $record->notify($notification);
-
-                        Notification::make()
-                            ->title('Email de verificação foi enviado')
-                            ->color('success')
-                            ->icon('heroicon-s-check-circle')
-                            ->iconColor('success')
-                            ->seconds(8)
-                            ->success();
-                    })
-                    ->requiresConfirmation(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([

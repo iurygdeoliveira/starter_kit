@@ -37,7 +37,7 @@ class AdminPanelProvider extends PanelProvider
                 });
             })
             ->spa()
-            ->unsavedChangesAlerts()
+            // ->unsavedChangesAlerts()
             ->databaseTransactions()
             ->darkMode(false)
             ->defaultThemeMode(ThemeMode::Light)

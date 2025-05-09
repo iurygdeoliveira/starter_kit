@@ -7,6 +7,8 @@ namespace App\Models;
 use App\Trait\BelongsToTenantTrait;
 use App\Trait\UuidTrait;
 use Carbon\Carbon;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +17,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class User extends Authenticatable implements Auditable, MustVerifyEmail
+class User extends Authenticatable implements Auditable, MustVerifyEmail, FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -33,7 +35,6 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail
         'cpf',
         'phone',
         'password',
-        'verified',
     ];
 
     protected $hidden = [
@@ -51,6 +52,11 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail
             'suspended_at'      => 'datetime:d/m/Y H:i',
             'suspended_until'   => 'datetime:d/m/Y H:i',
         ];
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->hasVerifiedEmail();
     }
 
     // RELACIONAMENTOS
