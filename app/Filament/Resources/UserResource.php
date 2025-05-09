@@ -206,7 +206,7 @@ class UserResource extends Resource
                     ->searchable()
                     ->dateTime('d/m/Y H:i')
                     ->placeholder('Usuário não verificado'),
-                    
+
             ])
 
             ->defaultSort('name', 'asc')
@@ -231,8 +231,8 @@ class UserResource extends Resource
                     ->icon('heroicon-s-pencil-square') // Define o ícone
                     ->tooltip('Editar'), // Define o tooltip,,
                 DeleteAction::make()
-                ->label('')
-                ->tooltip('Excluir'),
+                    ->label('')
+                    ->tooltip('Excluir'),
                 Action::make('resend_verification_email')
                     ->label('')
                     ->tooltip('Enviar email de verificação')
