@@ -15,13 +15,14 @@ class SupportUserSeeder extends Seeder
         $suporteTenant = Tenant::where('name', 'Elshamah Tecnologia LTDA')->first();
 
         User::factory()->create([
-            'uuid'      => fake('pt_BR')->uuid(),
-            'name'      => 'suporte',
-            'email'     => 'suporte@elshamahtec.com.br',
-            'cpf'       => fake('pt_BR')->unique()->cpf(),
-            'phone'     => fake('pt_BR')->unique()->phoneNumber(),
-            'password'  => bcrypt('password'),
-            'tenant_id' => $suporteTenant->id,
+            'uuid'              => fake('pt_BR')->uuid(),
+            'name'              => 'suporte',
+            'email'             => 'suporte@elshamahtec.com.br',
+            'cpf'               => fake('pt_BR')->unique()->cpf(),
+            'phone'             => fake('pt_BR')->unique()->phoneNumber(),
+            'password'          => bcrypt('password'),
+            'email_verified_at' => now(),
+            'tenant_id'         => $suporteTenant->id,
         ]);
     }
 }

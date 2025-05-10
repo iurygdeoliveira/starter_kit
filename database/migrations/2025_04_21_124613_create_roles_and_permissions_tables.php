@@ -63,6 +63,38 @@ return new class () extends Migration
             $table->timestamps();
         });
 
+        Schema::create('admin_task', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('admin_id')->constrained('admins')->cascadeOnDelete();
+            $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
+            $table->unique(['admin_id', 'task_id']);
+            $table->timestamps();
+        });
+
+        Schema::create('admin_role', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('admin_id')->constrained('admins')->cascadeOnDelete();
+            $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
+            $table->unique(['admin_id', 'role_id']);
+            $table->timestamps();
+        });
+
+        Schema::create('admin_client', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('admin_id')->constrained('admins')->cascadeOnDelete();
+            $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+            $table->unique(['admin_id', 'client_id']);
+            $table->timestamps();
+        });
+
+        Schema::create('admin_user', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('admin_id')->constrained('admins')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->unique(['admin_id', 'user_id']);
+            $table->timestamps();
+        });
+
         Schema::create('role_user', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();

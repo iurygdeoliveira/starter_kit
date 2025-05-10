@@ -85,14 +85,15 @@ class Register extends BaseRegister
             ]);
 
             $user = User::create([
-                'name'      => $data['name'],
-                'email'     => $data['email'],
-                'password'  => Hash::make($data['password']),
-                'tenant_id' => $tenant->id,
+                'name'              => $data['name'],
+                'email'             => $data['email'],
+                'password'          => Hash::make($data['password']),
+                'tenant_id'         => $tenant->id,
+                'email_verified_at' => now(),
             ]);
 
             // Busca a role de Administração (ou cria se não existir)
-            $adminRole = Role::firstOrCreate(['name' => RoleEnum::Administração->value]);
+            $adminRole = Role::firstOrCreate(['name' => RoleEnum::Administracao->value]);
 
             // Atribui a role ao usuário
             $user->roles()->attach($adminRole->id);

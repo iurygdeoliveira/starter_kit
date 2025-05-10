@@ -17,7 +17,7 @@ class AdminPermissionsSeeder extends Seeder
     public function run(): void
     {
         // Busca a role de Administração (ou cria se não existir)
-        $adminRole = Role::firstOrCreate(['name' => RoleEnum::Administração->value]);
+        $adminRole = Role::firstOrCreate(['name' => RoleEnum::Administracao->value]);
 
         // Busca todas as permissões
         $allPermissions = Permission::all();

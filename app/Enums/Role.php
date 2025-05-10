@@ -10,7 +10,7 @@ enum Role: string
     case Contabil      = 'Contábil';
     case Portal        = 'Portal do Cliente';
     case Cliente       = 'Cliente';
-    case Administração = 'Administração';
+    case Administracao = 'Administração';
     case CND           = 'Certidão Negativa de Débito (CND)';
     case Pessoal       = 'Pessoal';
     case Financeiro    = 'Financeiro';

@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Trait;
 
+use App\Models\Admin;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -17,14 +18,14 @@ trait HandlesCreationTrait
     public static function bootHandlesCreationTrait(): void
     {
         static::creating(function ($model): void {
-            // EXCEÇÃO ESPECIAL: Permite criar usuários sem tenant_id
-            if ($model instanceof User) {
+            // EXCEÇÃO ESPECIAL: Permite criar usuários e administradores sem tenant_id
+            if ($model instanceof User || $model instanceof Admin) {
                 // Se já existir um tenant_id, mantenha-o
                 if (Auth::check() && Auth::user()->tenant_id) {
                     $model->tenant_id = Auth::user()->tenant_id;
                 }
                 // Se não existir, permite a criação sem tenant
-                static::logModelAction($model, 'criação de usuário');
+                static::logModelAction($model, 'criação de usuário ou administrador');
 
                 return;
             }

@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Trait\BelongsToTenantTrait;
 use App\Trait\UuidTrait;
-use Carbon\Carbon;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -17,9 +16,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class User extends Authenticatable implements Auditable, MustVerifyEmail, FilamentUser
+class Admin extends Authenticatable implements Auditable, MustVerifyEmail, FilamentUser
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<\Database\Factories\AdminFactory> */
     use HasFactory;
     use Notifiable;
     use UuidTrait;
@@ -62,55 +61,45 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Filame
 
     // RELACIONAMENTOS
 
-    // Cada usuário pertence a um tenant
-    // e um tenant pode ter muitos usuários
+    // Cada admin pertence a um tenant
+    // e um tenant pode ter muitos admins
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
     }
 
-    // Cada usuário pode ter muitas roles
-    // e cada role pode ter muitos usuários
+    // Cada admin pode ter muitas roles
+    // e cada role pode ter muitos admins
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'role_user');
+        return $this->belongsToMany(Role::class, 'admin_role');
     }
 
-    // Cada usuário pode ter muitas tasks
-    // e cada task pode ter muitos usuários
+    // Cada admin pode ter muitas tasks
+    // e cada task pode ter muitos admins
     public function tasks(): BelongsToMany
     {
-        return $this->belongsToMany(Task::class, 'task_user');
+        return $this->belongsToMany(Task::class, 'admin_task');
     }
 
-    // Cada usuário pode ter muitos clientes
-    // e cada cliente pode ter muitos usuários
+    // Cada admin pode ter muitos clientes
+    // e cada cliente pode ter muitos admins
     public function clients(): BelongsToMany
     {
-        return $this->belongsToMany(Client::class, 'client_user');
+        return $this->belongsToMany(Client::class, 'admin_client');
     }
 
-    // Cada usuário pode ter muitos admins
-    // e cada admin pode ter muitos usuários
-    public function admins(): BelongsToMany
+    // Cada admin pode ter muitos clientes
+    // e cada cliente pode ter muitos admins
+    public function users(): BelongsToMany
     {
-        return $this->belongsToMany(Admin::class, 'admin_user');
+        return $this->belongsToMany(User::class, 'admin_user');
     }
 
     #[\Override]
     public function getRouteKeyName(): string
     {
         return 'uuid';  // Substitua por 'uuid' ou o nome do campo que contém seu UUID
-    }
-
-    /**
-     * Verifica se o usuário está suspenso.
-     * Um usuário é considerado suspenso se a data de suspensão (suspended_until) não for nula
-     * e a data atual for menor que a data de suspensão.
-     */
-    public function suspended(): bool
-    {
-        return ! is_null($this->suspended_until) && Carbon::now()->lessThan($this->suspended_until);
     }
 
     public function setCreatedAtAttribute(\DateTimeInterface | \Carbon\WeekDay | \Carbon\Month | string | int | float | null $value): void
