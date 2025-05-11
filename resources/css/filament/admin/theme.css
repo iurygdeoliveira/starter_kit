@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+@import "../../../../vendor/filament/filament/resources/css/base.css";
+
+@config 'tailwind.config.js';
+
+.fi-sidebar-nav-groups {
+    @apply !gap-y-1;
+}
+
+.fi-sidebar-item a:hover {
+    @apply bg-primary-700;
+}
+
+.fi-sidebar-item:hover .fi-sidebar-item-label {
+    color: #fafafa !important;
+}
+
+.fi-sidebar-item:hover .fi-sidebar-item-icon {
+    color: #fafafa !important;
+}
+
+.fi-sidebar-item:hover .fi-sidebar-item-grouped-border * {
+    @apply text-[#fafafa] bg-[#fafafa];
+}
