@@ -37,22 +37,9 @@ class UserResource extends Resource
     use UserLoogedTrait;
     use ValidateCpfTrait;
 
-    /**
-     * Define o modelo associado a este recurso.
-     * Neste caso, o recurso gerencia o modelo User.
-     */
     protected static ?string $model = User::class;
 
-    /**
-     * Define o ícone de navegação para este recurso no menu lateral.
-     * Utiliza o ícone 'rectangle-stack' da biblioteca Heroicons.
-     */
     protected static ?string $navigationIcon = 'heroicon-s-user-group';
-
-    protected static ?string $navigationGroup = 'Administração';
-
-    // Opcional: Definir a ordem do item no grupo
-    protected static ?int $navigationSort = 3;
 
     protected static $countUsers;
 

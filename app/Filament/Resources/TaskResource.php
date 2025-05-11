@@ -27,10 +27,6 @@ class TaskResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-s-clipboard-document-list';
 
-    protected static ?string $navigationGroup = 'Administração';
-
-    protected static ?int $navigationSort = 4;
-
     protected static $countTasks;
 
     // lembrar de limitar associação do cliente com apenas a role portal do cliente

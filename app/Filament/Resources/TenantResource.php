@@ -31,11 +31,7 @@ class TenantResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-m-building-office-2';
 
-    protected static ?string $navigationGroup = 'Administração';
-
     protected static ?string $navigationLabel = 'Minha Empresa';
-
-    protected static ?int $navigationSort = 1;
 
     protected static bool $showTableBulkActions = false;
 

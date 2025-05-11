@@ -5,12 +5,26 @@ declare(strict_types = 1);
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Register;
+use App\Filament\Pages\CND;
+use App\Filament\Pages\Contabil;
+use App\Filament\Pages\Financeiro;
+use App\Filament\Pages\Fiscal;
+use App\Filament\Pages\Pessoal;
+use App\Filament\Pages\Portal;
+use App\Filament\Pages\Processos;
+use App\Filament\Pages\Suporte;
+use App\Filament\Resources\ClientResource;
+use App\Filament\Resources\TaskResource;
+use App\Filament\Resources\TenantResource;
+use App\Filament\Resources\UserResource;
 use Filament\Enums\ThemeMode;
 use Filament\Forms\Components\Field;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationBuilder;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -82,6 +96,66 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
+                return $builder->groups([
+                    NavigationGroup::make('Administração')
+                        ->items([
+                            ...TenantResource::getNavigationItems(),
+                            ...UserResource::getNavigationItems(),
+                            ...ClientResource::getNavigationItems(),
+                            ...TaskResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Consultas')
+                        ->items([
+                            ...CND\cnd::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Contábil')
+                        ->items([
+                            ...Contabil\LucroArbitrado::getNavigationItems(),
+                            ...Contabil\LucroPresumido::getNavigationItems(),
+                            ...Contabil\LucroReal::getNavigationItems(),
+                            ...Contabil\Mei::getNavigationItems(),
+                            ...Contabil\SimplesNacional::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Financeiro')
+                        ->items([
+                            ...Financeiro\Financeiro::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Fiscal')
+                        ->items([
+                            ...Fiscal\LucroArbitrado::getNavigationItems(),
+                            ...Fiscal\LucroPresumido::getNavigationItems(),
+                            ...Fiscal\LucroReal::getNavigationItems(),
+                            ...Fiscal\Mei::getNavigationItems(),
+                            ...Fiscal\SimplesNacional::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Pessoal')
+                        ->items([
+                            ...Pessoal\Ferias::getNavigationItems(),
+                            ...Pessoal\Folha::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Portal do Cliente')
+                        ->items([
+                            ...Portal\Consulta::getNavigationItems(),
+                            ...Portal\Contabil::getNavigationItems(),
+                            ...Portal\Fiscal::getNavigationItems(),
+                            ...Portal\Pessoal::getNavigationItems(),
+                            ...Portal\Processos::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Processos')
+                        ->items([
+                            ...Processos\Abertura::getNavigationItems(),
+                            ...Processos\Alteracao::getNavigationItems(),
+                            ...Processos\Outros::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Suporte')
+                        ->items([
+                            ...Suporte\Chamados::getNavigationItems(),
+                            ...Suporte\Documentacao::getNavigationItems(),
+                            ...Suporte\Melhoria::getNavigationItems(),
+                        ]),
+                ]);
+            });
     }
 }

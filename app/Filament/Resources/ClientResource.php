@@ -34,10 +34,6 @@ class ClientResource extends Resource
 
     protected static ?string $navigationIcon = 'icon-clients';
 
-    protected static ?string $navigationGroup = 'Administração';
-
-    protected static ?int $navigationSort = 2;
-
     protected static $countClients;
 
     // lembrar de limitar associação do cliente com apenas a role portal do cliente
