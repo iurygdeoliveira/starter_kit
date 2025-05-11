@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Executa o Rector para refatoração do código
+echo "Executando Rector para análise e refatoração do código..."
+./vendor/bin/rector
+
+# Verifica se o Rector foi executado com sucesso
+if [ $? -ne 0 ]; then
+    echo "Erro ao executar o Rector. Corrigindo os problemas antes de continuar."
+    exit 1
+fi
+
 # Verifica se há argumentos para commit
 if [ $# -eq 0 ]; then
     # Se não houver argumentos, faz apenas o push

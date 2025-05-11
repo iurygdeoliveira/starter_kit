@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Register;
+use App\Filament\Pages\Portal\Consulta;
 use Filament\Enums\ThemeMode;
 use Filament\Forms\Components\Field;
 use Filament\Http\Middleware\Authenticate;
@@ -15,6 +16,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Tables\Columns\Column;
+use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -61,12 +63,13 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+                Consulta::class,
 
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 //Widgets\AccountWidget::class,
-                //Widgets\FilamentInfoWidget::class,
+                FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

@@ -12,11 +12,7 @@ echo "🔄 Iniciando limpeza completa de cache e reset do banco de dados..."
 ./vendor/bin/sail artisan optimize:clear
 
 # Limpando cache do Filament
-./vendor/bin/sail artisan filament:clear
 ./vendor/bin/sail artisan filament:optimize-clear
-
-# Recriando banco de dados com seed
-./vendor/bin/sail artisan migrate:fresh --seed
 
 # Reotimizando Laravel e Filament
 ./vendor/bin/sail artisan config:cache
@@ -28,4 +24,4 @@ echo "🔄 Iniciando limpeza completa de cache e reset do banco de dados..."
 
 ./vendor/bin/sail artisan filament:optimize
 
-echo "✅ Sistema limpo, banco de dados recriado, seed executado e otimizações refeitas com sucesso."
+echo "✅ Cache do Sistema limpo e otimizações refeitas com sucesso."
