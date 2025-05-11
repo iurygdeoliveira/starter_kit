@@ -90,13 +90,6 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Filame
         return $this->belongsToMany(Client::class, 'client_user');
     }
 
-    // Cada usuário pode ter muitos admins
-    // e cada admin pode ter muitos usuários
-    public function admins(): BelongsToMany
-    {
-        return $this->belongsToMany(Admin::class, 'admin_user');
-    }
-
     #[\Override]
     public function getRouteKeyName(): string
     {

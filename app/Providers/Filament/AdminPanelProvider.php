@@ -37,7 +37,6 @@ class AdminPanelProvider extends PanelProvider
                 });
             })
             ->spa()
-            ->authGuard('admin')
             ->databaseTransactions()
             ->darkMode(false)
             ->defaultThemeMode(ThemeMode::Light)

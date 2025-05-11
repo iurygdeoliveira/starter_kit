@@ -8,13 +8,13 @@ use App\Enums\Activity;
 use App\Enums\Regime;
 use App\Trait\BelongsToTenantTrait;
 use App\Trait\UuidTrait;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Client extends Model implements Auditable
+class Client extends Authenticatable implements Auditable
 {
     //
     use BelongsToTenantTrait;
@@ -29,13 +29,23 @@ class Client extends Model implements Auditable
         'cnpj',
         'activity',
         'regime',
+        'user',
+        'email',
+        'password',
+        'email_verified_at',
         'created_at',
         'updated_at',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 
     protected function casts(): array
     {
         return [
+            'password'   => 'hashed',
             'activity'   => Activity::class,
             'regime'     => Regime::class,
             'created_at' => 'datetime:d/m/Y H:i',

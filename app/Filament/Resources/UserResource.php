@@ -88,7 +88,7 @@ class UserResource extends Resource
     public static function getNavigationBadgeTooltip(): ?string
     {
         if (self::getCountUsers() === 0) {
-            return 'Adicionar usuários';
+            return 'Adicionar Funcionarios';
         }
 
         // Todos os campos estão preenchidos
@@ -98,7 +98,7 @@ class UserResource extends Resource
     #[\Override]
     public static function getModelLabel(): string
     {
-        return __('User');
+        return __('Funcionário');
     }
 
     #[\Override]
@@ -112,7 +112,7 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Informações Pessoais')
+                Section::make('Dados do Usuário')
                     ->schema([
                         TextInput::make('name')
                             ->required()
@@ -182,6 +182,7 @@ class UserResource extends Resource
                     ->label('Funções')
                     ->badge()
                     ->searchable()
+                    ->placeholder('Funções não atribuídas')
                     ->sortable()
                     ->formatStateUsing(
                         fn (string $state): string => $state !== '' ? $state : 'Nenhuma função atribuída'
@@ -213,7 +214,6 @@ class UserResource extends Resource
             ->actions([
                 EditAction::make()
                     ->label('')
-                    ->hidden(fn (): bool => self::isSupportUser())
                     ->icon('heroicon-s-pencil-square') // Define o ícone
                     ->tooltip('Editar'), // Define o tooltip,,
                 DeleteAction::make()

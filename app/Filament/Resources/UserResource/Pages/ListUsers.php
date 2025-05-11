@@ -17,11 +17,6 @@ class ListUsers extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        // Verifica se o usuário atual é um usuário de suporte
-        if (self::isSupportUser()) {
-            return [];
-        }
-
         return [
             Actions\CreateAction::make(),
         ];

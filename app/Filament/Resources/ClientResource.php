@@ -11,6 +11,7 @@ use App\Models\Client;
 use App\Trait\UserLoogedTrait;
 use App\Trait\ValidateCnpjTrait;
 use Closure;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -18,6 +19,8 @@ use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -89,47 +92,70 @@ class ClientResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->placeholder('Razão Social não cadastrada')
-                    ->label('Razão Social')
-                    ->dehydrated()
-                    ->required()
-                    ->unique('clients', 'name')
-                    ->maxLength(255)
-                    ->validationMessages([
-                        'maxLength' => 'O nome não pode ter mais de 255 caracteres.',
-                        'unique'    => 'Este nome já está cadastrado no sistema.',
-                        'required'  => 'O nome é obrigatório.',
-                    ]),
-                TextInput::make('cnpj')
-                    ->placeholder('CNPJ não cadastrado')
-                    ->label('CNPJ')
-                    ->dehydrated()
-                    ->required()
-                    ->mask('99.999.999/9999-99')
-                    ->unique('clients', 'cnpj')
-                    ->rules([
-                        fn (): Closure => self::getCnpjValidationRule(),
+                Section::make('Dados da Empresa')
+                    ->schema([
+                        TextInput::make('name')
+                            ->placeholder('Razão Social não cadastrada')
+                            ->label('Razão Social')
+                            ->dehydrated()
+                            ->required()
+                            ->unique('clients', 'name')
+                            ->maxLength(255)
+                            ->validationMessages([
+                                'maxLength' => 'O nome não pode ter mais de 255 caracteres.',
+                                'unique'    => 'Este nome já está cadastrado no sistema.',
+                                'required'  => 'O nome é obrigatório.',
+                            ]),
+                        TextInput::make('cnpj')
+                            ->placeholder('CNPJ não cadastrado')
+                            ->label('CNPJ')
+                            ->dehydrated()
+                            ->required()
+                            ->mask('99.999.999/9999-99')
+                            ->unique('clients', 'cnpj')
+                            ->rules([
+                                fn (): Closure => self::getCnpjValidationRule(),
+                            ])
+                            ->validationMessages([
+                                'unique'   => 'Este CNPJ já está cadastrado no sistema.',
+                                'required' => 'O CNPJ é obrigatório.',
+                            ])
+                            ->extraInputAttributes(['inputmode' => 'numeric']),
+                        Select::make('activity')
+                            ->label('Atividade')
+                            ->required()
+                            ->options(collect(Activity::cases())->pluck('value', 'value'))
+                            ->validationMessages([
+                                'required' => 'A atividade é obrigatória.',
+                            ]),
+                        Select::make('regime')
+                            ->label('Regime')
+                            ->required()
+                            ->options(collect(Regime::cases())->pluck('value', 'value'))
+                            ->validationMessages([
+                                'required' => 'O regime é obrigatório.',
+                            ]),
                     ])
-                    ->validationMessages([
-                        'unique'   => 'Este CNPJ já está cadastrado no sistema.',
-                        'required' => 'O CNPJ é obrigatório.',
+                    ->columns(2),
+                Section::make('Informações de Acesso')
+                    ->schema([
+                        TextInput::make('user')
+                            ->label('Nome')
+                            ->required()
+                            ->rules(['regex:/^[\pL\s\-\'\.]+$/u'])
+                            ->validationMessages([
+                                'regex' => 'O nome deve conter apenas letras, espaços e caracteres especiais (como acentos ou hífens).',
+                            ]),
+                        TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->unique('users', 'email', ignoreRecord: true)
+                            ->dehydrated()
+                            ->validationMessages([
+                                'unique' => 'Este e-mail já está cadastrado no sistema.',
+                            ]),
                     ])
-                    ->extraInputAttributes(['inputmode' => 'numeric']),
-                Select::make('activity')
-                    ->label('Atividade')
-                    ->required()
-                    ->options(collect(Activity::cases())->pluck('value', 'value'))
-                    ->validationMessages([
-                        'required' => 'A atividade é obrigatória.',
-                    ]),
-                Select::make('regime')
-                    ->label('Regime')
-                    ->required()
-                    ->options(collect(Regime::cases())->pluck('value', 'value'))
-                    ->validationMessages([
-                        'required' => 'O regime é obrigatório.',
-                    ]),
+                    ->columns(2),
             ]);
     }
 
@@ -181,7 +207,13 @@ class ClientResource extends Resource
                     ->multiple(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make()
+                    ->label('')
+                    ->icon('heroicon-s-pencil-square') // Define o ícone
+                    ->tooltip('Editar'), // Define o tooltip,,
+                DeleteAction::make()
+                    ->label('')
+                    ->tooltip('Excluir'),
 
             ])
             ->bulkActions([

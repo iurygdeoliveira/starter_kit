@@ -41,11 +41,11 @@ class DatabaseSeeder extends Seeder
     private function seedTestData(): void
     {
         $this->call([
-            TenantSeeder::class,
-            UserSeeder::class,
-            AdminSeeder::class,
-            PermissionSeeder::class,
             RoleSeeder::class,
+            TenantSeeder::class,
+            AdminSeeder::class,
+            UserSeeder::class,
+            PermissionSeeder::class,
             AdminPermissionsSeeder::class,
         ]);
     }

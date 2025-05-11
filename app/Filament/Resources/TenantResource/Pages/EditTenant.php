@@ -18,13 +18,9 @@ class EditTenant extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        if (static::isSupportUser()) {
-            return [
-                Actions\DeleteAction::make(),
-            ];
-        }
-
-        return [];
+        return [
+            // Actions\DeleteAction::make(),
+        ];
     }
 
     #[\Override]

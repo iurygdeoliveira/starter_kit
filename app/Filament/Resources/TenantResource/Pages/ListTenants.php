@@ -18,13 +18,9 @@ class ListTenants extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        if (static::isSupportUser()) {
-            return [
-                Actions\CreateAction::make(),
-            ];
-        }
-
-        return [];
+        return [
+            // Actions\CreateAction::make(),
+        ];
     }
 
     #[\Override]
@@ -32,10 +28,9 @@ class ListTenants extends ListRecords
     {
         parent::mount();
 
-        if (! static::isSupportUser()) {
-            $tenant = Tenant::first();
+        $tenant = Tenant::first();
 
-            $this->redirect(TenantResource::getUrl('view', ['record' => $tenant]));
-        }
+        // Direciona para a página de visualização do primeiro registro
+        $this->redirect(TenantResource::getUrl('view', ['record' => $tenant]));
     }
 }

@@ -34,7 +34,7 @@ class CreateUser extends CreateRecord
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
-            ->title('Usuário criado com sucesso!')
+            ->title('Funcionário criado com sucesso!')
             ->color('success')
             ->icon('heroicon-s-check-circle')
             ->iconColor('success')

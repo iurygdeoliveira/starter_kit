@@ -68,11 +68,6 @@ class TenantResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        // Se é o usuário de suporte, mostrar contagem de tenants
-        if (static::isSupportUser()) {
-            return (string) Tenant::count();
-        }
-
         $tenant = self::getUserTenant();
 
         // Verificar campos incompletos
@@ -88,10 +83,6 @@ class TenantResource extends Resource
 
     public static function getNavigationBadgeColor(): ?string
     {
-        if (static::isSupportUser()) {
-            return 'primary';
-        }
-
         $tenant = self::getUserTenant();
 
         // Verificar campos incompletos
@@ -108,10 +99,6 @@ class TenantResource extends Resource
     #[\Override]
     public static function getNavigationBadgeTooltip(): ?string
     {
-        if (static::isSupportUser()) {
-            return null;
-        }
-
         $tenant = self::getUserTenant();
 
         // Verificar campos incompletos
@@ -183,11 +170,6 @@ class TenantResource extends Resource
                         'required' => 'O email é obrigatório.',
                     ]),
             ]);
-    }
-
-    public static function shouldShowTable(): bool
-    {
-        return static::isSupportUser();
     }
 
     #[\Override]

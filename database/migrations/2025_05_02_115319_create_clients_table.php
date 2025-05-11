@@ -25,17 +25,14 @@ return new class () extends Migration
             $table->string('cnpj')->unique();
             $table->string('activity');
             $table->string('regime');
+            $table->string('user');
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->rememberToken();
+
+            $table->timestamp('email_verified_at');
 
             $table->timestamps();
-        });
-
-        Schema::create('client_task', function (Blueprint $table): void {
-            $table->id();
-            $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
-            $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
-            $table->timestamps();
-            // Garante que uma tarefa não seja associada ao mesmo cliente múltiplas vezes
-            $table->unique(['client_id', 'task_id']);
         });
     }
 
@@ -44,7 +41,6 @@ return new class () extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('client_task');
         Schema::dropIfExists('clients');
     }
 };
