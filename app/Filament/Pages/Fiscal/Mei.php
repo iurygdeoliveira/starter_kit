@@ -11,4 +11,12 @@ class Mei extends Page
     protected static ?string $navigationIcon = null;
 
     protected static string $view = 'filament.pages.fiscal.mei';
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            '/'              => 'Fiscal',
+            url()->current() => 'MEI',
+        ];
+    }
 }

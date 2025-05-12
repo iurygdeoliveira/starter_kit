@@ -13,4 +13,12 @@ class Financeiro extends Page
     protected static ?string $navigationLabel = 'Clientes';
 
     protected static string $view = 'filament.pages.financeiro.financeiro';
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            '/'              => 'Financeiro',
+            url()->current() => 'Clientes',
+        ];
+    }
 }

@@ -11,4 +11,12 @@ class SimplesNacional extends Page
     protected static ?string $navigationIcon = null;
 
     protected static string $view = 'filament.pages.contabil.simples-nacional';
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            '/'              => 'Contábil',
+            url()->current() => 'Simples Nacional',
+        ];
+    }
 }

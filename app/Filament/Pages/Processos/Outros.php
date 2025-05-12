@@ -11,4 +11,12 @@ class Outros extends Page
     protected static ?string $navigationIcon = null;
 
     protected static string $view = 'filament.pages.processos.outros';
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            '/'              => 'Processos',
+            url()->current() => 'Outros Processos',
+        ];
+    }
 }

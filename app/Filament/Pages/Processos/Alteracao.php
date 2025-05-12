@@ -11,4 +11,12 @@ class Alteracao extends Page
     protected static ?string $navigationIcon = null;
 
     protected static string $view = 'filament.pages.processos.alteracao';
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            '/'              => 'Processos',
+            url()->current() => 'Alteração de Empresas',
+        ];
+    }
 }

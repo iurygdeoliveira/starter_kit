@@ -11,4 +11,12 @@ class Mei extends Page
     protected static ?string $navigationIcon = null;
 
     protected static string $view = 'filament.pages.contabil.mei';
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            '/'              => 'Contábil',
+            url()->current() => 'MEI',
+        ];
+    }
 }

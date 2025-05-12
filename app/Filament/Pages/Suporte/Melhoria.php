@@ -11,4 +11,12 @@ class Melhoria extends Page
     protected static ?string $navigationIcon = null;
 
     protected static string $view = 'filament.pages.suporte.melhoria';
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            '/'              => 'Suporte',
+            url()->current() => 'Melhoria',
+        ];
+    }
 }

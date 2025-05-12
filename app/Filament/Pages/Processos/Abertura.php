@@ -11,4 +11,12 @@ class Abertura extends Page
     protected static ?string $navigationIcon = null;
 
     protected static string $view = 'filament.pages.processos.abertura';
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            '/'              => 'Processos',
+            url()->current() => 'Abertura de Empresas',
+        ];
+    }
 }
