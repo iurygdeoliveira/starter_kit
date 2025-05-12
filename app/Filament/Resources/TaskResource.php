@@ -46,7 +46,7 @@ class TaskResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return self::getCountTasks() > 0 ? (string) self::getCountTasks() : '0';
+        return self::getCountTasks() > 0 ? (string) self::getCountTasks() : '!';
     }
 
     public static function getNavigationBadgeColor(): ?string

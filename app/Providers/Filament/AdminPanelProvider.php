@@ -63,6 +63,7 @@ class AdminPanelProvider extends PanelProvider
             ->registration(Register::class)
             ->passwordReset()
             ->emailVerification()
+            ->unsavedChangesAlerts()
             ->colors([
                 'primary'   => '#076fd1',
                 'secondary' => '#6b7a91',

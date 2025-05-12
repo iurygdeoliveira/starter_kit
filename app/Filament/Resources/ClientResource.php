@@ -53,7 +53,7 @@ class ClientResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return self::getCountClients() > 0 ? (string) self::getCountClients() : '0';
+        return self::getCountClients() > 0 ? (string) self::getCountClients() : '!';
     }
 
     public static function getNavigationBadgeColor(): ?string
