@@ -3,12 +3,6 @@
 echo "🔄 Iniciando limpeza completa de cache dos componentes..."
 
 # Limpando todos os caches do Laravel
-./vendor/bin/sail artisan cache:clear
-./vendor/bin/sail artisan config:clear
-./vendor/bin/sail artisan config:cache
-./vendor/bin/sail artisan route:clear
-./vendor/bin/sail artisan view:clear
-./vendor/bin/sail artisan event:clear
 ./vendor/bin/sail artisan optimize:clear
 ./vendor/bin/sail artisan filament:optimize-clear
 

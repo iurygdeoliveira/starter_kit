@@ -11,6 +11,4 @@ class SimplesNacional extends Page
     protected static ?string $navigationIcon = null;
 
     protected static string $view = 'filament.pages.contabil.simples-nacional';
-
-    protected static ?string $navigationGroup = 'Contábil';
 }

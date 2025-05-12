@@ -10,7 +10,5 @@ class Folha extends Page
 {
     protected static ?string $navigationIcon = null;
 
-    protected static ?string $navigationGroup = 'Dep. Pessoal';
-
     protected static string $view = 'filament.pages.pessoal.folha';
 }

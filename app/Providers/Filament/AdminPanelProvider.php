@@ -9,6 +9,7 @@ use App\Filament\Pages\CND;
 use App\Filament\Pages\Contabil;
 use App\Filament\Pages\Financeiro;
 use App\Filament\Pages\Fiscal;
+use App\Filament\Pages\Indicadores;
 use App\Filament\Pages\Pessoal;
 use App\Filament\Pages\Portal;
 use App\Filament\Pages\Processos;
@@ -25,7 +26,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationBuilder;
 use Filament\Navigation\NavigationGroup;
-use Filament\Pages;
+use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Tables\Columns\Column;
@@ -76,7 +77,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -99,7 +100,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                 return $builder->groups([
+                    NavigationGroup::make('Dashboard')
+                        ->icon('icon-dashboard')
+                        ->items([
+                            ...Indicadores\Indicadores::getNavigationItems(),
+                        ]),
                     NavigationGroup::make('Administração')
+                        ->icon('icon-administracao')
                         ->items([
                             ...TenantResource::getNavigationItems(),
                             ...UserResource::getNavigationItems(),
@@ -107,10 +114,12 @@ class AdminPanelProvider extends PanelProvider
                             ...TaskResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Consultas')
+                        ->icon('icon-consultas')
                         ->items([
                             ...CND\cnd::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Contábil')
+                        ->icon('icon-contabil')
                         ->items([
                             ...Contabil\LucroArbitrado::getNavigationItems(),
                             ...Contabil\LucroPresumido::getNavigationItems(),
@@ -119,10 +128,12 @@ class AdminPanelProvider extends PanelProvider
                             ...Contabil\SimplesNacional::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Financeiro')
+                        ->icon('icon-financeiro')
                         ->items([
                             ...Financeiro\Financeiro::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Fiscal')
+                        ->icon('icon-fiscal')
                         ->items([
                             ...Fiscal\LucroArbitrado::getNavigationItems(),
                             ...Fiscal\LucroPresumido::getNavigationItems(),
@@ -131,11 +142,13 @@ class AdminPanelProvider extends PanelProvider
                             ...Fiscal\SimplesNacional::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Pessoal')
+                        ->icon('heroicon-s-user-group')
                         ->items([
                             ...Pessoal\Ferias::getNavigationItems(),
                             ...Pessoal\Folha::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Portal do Cliente')
+                        ->icon('icon-portal')
                         ->items([
                             ...Portal\Consulta::getNavigationItems(),
                             ...Portal\Contabil::getNavigationItems(),
@@ -144,12 +157,14 @@ class AdminPanelProvider extends PanelProvider
                             ...Portal\Processos::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Processos')
+                        ->icon('icon-processo')
                         ->items([
                             ...Processos\Abertura::getNavigationItems(),
                             ...Processos\Alteracao::getNavigationItems(),
                             ...Processos\Outros::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Suporte')
+                        ->icon('icon-suporte')
                         ->items([
                             ...Suporte\Chamados::getNavigationItems(),
                             ...Suporte\Documentacao::getNavigationItems(),

@@ -11,6 +11,4 @@ class LucroReal extends Page
     protected static ?string $navigationIcon = null;
 
     protected static string $view = 'filament.pages.contabil.lucro-real';
-
-    protected static ?string $navigationGroup = 'Contábil';
 }

@@ -29,7 +29,7 @@ class TenantResource extends Resource
 
     protected static ?string $model = Tenant::class;
 
-    protected static ?string $navigationIcon = 'heroicon-m-building-office-2';
+    // protected static ?string $navigationIcon = 'heroicon-m-building-office-2';
 
     protected static ?string $navigationLabel = 'Minha Empresa';
 

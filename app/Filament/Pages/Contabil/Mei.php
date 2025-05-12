@@ -11,6 +11,4 @@ class Mei extends Page
     protected static ?string $navigationIcon = null;
 
     protected static string $view = 'filament.pages.contabil.mei';
-
-    protected static ?string $navigationGroup = 'Contábil';
 }

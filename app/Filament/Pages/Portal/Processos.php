@@ -10,7 +10,5 @@ class Processos extends Page
 {
     protected static ?string $navigationIcon = null;
 
-    protected static ?string $navigationGroup = 'Portal do Cliente';
-
     protected static string $view = 'filament.pages.portal.processos';
 }

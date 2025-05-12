@@ -10,8 +10,6 @@ class Financeiro extends Page
 {
     protected static ?string $navigationIcon = null;
 
-    protected static ?string $navigationGroup = 'Financeiro';
-
     protected static ?string $navigationLabel = 'Clientes';
 
     protected static string $view = 'filament.pages.financeiro.financeiro';

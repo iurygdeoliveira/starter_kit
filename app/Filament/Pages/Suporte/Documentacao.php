@@ -10,7 +10,5 @@ class Documentacao extends Page
 {
     protected static ?string $navigationIcon = null;
 
-    protected static ?string $navigationGroup = 'Suporte';
-
     protected static string $view = 'filament.pages.suporte.documentacao';
 }

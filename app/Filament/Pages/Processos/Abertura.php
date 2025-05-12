@@ -10,7 +10,5 @@ class Abertura extends Page
 {
     protected static ?string $navigationIcon = null;
 
-    protected static ?string $navigationGroup = 'Processos';
-
     protected static string $view = 'filament.pages.processos.abertura';
 }

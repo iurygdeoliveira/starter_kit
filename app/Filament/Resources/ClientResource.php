@@ -32,7 +32,7 @@ class ClientResource extends Resource
 
     protected static ?string $model = Client::class;
 
-    protected static ?string $navigationIcon = 'icon-clients';
+    // protected static ?string $navigationIcon = 'icon-clients';
 
     protected static $countClients;
 
