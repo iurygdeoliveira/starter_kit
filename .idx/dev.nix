@@ -9,6 +9,7 @@
     pkgs.php83Packages.composer
     pkgs.nodejs_20
     pkgs.busybox
+    pkgs.sudo
   ];
   # Sets environment variables in the workspace
   env = {};

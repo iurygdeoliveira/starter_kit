@@ -296,9 +296,9 @@ class UserResource extends Resource
 
         // Verificar se estamos na página de edição
         // evitar exibir a tabela de relacionamento na página de edição
-        if (str_contains($currentUrl, '/edit') || str_contains($currentUrl, '/livewire/update')) {
-            return [];
-        }
+        //if (str_contains($currentUrl, '/edit') || str_contains($currentUrl, '/livewire/update')) {
+        //    return [];
+       // }
 
         return [
             RolesRelationManager::class,

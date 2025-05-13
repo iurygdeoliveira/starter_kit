@@ -29,6 +29,7 @@ class RolesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('name')
+            ->label('Permissões em cada função')
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
             ])

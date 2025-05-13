@@ -46,13 +46,13 @@ class EditUser extends EditRecord
         parent::getFormActions();
 
         return [
-            $this->getSaveFormAction(),
-            Action::make('voltar')
-                ->label('Voltar')
-                ->color('secondary')
-                ->icon('heroicon-o-arrow-left')
-                ->url(UserResource::getUrl('index')),
-            $this->getCancelFormAction(),
+            // $this->getSaveFormAction(),
+            // Action::make('voltar')
+            //     ->label('Voltar')
+            //     ->color('secondary')
+            //     ->icon('heroicon-o-arrow-left')
+            //     ->url(UserResource::getUrl('index')),
+            // $this->getCancelFormAction(),
 
         ];
     }
