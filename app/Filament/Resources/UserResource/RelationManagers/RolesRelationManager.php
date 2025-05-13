@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
@@ -41,19 +42,19 @@ class RolesRelationManager extends RelationManager
         
         // Adiciona colunas dinâmicas de permissões com toggles
         foreach ($permissions as $permission) {
-            $columns[] = Tables\Columns\ToggleColumn::make('permissions.' . $permission->id)
-                ->label($permission->name)
-                ->afterStateUpdated(function (RelationManager $livewire, Model $record, $state) use ($permission) {
-                    if ($state) {
-                        $record->permissions()->attach($permission->id);
-                    } else {
-                        $record->permissions()->detach($permission->id);
-                    }
-                })
-                ->getStateUsing(function (Model $record) use ($permission): bool {
-                    return $record->permissions->contains('id', $permission->id);
-                })
+            $columns[] = ToggleColumn::make($permission->name)
+                // ->label($permission->name)
                 ->alignCenter();
+                // ->afterStateUpdated(function (RelationManager $livewire, Model $record, $state) use ($permission) {
+                //     if ($state) {
+                //         $record->permissions()->attach($permission->id);
+                //     } else {
+                //         $record->permissions()->detach($permission->id);
+                //     }
+                // })
+                // ->getStateUsing(function (Model $record) use ($permission): bool {
+                //     return $record->permissions->contains('id', $permission->id);
+                // });
         }
         
         return $table
