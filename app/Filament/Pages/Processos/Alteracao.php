@@ -12,6 +12,7 @@ class Alteracao extends Page
 
     protected static string $view = 'filament.pages.processos.alteracao';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

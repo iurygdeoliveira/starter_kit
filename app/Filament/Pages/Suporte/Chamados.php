@@ -12,6 +12,7 @@ class Chamados extends Page
 
     protected static string $view = 'filament.pages.suporte.chamados';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

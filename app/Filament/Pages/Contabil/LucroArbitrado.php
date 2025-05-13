@@ -12,6 +12,7 @@ class LucroArbitrado extends Page
 
     protected static string $view = 'filament.pages.contabil.lucro-arbitrado';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

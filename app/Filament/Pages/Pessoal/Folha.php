@@ -12,6 +12,7 @@ class Folha extends Page
 
     protected static string $view = 'filament.pages.pessoal.folha';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

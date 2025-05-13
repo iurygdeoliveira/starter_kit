@@ -12,6 +12,7 @@ class Outros extends Page
 
     protected static string $view = 'filament.pages.processos.outros';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

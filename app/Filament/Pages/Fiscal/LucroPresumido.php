@@ -12,6 +12,7 @@ class LucroPresumido extends Page
 
     protected static string $view = 'filament.pages.fiscal.lucro-presumido';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

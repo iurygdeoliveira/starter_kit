@@ -12,6 +12,7 @@ class SimplesNacional extends Page
 
     protected static string $view = 'filament.pages.fiscal.simples-nacional';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

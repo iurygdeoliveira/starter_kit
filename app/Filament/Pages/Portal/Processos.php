@@ -12,6 +12,7 @@ class Processos extends Page
 
     protected static string $view = 'filament.pages.portal.processos';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

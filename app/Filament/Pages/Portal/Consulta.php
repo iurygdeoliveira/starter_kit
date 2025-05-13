@@ -12,6 +12,7 @@ class Consulta extends Page
 
     protected static string $view = 'filament.pages.portal.consulta';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

@@ -12,6 +12,7 @@ class Documentacao extends Page
 
     protected static string $view = 'filament.pages.suporte.documentacao';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

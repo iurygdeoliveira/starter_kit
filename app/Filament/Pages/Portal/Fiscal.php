@@ -12,6 +12,7 @@ class Fiscal extends Page
 
     protected static string $view = 'filament.pages.portal.fiscal';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

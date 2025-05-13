@@ -12,6 +12,7 @@ class Ferias extends Page
 
     protected static string $view = 'filament.pages.pessoal.ferias';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

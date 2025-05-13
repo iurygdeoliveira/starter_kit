@@ -12,6 +12,7 @@ class Contabil extends Page
 
     protected static string $view = 'filament.pages.portal.contabil';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

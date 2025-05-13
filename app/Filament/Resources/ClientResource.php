@@ -88,7 +88,10 @@ class ClientResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Dados da Empresa')
+                Section::make('Dados da Empresa do Cliente')
+                    ->icon('heroicon-s-building-office-2')
+                    ->collapsed()
+                    ->description('São os dados da empresa do cliente, como razão social, CNPJ, atividade e regime.')
                     ->schema([
                         TextInput::make('name')
                             ->placeholder('Razão Social não cadastrada')
@@ -133,7 +136,10 @@ class ClientResource extends Resource
                             ]),
                     ])
                     ->columns(2),
-                Section::make('Informações de Acesso')
+                Section::make('Informações de Acesso do Cliente')
+                    ->icon('icon-acesso-cliente')
+                    ->collapsed()
+                    ->description('São as informações para que o cliente possa acessar o portal do cliente.')
                     ->schema([
                         TextInput::make('user')
                             ->label('Nome')

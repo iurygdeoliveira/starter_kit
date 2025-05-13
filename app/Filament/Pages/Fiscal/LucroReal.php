@@ -12,6 +12,7 @@ class LucroReal extends Page
 
     protected static string $view = 'filament.pages.fiscal.lucro-real';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

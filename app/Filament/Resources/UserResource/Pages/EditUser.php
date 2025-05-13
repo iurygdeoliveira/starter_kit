@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
@@ -37,5 +38,22 @@ class EditUser extends EditRecord
             ->iconColor('success')
             ->seconds(8)
             ->success();
+    }
+
+    #[\Override]
+    protected function getFormActions(): array
+    {
+        parent::getFormActions();
+
+        return [
+            $this->getSaveFormAction(),
+            Action::make('voltar')
+                ->label('Voltar')
+                ->color('secondary')
+                ->icon('heroicon-o-arrow-left')
+                ->url(UserResource::getUrl('index')),
+            $this->getCancelFormAction(),
+
+        ];
     }
 }

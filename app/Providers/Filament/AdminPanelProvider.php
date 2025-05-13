@@ -63,7 +63,6 @@ class AdminPanelProvider extends PanelProvider
             ->registration(Register::class)
             ->passwordReset()
             ->emailVerification()
-            ->unsavedChangesAlerts()
             ->colors([
                 'primary'   => '#076fd1',
                 'secondary' => '#6b7a91',
@@ -99,79 +98,77 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
-                return $builder->groups([
-                    NavigationGroup::make('Dashboard')
-                        ->icon('icon-dashboard')
-                        ->items([
-                            ...Indicadores\Indicadores::getNavigationItems(),
-                        ]),
-                    NavigationGroup::make('Administração')
-                        ->icon('icon-administracao')
-                        ->items([
-                            ...TenantResource::getNavigationItems(),
-                            ...UserResource::getNavigationItems(),
-                            ...ClientResource::getNavigationItems(),
-                            ...TaskResource::getNavigationItems(),
-                        ]),
-                    NavigationGroup::make('Consultas')
-                        ->icon('icon-consultas')
-                        ->items([
-                            ...CND\cnd::getNavigationItems(),
-                        ]),
-                    NavigationGroup::make('Contábil')
-                        ->icon('icon-contabil')
-                        ->items([
-                            ...Contabil\LucroArbitrado::getNavigationItems(),
-                            ...Contabil\LucroPresumido::getNavigationItems(),
-                            ...Contabil\LucroReal::getNavigationItems(),
-                            ...Contabil\Mei::getNavigationItems(),
-                            ...Contabil\SimplesNacional::getNavigationItems(),
-                        ]),
-                    NavigationGroup::make('Financeiro')
-                        ->icon('icon-financeiro')
-                        ->items([
-                            ...Financeiro\Financeiro::getNavigationItems(),
-                        ]),
-                    NavigationGroup::make('Fiscal')
-                        ->icon('icon-fiscal')
-                        ->items([
-                            ...Fiscal\LucroArbitrado::getNavigationItems(),
-                            ...Fiscal\LucroPresumido::getNavigationItems(),
-                            ...Fiscal\LucroReal::getNavigationItems(),
-                            ...Fiscal\Mei::getNavigationItems(),
-                            ...Fiscal\SimplesNacional::getNavigationItems(),
-                        ]),
-                    NavigationGroup::make('Pessoal')
-                        ->icon('heroicon-s-user-group')
-                        ->items([
-                            ...Pessoal\Ferias::getNavigationItems(),
-                            ...Pessoal\Folha::getNavigationItems(),
-                        ]),
-                    NavigationGroup::make('Portal do Cliente')
-                        ->icon('icon-portal')
-                        ->items([
-                            ...Portal\Consulta::getNavigationItems(),
-                            ...Portal\Contabil::getNavigationItems(),
-                            ...Portal\Fiscal::getNavigationItems(),
-                            ...Portal\Pessoal::getNavigationItems(),
-                            ...Portal\Processos::getNavigationItems(),
-                        ]),
-                    NavigationGroup::make('Processos')
-                        ->icon('icon-processo')
-                        ->items([
-                            ...Processos\Abertura::getNavigationItems(),
-                            ...Processos\Alteracao::getNavigationItems(),
-                            ...Processos\Outros::getNavigationItems(),
-                        ]),
-                    NavigationGroup::make('Suporte')
-                        ->icon('icon-suporte')
-                        ->items([
-                            ...Suporte\Chamados::getNavigationItems(),
-                            ...Suporte\Documentacao::getNavigationItems(),
-                            ...Suporte\Melhoria::getNavigationItems(),
-                        ]),
-                ]);
-            });
+            ->navigation(fn (NavigationBuilder $builder): NavigationBuilder => $builder->groups([
+                NavigationGroup::make('Dashboard')
+                    ->icon('icon-dashboard')
+                    ->items([
+                        ...Indicadores\Indicadores::getNavigationItems(),
+                    ]),
+                NavigationGroup::make('Administração')
+                    ->icon('icon-administracao')
+                    ->items([
+                        ...TenantResource::getNavigationItems(),
+                        ...UserResource::getNavigationItems(),
+                        ...ClientResource::getNavigationItems(),
+                        ...TaskResource::getNavigationItems(),
+                    ]),
+                // NavigationGroup::make('Consultas')
+                //     ->icon('icon-consultas')
+                //     ->items([
+                //         ...CND\cnd::getNavigationItems(),
+                //     ]),
+                NavigationGroup::make('Contábil')
+                    ->icon('icon-contabil')
+                    ->items([
+                        ...Contabil\LucroArbitrado::getNavigationItems(),
+                        ...Contabil\LucroPresumido::getNavigationItems(),
+                        ...Contabil\LucroReal::getNavigationItems(),
+                        ...Contabil\Mei::getNavigationItems(),
+                        ...Contabil\SimplesNacional::getNavigationItems(),
+                    ]),
+                // NavigationGroup::make('Financeiro')
+                //     ->icon('icon-financeiro')
+                //     ->items([
+                //         ...Financeiro\Financeiro::getNavigationItems(),
+                //     ]),
+                NavigationGroup::make('Fiscal')
+                    ->icon('icon-fiscal')
+                    ->items([
+                        ...Fiscal\LucroArbitrado::getNavigationItems(),
+                        ...Fiscal\LucroPresumido::getNavigationItems(),
+                        ...Fiscal\LucroReal::getNavigationItems(),
+                        ...Fiscal\Mei::getNavigationItems(),
+                        ...Fiscal\SimplesNacional::getNavigationItems(),
+                    ]),
+                // NavigationGroup::make('Pessoal')
+                //     ->icon('heroicon-s-user-group')
+                //     ->items([
+                //         ...Pessoal\Ferias::getNavigationItems(),
+                //         ...Pessoal\Folha::getNavigationItems(),
+                //     ]),
+                NavigationGroup::make('Portal do Cliente')
+                    ->icon('icon-portal')
+                    ->items([
+                        ...Portal\Consulta::getNavigationItems(),
+                        ...Portal\Contabil::getNavigationItems(),
+                        ...Portal\Fiscal::getNavigationItems(),
+                        ...Portal\Pessoal::getNavigationItems(),
+                        ...Portal\Processos::getNavigationItems(),
+                    ]),
+                // NavigationGroup::make('Processos')
+                //     ->icon('icon-processo')
+                //     ->items([
+                //         ...Processos\Abertura::getNavigationItems(),
+                //         ...Processos\Alteracao::getNavigationItems(),
+                //         ...Processos\Outros::getNavigationItems(),
+                //     ]),
+                NavigationGroup::make('Suporte')
+                    ->icon('icon-suporte')
+                    ->items([
+                        ...Suporte\Chamados::getNavigationItems(),
+                        ...Suporte\Documentacao::getNavigationItems(),
+                        ...Suporte\Melhoria::getNavigationItems(),
+                    ]),
+            ]));
     }
 }

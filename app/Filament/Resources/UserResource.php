@@ -11,10 +11,12 @@ use App\Trait\SupportUserTrait;
 use App\Trait\UserLoogedTrait;
 use App\Trait\ValidateCpfTrait;
 use Closure;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Actions\BulkActionGroup;
@@ -99,7 +101,43 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Dados do Usuário')
+                Section::make('Dados do Funcionário')
+                    ->icon('icon-dados-usuario')
+                    ->collapsed()
+                    ->description('São os dados do funcionário que serão utilizados para o login no sistema')
+                    ->headerActions([
+                        Action::make('Salvar Dados do Funcionário')
+                            ->label('Salvar Dados')
+                            ->action(function ($livewire): void {
+                                // Obter os dados do formulário
+                                $data = $livewire->form->getState();
+
+                                // Obter o registro atual
+                                $record = $livewire->record ?? new User();
+
+                                // Extrair apenas os campos específicos
+                                $userData = [
+                                    'name'  => $data['name'] ?? $record->name,
+                                    'email' => $data['email'] ?? $record->email,
+                                    'cpf'   => $data['cpf'] ?? $record->cpf,
+                                    'phone' => $data['phone'] ?? $record->phone,
+                                ];
+
+                                // Salvar os dados
+                                $record->fill($userData);
+                                $record->save();
+
+                                // Notificar sucesso
+                                Notification::make()
+                                    ->title('Dados de acesso do funcionário atualizado com sucesso!')
+                                    ->color('success')
+                                    ->icon('heroicon-s-check-circle')
+                                    ->iconColor('success')
+                                    ->seconds(8)
+                                    ->success()
+                                    ->send();
+                            }),
+                    ])
                     ->schema([
                         TextInput::make('name')
                             ->required()
@@ -139,7 +177,40 @@ class UserResource extends Resource
                                 'unique' => 'Este telefone já está cadastrado no sistema.',
                             ])
                             ->extraInputAttributes(['inputmode' => 'numeric']),
-                        Select::make('Funções:')
+
+                    ])->columns(2),
+                Section::make('Funções do Funcionário')
+                    ->icon('heroicon-s-identification')
+                    ->collapsed()
+                    ->description('São as funções que o funcionário terá acesso no sistema')
+                    ->headerActions([
+                        Action::make('Salvar Funções do Funcionário')
+                            ->label('Salvar Funções')
+                            ->action(function ($livewire): void {
+                                // Obter os dados do formulário
+                                $data = $livewire->form->getState();
+
+                                // Obter o registro atual
+                                $record = $livewire->record ?? new User();
+
+                                // Sincronizar as funções selecionadas com o usuário
+                                if (isset($data['Funções'])) {
+                                    $record->roles()->sync($data['Funções']);
+                                }
+
+                                // Notificar sucesso
+                                Notification::make()
+                                    ->title('Funções do funcionário atualizadas com sucesso!')
+                                    ->color('success')
+                                    ->icon('heroicon-s-check-circle')
+                                    ->iconColor('success')
+                                    ->seconds(8)
+                                    ->success()
+                                    ->send();
+                            }),
+                    ])
+                    ->schema([
+                        Select::make('Funções')
                             ->multiple()
                             ->relationship('roles', 'name')
                             ->preload()
@@ -217,7 +288,6 @@ class UserResource extends Resource
     /**
      * Define os relacionamentos disponíveis para o recurso de usuário.
      * Este método configura quais relacionamentos serão exibidos na interface do Filament.
-     * Atualmente não há relacionamentos configurados, mas podem ser adicionados conforme necessário.
      */
     #[\Override]
     public static function getRelations(): array
@@ -226,7 +296,7 @@ class UserResource extends Resource
 
         // Verificar se estamos na página de edição
         // evitar exibir a tabela de relacionamento na página de edição
-        if (str_contains($currentUrl, '/edit')) {
+        if (str_contains($currentUrl, '/edit') || str_contains($currentUrl, '/livewire/update')) {
             return [];
         }
 

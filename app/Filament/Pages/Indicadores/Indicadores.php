@@ -21,13 +21,14 @@ class Indicadores extends Page
 
     protected function getTenant(): ?Tenant
     {
-        if (! isset($this->cachedTenant)) {
+        if (! $this->cachedTenant instanceof Tenant) {
             $this->cachedTenant = Tenant::first();
         }
 
         return $this->cachedTenant;
     }
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [
@@ -54,7 +55,7 @@ class Indicadores extends Page
             ->visible(function (): bool {
                 $tenant = $this->getTenant();
 
-                return ! $tenant || ! $tenant->cnpj || ! $tenant->phone || ! $tenant->email;
+                return ! $tenant instanceof Tenant || ! $tenant->cnpj || ! $tenant->phone || ! $tenant->email;
             });
     }
 }

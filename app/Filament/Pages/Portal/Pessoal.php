@@ -12,6 +12,7 @@ class Pessoal extends Page
 
     protected static string $view = 'filament.pages.portal.pessoal';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

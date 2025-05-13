@@ -12,6 +12,7 @@ class Abertura extends Page
 
     protected static string $view = 'filament.pages.processos.abertura';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

@@ -12,6 +12,7 @@ class Mei extends Page
 
     protected static string $view = 'filament.pages.contabil.mei';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

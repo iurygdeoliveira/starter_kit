@@ -12,6 +12,7 @@ class Melhoria extends Page
 
     protected static string $view = 'filament.pages.suporte.melhoria';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

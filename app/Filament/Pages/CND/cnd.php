@@ -14,6 +14,7 @@ class cnd extends Page
 
     protected static ?string $navigationLabel = 'CND';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [

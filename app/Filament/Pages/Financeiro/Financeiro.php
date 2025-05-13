@@ -14,6 +14,7 @@ class Financeiro extends Page
 
     protected static string $view = 'filament.pages.financeiro.financeiro';
 
+    #[\Override]
     public function getBreadcrumbs(): array
     {
         return [
