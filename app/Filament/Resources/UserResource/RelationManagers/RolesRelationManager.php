@@ -9,14 +9,21 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class RolesRelationManager extends RelationManager
 {
     protected static string $relationship = 'roles';
+
+    protected static ?string $title = 'Permissões de cada Função';
+
+    protected static ?string $icon = 'icon-permissoes';
 
     #[\Override]
     public function form(Form $form): Form
@@ -29,44 +36,86 @@ class RolesRelationManager extends RelationManager
             ]);
     }
 
+     /**
+     * Gera uma coluna toggle para cada permissão existente
+     */
+    /**
+     * Gera uma coluna toggle para cada permissão existente
+     */
+    public static function getPermissionToggleColumns(): array
+    {
+        // Cache para as permissões para evitar múltiplas consultas
+        static $permissionColumns = null;
+        
+        if ($permissionColumns === null) {
+            $permissions = Permission::orderBy('name')->get();
+            $permissionColumns = [];
+            
+            foreach ($permissions as $permission) {
+                $permissionId = $permission->id; // Store the ID in a variable
+                $permissionName = $permission->name; // Store the name in a variable
+                
+                $permissionColumns[] = ToggleColumn::make("permission_{$permissionId}")
+                    ->label($permissionName)
+                    ->afterStateUpdated(function (RelationManager $livewire, Model $record, bool $state) use ($permissionId, $permissionName) {
+                        // $record é a Role atual
+                        if ($state) {
+                            // Adiciona a permissão à role se o toggle for ativado
+                            $record->permissions()->syncWithoutDetaching([$permissionId]);
+                            $livewire->notify('success', "Permissão '{$permissionName}' adicionada à role '{$record->name}'");
+                        } else {
+                            // Remove a permissão da role se o toggle for desativado
+                            $record->permissions()->detach($permissionId);
+                            $livewire->notify('success', "Permissão '{$permissionName}' removida da role '{$record->name}'");
+                        }
+                        
+                        // Reload the record with permissions to avoid lazy loading
+                        $record->load('permissions');
+                    })
+                    ->getStateUsing(function (Model $record) use ($permissionId) {
+                        // Não acessa diretamente permissions() que causaria lazy loading
+                        // Em vez disso, usa a coleção permissions já carregada pelo with()
+                        $permissionIds = $record->getRelation('permissions')->pluck('id')->toArray();
+                        return in_array($permissionId, $permissionIds);
+                    })
+                    ->alignCenter()
+                    ->onColor('primary')
+                    ->offColor('danger');
+            }
+        }
+        
+        return $permissionColumns;
+    }
+
     public function table(Table $table): Table
     {
-
-        $permissions = Permission::all();
-        
-        $columns = [
-            TextColumn::make('name')
-                ->label('Funções')
-                ->sortable(),
-        ];
-        
-        // Adiciona colunas dinâmicas de permissões com toggles
-        foreach ($permissions as $permission) {
-            $columns[] = ToggleColumn::make($permission->name)
-                // ->label($permission->name)
-                ->alignCenter();
-                // ->afterStateUpdated(function (RelationManager $livewire, Model $record, $state) use ($permission) {
-                //     if ($state) {
-                //         $record->permissions()->attach($permission->id);
-                //     } else {
-                //         $record->permissions()->detach($permission->id);
-                //     }
-                // })
-                // ->getStateUsing(function (Model $record) use ($permission): bool {
-                //     return $record->permissions->contains('id', $permission->id);
-                // });
-        }
         
         return $table
             ->recordTitleAttribute('name')
             ->defaultPaginationPageOption(11)
             ->paginated([11, 'all'])
-            ->columns($columns)
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('permissions'))
+            ->columns([
+                TextColumn::make('name')
+                    ->label('Função')
+                    ->sortable()
+                    ->weight('bold'),
+                // Adicionamos uma coluna para cada permissão existente
+                ...self::getPermissionToggleColumns(),
+            ])
             ->filters([
                 //
             ])
             ->headerActions([
-                
+                AttachAction::make()
+                    ->label('Adicionar Função')
+                    ->preloadRecordSelect()
+                // Action::make('saveChanges')
+                // ->label('Salvar alterações')
+                //     ->button()
+                //     ->color('primary')
+                //     ->action(fn (RelationManager $livewire) => $livewire->savePermissionChanges())
+                //     ->disabled(fn (RelationManager $livewire) => empty($livewire->pendingPermissionChanges)),
             ])
             ->actions([
                

@@ -242,9 +242,16 @@ class UserResource extends Resource
                     ->searchable()
                     ->placeholder('Funções não atribuídas')
                     ->sortable()
-                    ->formatStateUsing(
-                        fn (string $state): string => $state !== '' ? $state : 'Nenhuma função atribuída'
-                    ),
+                    ->getStateUsing(function (User $record): array {
+                        // Verifica se o usuário tem a role 'Administração'
+                        if ($record->roles->contains('name', 'Administração')) {
+                            // Se tiver, retorna apenas essa role como array com um único elemento
+                            return ['Administração'];
+                        }
+                        
+                        // Caso contrário, retorna todas as roles normalmente
+                        return $record->roles->pluck('name')->toArray();
+                    }),
                 TextColumn::make('email_verified_at')
                     ->label('Email Verificado')
                     ->sortable()
@@ -296,13 +303,14 @@ class UserResource extends Resource
 
         // Verificar se estamos na página de edição
         // evitar exibir a tabela de relacionamento na página de edição
-        //if (str_contains($currentUrl, '/edit') || str_contains($currentUrl, '/livewire/update')) {
-        //    return [];
-       // }
+        if (str_contains($currentUrl, '/edit') || str_contains($currentUrl, '/livewire/update')) {
+            return [];
+        }
 
         return [
             RolesRelationManager::class,
         ];
+
     }
 
     /**

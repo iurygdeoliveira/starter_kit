@@ -16,5 +16,5 @@ enum Role: string
     case Financeiro    = 'Financeiro';
     case Processos     = 'Processos';
     case Suporte       = 'Suporte';
-    case Dashboard     = 'Painel de Controle';
+    case Dashboard     = 'Dashboard';
 }
