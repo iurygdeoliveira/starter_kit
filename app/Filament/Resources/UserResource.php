@@ -104,7 +104,7 @@ class UserResource extends Resource
             ->schema([
                 Section::make('Dados do Funcionário')
                     ->icon('icon-dados-usuario')
-                    ->collapsed()
+                    ->collapsible()
                     ->description('São os dados do funcionário que serão utilizados para o login no sistema')
                     ->headerActions([
                         Action::make('Salvar Dados do Funcionário')
@@ -180,47 +180,77 @@ class UserResource extends Resource
                             ->extraInputAttributes(['inputmode' => 'numeric']),
 
                     ])->columns(2),
-                Section::make('Administrar Sistema')
-                    ->icon('icon-administrar')
-                    ->collapsed()
-                    ->description('Habilitar administração do sistema para o funcionario')
-                    ->headerActions([
-                        Action::make('Salvar Funções do Funcionário')
-                            ->label('Salvar Função')
-                            ->action(function ($livewire): void {
-                                // Obter os dados do formulário
-                                $data = $livewire->form->getState();
-
-                                // Obter o registro atual
-                                $record = $livewire->record ?? new User();
-
-                                // Sincronizar as funções selecionadas com o usuário
-                                if (isset($data['Funções'])) {
-                                    $record->roles()->sync($data['Funções']);
-                                }
-
-                                // Notificar sucesso
-                                Notification::make()
-                                    ->title('Funções do funcionário atualizadas com sucesso!')
-                                    ->color('success')
-                                    ->icon('heroicon-s-check-circle')
-                                    ->iconColor('success')
-                                    ->seconds(8)
-                                    ->success()
-                                    ->send();
-                            }),
-                    ])
-                    ->schema([
-                        Select::make('Funções')
-                            ->multiple()
-                            ->relationship('roles', 'name')
-                            ->preload()
-                            ->required()
-                            ->columnSpan(2),
-                    ]),
+                    Section::make('Administrar Sistema')
+    ->icon('icon-administrar')
+    ->collapsible()
+    ->description('Habilitar administração do sistema para o funcionario')
+    ->schema([
+        \Filament\Forms\Components\Grid::make()
+            ->schema([
+                \Filament\Forms\Components\Toggle::make('is_admin')
+                    ->label('Status de Administração')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->onIcon('heroicon-s-check')
+                    ->offIcon('heroicon-s-x-mark')
+                    ->formatStateUsing(function ($record) {
+                        if (!$record) return false;
+                        return $record->roles->contains('name', 'Administração');
+                    })
+                    ->afterStateUpdated(function ($state, $record, \Filament\Forms\Set $set) {
+                        if (!$record) return;
+                        
+                        // Find the admin role
+                        $adminRole = \Spatie\Permission\Models\Role::where('name', 'Administração')->first();
+                        
+                        if (!$adminRole) {
+                            Notification::make()
+                                ->title('Erro ao alterar status de administração!')
+                                ->body('Papel de Administração não encontrado no sistema.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+                        
+                        // Get current roles
+                        $currentRoles = $record->roles()->pluck('id')->toArray();
+                        
+                        if ($state) {
+                            // Add admin role if it doesn't exist
+                            if (!in_array($adminRole->id, $currentRoles)) {
+                                $currentRoles[] = $adminRole->id;
+                            }
+                            $message = 'Administração habilitada com sucesso!';
+                        } else {
+                            // Remove admin role if exists
+                            $currentRoles = array_diff($currentRoles, [$adminRole->id]);
+                            $message = 'Administração desabilitada com sucesso!';
+                        }
+                        
+                        // Sync roles
+                        $record->roles()->sync($currentRoles);
+                        
+                        // Refresh the record
+                        $record->refresh();
+                        
+                        // Send notification
+                        Notification::make()
+                            ->title($message)
+                            ->color($state ? 'success' : 'danger')
+                            ->icon('heroicon-s-check-circle')
+                            ->iconColor($state ? 'success' : 'danger')
+                            ->seconds(8)
+                            ->success()
+                            ->send();
+                    })
+                    ->live()
+                    ->columnSpanFull(),
+            ])
+            ->columns(1),
+                ]),
                     Section::make('Outras funções administrativas')
                     ->icon('heroicon-s-identification')
-                    ->collapsed()
+                    ->collapsible()
                     ->description('São as funções que o funcionário terá acesso no sistema')
                     ->headerActions([
                         Action::make('Salvar Funções do Funcionário')
