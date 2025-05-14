@@ -8,7 +8,6 @@ use App\Models\Permission;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Columns\TextColumn;
@@ -36,9 +35,9 @@ class RolesRelationManager extends RelationManager
             ]);
     }
 
-     /**
-     * Gera uma coluna toggle para cada permissão existente
-     */
+    /**
+    * Gera uma coluna toggle para cada permissão existente
+    */
     /**
      * Gera uma coluna toggle para cada permissão existente
      */
@@ -46,15 +45,15 @@ class RolesRelationManager extends RelationManager
     {
         // Cache para as permissões para evitar múltiplas consultas
         static $permissionColumns = null;
-        
+
         if ($permissionColumns === null) {
-            $permissions = Permission::orderBy('name')->get();
+            $permissions       = Permission::orderBy('name')->get();
             $permissionColumns = [];
-            
+
             foreach ($permissions as $permission) {
-                $permissionId = $permission->id; // Store the ID in a variable
+                $permissionId   = $permission->id; // Store the ID in a variable
                 $permissionName = $permission->name; // Store the name in a variable
-                
+
                 $permissionColumns[] = ToggleColumn::make("permission_{$permissionId}")
                     ->label($permissionName)
                     ->afterStateUpdated(function (RelationManager $livewire, Model $record, bool $state) use ($permissionId, $permissionName) {
@@ -68,7 +67,7 @@ class RolesRelationManager extends RelationManager
                             $record->permissions()->detach($permissionId);
                             $livewire->notify('success', "Permissão '{$permissionName}' removida da role '{$record->name}'");
                         }
-                        
+
                         // Reload the record with permissions to avoid lazy loading
                         $record->load('permissions');
                     })
@@ -76,6 +75,7 @@ class RolesRelationManager extends RelationManager
                         // Não acessa diretamente permissions() que causaria lazy loading
                         // Em vez disso, usa a coleção permissions já carregada pelo with()
                         $permissionIds = $record->getRelation('permissions')->pluck('id')->toArray();
+
                         return in_array($permissionId, $permissionIds);
                     })
                     ->alignCenter()
@@ -83,13 +83,12 @@ class RolesRelationManager extends RelationManager
                     ->offColor('danger');
             }
         }
-        
+
         return $permissionColumns;
     }
 
     public function table(Table $table): Table
     {
-        
         return $table
             ->recordTitleAttribute('name')
             ->defaultPaginationPageOption(11)
@@ -109,7 +108,7 @@ class RolesRelationManager extends RelationManager
             ->headerActions([
                 AttachAction::make()
                     ->label('Adicionar Função')
-                    ->preloadRecordSelect()
+                    ->preloadRecordSelect(),
                 // Action::make('saveChanges')
                 // ->label('Salvar alterações')
                 //     ->button()
@@ -118,10 +117,10 @@ class RolesRelationManager extends RelationManager
                 //     ->disabled(fn (RelationManager $livewire) => empty($livewire->pendingPermissionChanges)),
             ])
             ->actions([
-               
+
             ])
             ->bulkActions([
-               
+
             ])
             ->defaultSort('name', 'asc');
     }

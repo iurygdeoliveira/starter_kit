@@ -27,6 +27,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Recurso do Filament para gerenciamento de usuários.
@@ -179,7 +180,45 @@ class UserResource extends Resource
                             ->extraInputAttributes(['inputmode' => 'numeric']),
 
                     ])->columns(2),
-                Section::make('Funções do Funcionário')
+                Section::make('Administrar Sistema')
+                    ->icon('icon-administrar')
+                    ->collapsed()
+                    ->description('Habilitar administração do sistema para o funcionario')
+                    ->headerActions([
+                        Action::make('Salvar Funções do Funcionário')
+                            ->label('Salvar Função')
+                            ->action(function ($livewire): void {
+                                // Obter os dados do formulário
+                                $data = $livewire->form->getState();
+
+                                // Obter o registro atual
+                                $record = $livewire->record ?? new User();
+
+                                // Sincronizar as funções selecionadas com o usuário
+                                if (isset($data['Funções'])) {
+                                    $record->roles()->sync($data['Funções']);
+                                }
+
+                                // Notificar sucesso
+                                Notification::make()
+                                    ->title('Funções do funcionário atualizadas com sucesso!')
+                                    ->color('success')
+                                    ->icon('heroicon-s-check-circle')
+                                    ->iconColor('success')
+                                    ->seconds(8)
+                                    ->success()
+                                    ->send();
+                            }),
+                    ])
+                    ->schema([
+                        Select::make('Funções')
+                            ->multiple()
+                            ->relationship('roles', 'name')
+                            ->preload()
+                            ->required()
+                            ->columnSpan(2),
+                    ]),
+                    Section::make('Outras funções administrativas')
                     ->icon('heroicon-s-identification')
                     ->collapsed()
                     ->description('São as funções que o funcionário terá acesso no sistema')
@@ -248,7 +287,7 @@ class UserResource extends Resource
                             // Se tiver, retorna apenas essa role como array com um único elemento
                             return ['Administração'];
                         }
-                        
+
                         // Caso contrário, retorna todas as roles normalmente
                         return $record->roles->pluck('name')->toArray();
                     }),
@@ -299,18 +338,9 @@ class UserResource extends Resource
     #[\Override]
     public static function getRelations(): array
     {
-        $currentUrl = request()->url();
-
-        // Verificar se estamos na página de edição
-        // evitar exibir a tabela de relacionamento na página de edição
-        if (str_contains($currentUrl, '/edit') || str_contains($currentUrl, '/livewire/update')) {
-            return [];
-        }
-
         return [
             RolesRelationManager::class,
         ];
-
     }
 
     /**
