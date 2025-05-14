@@ -12,9 +12,11 @@ use App\Trait\UserLoogedTrait;
 use App\Trait\ValidateCpfTrait;
 use Closure;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -185,66 +187,20 @@ class UserResource extends Resource
     ->collapsible()
     ->description('Habilitar administração do sistema para o funcionario')
     ->schema([
-        \Filament\Forms\Components\Grid::make()
+        Grid::make()
             ->schema([
-                \Filament\Forms\Components\Toggle::make('is_admin')
-                    ->label('Status de Administração')
-                    ->onColor('success')
-                    ->offColor('danger')
-                    ->onIcon('heroicon-s-check')
-                    ->offIcon('heroicon-s-x-mark')
-                    ->formatStateUsing(function ($record) {
-                        if (!$record) return false;
-                        return $record->roles->contains('name', 'Administração');
-                    })
-                    ->afterStateUpdated(function ($state, $record, \Filament\Forms\Set $set) {
-                        if (!$record) return;
-                        
-                        // Find the admin role
-                        $adminRole = \Spatie\Permission\Models\Role::where('name', 'Administração')->first();
-                        
-                        if (!$adminRole) {
-                            Notification::make()
-                                ->title('Erro ao alterar status de administração!')
-                                ->body('Papel de Administração não encontrado no sistema.')
-                                ->danger()
-                                ->send();
-                            return;
-                        }
-                        
-                        // Get current roles
-                        $currentRoles = $record->roles()->pluck('id')->toArray();
-                        
-                        if ($state) {
-                            // Add admin role if it doesn't exist
-                            if (!in_array($adminRole->id, $currentRoles)) {
-                                $currentRoles[] = $adminRole->id;
-                            }
-                            $message = 'Administração habilitada com sucesso!';
-                        } else {
-                            // Remove admin role if exists
-                            $currentRoles = array_diff($currentRoles, [$adminRole->id]);
-                            $message = 'Administração desabilitada com sucesso!';
-                        }
-                        
-                        // Sync roles
-                        $record->roles()->sync($currentRoles);
-                        
-                        // Refresh the record
-                        $record->refresh();
-                        
-                        // Send notification
-                        Notification::make()
-                            ->title($message)
-                            ->color($state ? 'success' : 'danger')
-                            ->icon('heroicon-s-check-circle')
-                            ->iconColor($state ? 'success' : 'danger')
-                            ->seconds(8)
-                            ->success()
-                            ->send();
-                    })
-                    ->live()
-                    ->columnSpanFull(),
+                Toggle::make('is_admin')
+                ->label((fn ($state) => $state ? 'Habilitado' : 'Desabilitado'))
+                ->onColor('success')
+                ->offColor('danger')
+                ->onIcon('heroicon-c-check')
+                ->offIcon('heroicon-c-x-mark')
+                ->reactive()
+                ->helperText(fn ($state) => $state 
+                    ? 'O usuário tem acesso administrativo' 
+                    : 'O usuário não tem acesso administrativo')
+                
+                ->columnSpanFull(),
             ])
             ->columns(1),
                 ]),
