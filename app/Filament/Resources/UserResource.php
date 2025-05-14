@@ -29,7 +29,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Recurso do Filament para gerenciamento de usuários.
@@ -182,29 +181,28 @@ class UserResource extends Resource
                             ->extraInputAttributes(['inputmode' => 'numeric']),
 
                     ])->columns(2),
-                    Section::make('Administrar Sistema')
-    ->icon('icon-administrar')
-    ->collapsible()
-    ->description('Habilitar administração do sistema para o funcionario')
-    ->schema([
-        Grid::make()
-            ->schema([
-                Toggle::make('is_admin')
-                ->label((fn ($state) => $state ? 'Habilitado' : 'Desabilitado'))
-                ->onColor('success')
-                ->offColor('danger')
-                ->onIcon('heroicon-c-check')
-                ->offIcon('heroicon-c-x-mark')
-                ->reactive()
-                ->helperText(fn ($state) => $state 
-                    ? 'O usuário tem acesso administrativo' 
-                    : 'O usuário não tem acesso administrativo')
-                
-                ->columnSpanFull(),
-            ])
-            ->columns(1),
-                ]),
-                    Section::make('Outras funções administrativas')
+                Section::make('Administrar Sistema')
+                    ->icon('icon-administrar')
+                    ->collapsible()
+                    ->description('Habilitar administração do sistema para o funcionario')
+                    ->schema([
+                        Grid::make()
+                            ->schema([
+                                Toggle::make('is_admin')
+                                    ->label((fn ($state) => $state ? 'Habilitado' : 'Desabilitado'))
+                                    ->onColor('success')
+                                    ->offColor('danger')
+                                    ->onIcon('heroicon-c-check')
+                                    ->offIcon('heroicon-c-x-mark')
+                                    ->reactive()
+                                    ->helperText(fn ($state) => $state
+                                        ? 'O usuário tem acesso administrativo'
+                                        : 'O usuário não tem acesso administrativo')
+                                    ->columnSpanFull(),
+                            ])
+                            ->columns(1),
+                    ]),
+                Section::make('Outras funções administrativas')
                     ->icon('heroicon-s-identification')
                     ->collapsible()
                     ->description('São as funções que o funcionário terá acesso no sistema')
