@@ -112,7 +112,7 @@ class TaskResource extends Resource
                             'Cliente',
                             'Certidão Negativa de Débito (CND)',
                             'Suporte',
-                            'Painel de Controle',
+                            'Dashboard',
                             'Portal do Cliente',
                             'Financeiro',
                         ])

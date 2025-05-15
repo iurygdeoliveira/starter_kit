@@ -101,22 +101,24 @@ class RolesRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->defaultPaginationPageOption(11)
             ->paginated([11, 'all'])
-            ->modifyQueryUsing(fn (Builder $query) => $query->with('permissions'))
+            ->emptyStateDescription('Uma vez que você defina funções de acesso, elas poderão ser configuradas aqui.')
+            ->emptyStateIcon('heroicon-s-exclamation-triangle')
+           // ->modifyQueryUsing(fn (Builder $query) => $query->with('permissions'))
             ->columns([
                 TextColumn::make('name')
                     ->label('Função')
                     ->sortable()
                     ->weight('bold'),
                 // Adicionamos uma coluna para cada permissão existente
-                ...self::getPermissionToggleColumns(),
+                //...self::getPermissionToggleColumns(),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                AttachAction::make()
-                    ->label('Adicionar Função')
-                    ->preloadRecordSelect(),
+                //AttachAction::make()
+                //    ->label('Adicionar Função')
+                //    ->preloadRecordSelect(),
                 // Action::make('saveChanges')
                 // ->label('Salvar alterações')
                 //     ->button()

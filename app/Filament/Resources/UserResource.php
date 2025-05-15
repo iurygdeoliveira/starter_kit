@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
@@ -31,6 +31,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Validation\Rules\Enum;
 
 /**
  * Recurso do Filament para gerenciamento de usuários.
@@ -165,12 +166,12 @@ class UserResource extends Resource
                             ->extraInputAttributes(['inputmode' => 'numeric'])
                             ->unique('users', 'cpf', ignoreRecord: true)
                             ->rules([
-                                fn (): Closure => self::getCpfValidationRule(),
+                                fn(): Closure => self::getCpfValidationRule(),
                             ])
                             ->validationMessages([
                                 'unique' => 'Este CPF já está cadastrado no sistema.',
                             ])
-                            ->disabled(fn (string $operation): bool => $operation === 'edit'),
+                            ->disabled(fn(string $operation): bool => $operation === 'edit'),
                         TextInput::make('phone')
                             ->label('Fone')
                             ->mask('(99) 99999-9999')
@@ -192,13 +193,13 @@ class UserResource extends Resource
                             ->schema([
                                 Toggle::make('is_admin')
                                     ->dehydrated(false)
-                                    ->label((fn ($state) => $state ? 'Habilitado' : 'Desabilitado'))
+                                    ->label((fn($state) => $state ? 'Habilitado' : 'Desabilitado'))
                                     ->onColor('success')
                                     ->offColor('danger')
                                     ->onIcon('heroicon-c-check')
                                     ->offIcon('heroicon-c-x-mark')
                                     ->reactive()
-                                    ->helperText(fn ($state) => $state
+                                    ->helperText(fn($state) => $state
                                         ? 'O usuário tem acesso a administração do sistema'
                                         : 'O usuário não tem acesso a administração do sistema')
                                     ->columnSpanFull()
@@ -244,6 +245,32 @@ class UserResource extends Resource
                                 $isAdmin = $user->hasRole(EnumRole::Administracao->value);
 
                                 $adminRole = Role::where('name', EnumRole::Administracao->value)->first();
+
+                                // Se estiver tentando remover a role de administração, verificar se não ficará sem administradores
+                                if (!$isAdminToggleValue && $isAdmin) {
+                                    // Contar quantos usuários têm a role de Administração (incluindo este)
+                                    $adminUsersCount = User::whereHas('roles', function ($query) use ($adminRole) {
+                                        $query->where('roles.id', $adminRole->id);
+                                    })->count();
+
+                                    // Se este for o único administrador, impedir a remoção
+                                    if ($adminUsersCount <= 1) {
+                                        Notification::make()
+                                            ->title('Operação não permitida!')
+                                            ->body('É necessário ter pelo menos um usuário com permissão de administração no sistema. Adicione outro administrador antes de remover esta permissão.')
+                                            ->color('danger')
+                                            ->icon('heroicon-s-x-circle')
+                                            ->iconColor('danger')
+                                            ->seconds(8)
+                                            ->send();
+
+                                        // Redefina o toggle para refletir o estado real da permissão
+                                        $livewire->form->fill(['is_admin' => true]);
+
+                                        // Encerra a execução da função
+                                        return;
+                                    }
+                                }
 
                                 if ($isAdminToggleValue) {
                                     // Se o toggle estiver ativado, adiciona a role se não existir
@@ -303,12 +330,18 @@ class UserResource extends Resource
                                     ->seconds(8)
                                     ->success()
                                     ->send();
-                            }),
+                            })
                     ])
                     ->schema([
                         Select::make('Funções')
                             ->multiple()
-                            ->relationship('roles', 'name')
+                            ->relationship(
+                                'roles',
+                                'name',
+                                modifyQueryUsing: fn($query) => $query->whereNotIn('name', [
+                                    EnumRole::Administracao->value,
+                                ])
+                            )
                             ->preload()
                             ->required()
                             ->columnSpan(2),
@@ -340,7 +373,7 @@ class UserResource extends Resource
                     ->sortable()
                     ->getStateUsing(function (User $record): array {
                         // Verifica se o usuário tem a role 'Administração'
-                        if ($record->roles->contains('name', 'Administração')) {
+                        if ($record->hasRole(EnumRole::Administracao->value)) {
                             // Se tiver, retorna apenas essa role como array com um único elemento
                             return ['Administração'];
                         }
