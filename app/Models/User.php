@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Models;
 
@@ -58,6 +58,13 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Filame
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->hasVerifiedEmail();
+    }
+
+    // INTERAÇÃO COM RELACIONAMENTOS
+
+    public function hasRole(string $roleName): bool
+    {
+        return $this->roles->contains('name', $roleName);
     }
 
     // RELACIONAMENTOS

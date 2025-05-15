@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Filament\Resources\UserResource\Pages;
 
@@ -15,15 +15,13 @@ class EditUser extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [
-
-        ];
+        return [];
     }
 
+    // Redireciona para a página de listagem (index) após editar o usuário
     #[\Override]
     protected function getRedirectUrl(): string
     {
-        // Redireciona para a página de listagem (index) após editar o usuário
         return UserResource::getUrl('index');
     }
 

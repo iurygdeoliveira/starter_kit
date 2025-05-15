@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
@@ -29,6 +29,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use App\Enums\Role as EnumRole;
+use App\Models\Role;
 
 /**
  * Recurso do Filament para gerenciamento de usuários.
@@ -163,12 +165,12 @@ class UserResource extends Resource
                             ->extraInputAttributes(['inputmode' => 'numeric'])
                             ->unique('users', 'cpf', ignoreRecord: true)
                             ->rules([
-                                fn (): Closure => self::getCpfValidationRule(),
+                                fn(): Closure => self::getCpfValidationRule(),
                             ])
                             ->validationMessages([
                                 'unique' => 'Este CPF já está cadastrado no sistema.',
                             ])
-                            ->disabled(fn (string $operation): bool => $operation === 'edit'),
+                            ->disabled(fn(string $operation): bool => $operation === 'edit'),
                         TextInput::make('phone')
                             ->label('Fone')
                             ->mask('(99) 99999-9999')
@@ -189,18 +191,71 @@ class UserResource extends Resource
                         Grid::make()
                             ->schema([
                                 Toggle::make('is_admin')
-                                    ->label((fn ($state) => $state ? 'Habilitado' : 'Desabilitado'))
+                                    ->dehydrated(false)
+                                    ->label((fn($state) => $state ? 'Habilitado' : 'Desabilitado'))
                                     ->onColor('success')
                                     ->offColor('danger')
                                     ->onIcon('heroicon-c-check')
                                     ->offIcon('heroicon-c-x-mark')
                                     ->reactive()
-                                    ->helperText(fn ($state) => $state
-                                        ? 'O usuário tem acesso administrativo'
-                                        : 'O usuário não tem acesso administrativo')
-                                    ->columnSpanFull(),
+                                    ->helperText(fn($state) => $state
+                                        ? 'O usuário tem acesso a administração do sistema'
+                                        : 'O usuário não tem acesso a administração do sistema')
+                                    ->columnSpanFull()
+                                    ->afterStateHydrated(function ($state, $livewire, $set) {
+                                        // Obter o usuário que está sendo editado
+                                        $user = $livewire->record;
+
+                                        // Verificar se o usuário tem a role "Administração"
+                                        $isAdmin = $user ? $user->hasRole(EnumRole::Administracao->value) : false;
+
+                                        // Define explicitamente o estado do campo
+                                        $set('is_admin', $isAdmin);
+
+                                        return $isAdmin;
+                                    })
                             ])
                             ->columns(1),
+                    ])
+                    ->headerActions([
+                        Action::make('Permissão de Administração')
+                            ->label('Salvar Permissão')
+                            ->action(function ($livewire, $get): void {
+
+                                // Obter o usuário que está sendo editado
+                                $user = $livewire->record;
+
+                                // Obter o valor atual do toggle is_admin
+                                $isAdminToggleValue = $get('is_admin');
+
+                                // Verificar se o usuário tem a role "Administração"
+                                $isAdmin = $user->hasRole(EnumRole::Administracao->value);
+
+                                $adminRole = Role::where('name', EnumRole::Administracao->value)->first();
+
+                                if ($isAdminToggleValue) {
+                                    // Se o toggle estiver ativado, adiciona a role se não existir
+                                    // Usando syncWithoutDetaching para evitar duplicatas
+                                    $user->roles()->syncWithoutDetaching([$adminRole->id]);
+                                } else {
+                                    // Se o toggle estiver desativado, remove a role
+                                    $user->roles()->detach($adminRole->id);
+                                }
+
+                                // Recarregar a relação para garantir que os dados estejam atualizados
+                                $user->load('roles');
+
+                                // Notificar sucesso
+                                Notification::make()
+                                    ->title('Permissão de administração atualizada com sucesso!')
+                                    ->color('success')
+                                    ->icon('heroicon-s-check-circle')
+                                    ->iconColor('success')
+                                    ->seconds(8)
+                                    ->success()
+                                    ->send();
+
+                            }),
                     ]),
                 Section::make('Outras funções administrativas')
                     ->icon('heroicon-s-identification')
