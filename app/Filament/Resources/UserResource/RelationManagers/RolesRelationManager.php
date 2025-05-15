@@ -7,6 +7,7 @@ namespace App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\Permission;
 use Filament\Forms;
 use Filament\Forms\Form;
+use App\Enums\Role as EnumRole;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\AttachAction;
@@ -23,6 +24,14 @@ class RolesRelationManager extends RelationManager
     protected static ?string $title = 'Permissões de cada Função';
 
     protected static ?string $icon = 'icon-permissoes';
+
+
+    // Adicione este método
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        // Mostrar o RelationManager apenas se o usuário NÃO tiver a role de Administração
+        return !$ownerRecord->hasRole(EnumRole::Administracao->value);
+    }
 
     #[\Override]
     public function form(Form $form): Form

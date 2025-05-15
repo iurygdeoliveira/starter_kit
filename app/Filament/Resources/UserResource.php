@@ -31,6 +31,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use App\Enums\Role as EnumRole;
 use App\Models\Role;
+use Filament\Resources\RelationManagers\RelationGroup;
 
 /**
  * Recurso do Filament para gerenciamento de usuários.
@@ -274,6 +275,13 @@ class UserResource extends Resource
                     ->icon('heroicon-s-identification')
                     ->collapsible()
                     ->description('São as funções que o funcionário terá acesso no sistema')
+                    ->hidden(function ($livewire) {
+                        // Obter o usuário que está sendo editado
+                        $user = $livewire->record;
+                        
+                        // Esconder a seção se o usuário tiver a role de administração
+                        return $user && $user->hasRole(EnumRole::Administracao->value);
+                    })
                     ->headerActions([
                         Action::make('Salvar Funções do Funcionário')
                             ->label('Salvar Funções')
@@ -391,7 +399,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RolesRelationManager::class,
+                RolesRelationManager::class,
         ];
     }
 
