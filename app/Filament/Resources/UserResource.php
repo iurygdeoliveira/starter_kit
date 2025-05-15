@@ -1,11 +1,13 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Filament\Resources;
 
+use App\Enums\Role as EnumRole;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers\RolesRelationManager;
+use App\Models\Role;
 use App\Models\User;
 use App\Trait\SupportUserTrait;
 use App\Trait\UserLoogedTrait;
@@ -29,9 +31,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use App\Enums\Role as EnumRole;
-use App\Models\Role;
-use Filament\Resources\RelationManagers\RelationGroup;
 
 /**
  * Recurso do Filament para gerenciamento de usuários.
@@ -166,12 +165,12 @@ class UserResource extends Resource
                             ->extraInputAttributes(['inputmode' => 'numeric'])
                             ->unique('users', 'cpf', ignoreRecord: true)
                             ->rules([
-                                fn(): Closure => self::getCpfValidationRule(),
+                                fn (): Closure => self::getCpfValidationRule(),
                             ])
                             ->validationMessages([
                                 'unique' => 'Este CPF já está cadastrado no sistema.',
                             ])
-                            ->disabled(fn(string $operation): bool => $operation === 'edit'),
+                            ->disabled(fn (string $operation): bool => $operation === 'edit'),
                         TextInput::make('phone')
                             ->label('Fone')
                             ->mask('(99) 99999-9999')
@@ -193,13 +192,13 @@ class UserResource extends Resource
                             ->schema([
                                 Toggle::make('is_admin')
                                     ->dehydrated(false)
-                                    ->label((fn($state) => $state ? 'Habilitado' : 'Desabilitado'))
+                                    ->label((fn ($state) => $state ? 'Habilitado' : 'Desabilitado'))
                                     ->onColor('success')
                                     ->offColor('danger')
                                     ->onIcon('heroicon-c-check')
                                     ->offIcon('heroicon-c-x-mark')
                                     ->reactive()
-                                    ->helperText(fn($state) => $state
+                                    ->helperText(fn ($state) => $state
                                         ? 'O usuário tem acesso a administração do sistema'
                                         : 'O usuário não tem acesso a administração do sistema')
                                     ->columnSpanFull()
@@ -214,7 +213,7 @@ class UserResource extends Resource
                                         $set('is_admin', $isAdmin);
 
                                         return $isAdmin;
-                                    })
+                                    }),
                             ])
                             ->columns(1),
                     ])
@@ -224,18 +223,17 @@ class UserResource extends Resource
                             ->disabled(function ($livewire, $get) {
                                 // Obter o usuário que está sendo editado
                                 $user = $livewire->record;
-                                
+
                                 // Obter o valor atual do toggle is_admin
                                 $currentToggleValue = $get('is_admin');
-                                
+
                                 // Verificar se o usuário tem a role "Administração"
                                 $originalHasAdminRole = $user->hasRole(EnumRole::Administracao->value);
-                                
+
                                 // Habilitar o botão apenas se o valor do toggle for diferente do estado atual da role
                                 return $currentToggleValue === $originalHasAdminRole;
                             })
                             ->action(function ($livewire, $get): void {
-
                                 // Obter o usuário que está sendo editado
                                 $user = $livewire->record;
 
@@ -268,7 +266,6 @@ class UserResource extends Resource
                                     ->seconds(8)
                                     ->success()
                                     ->send();
-
                             }),
                     ]),
                 Section::make('Outras funções administrativas')
@@ -278,7 +275,7 @@ class UserResource extends Resource
                     ->hidden(function ($livewire) {
                         // Obter o usuário que está sendo editado
                         $user = $livewire->record;
-                        
+
                         // Esconder a seção se o usuário tiver a role de administração
                         return $user && $user->hasRole(EnumRole::Administracao->value);
                     })
@@ -399,7 +396,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-                RolesRelationManager::class,
+            RolesRelationManager::class,
         ];
     }
 
