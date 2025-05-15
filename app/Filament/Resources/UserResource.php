@@ -220,6 +220,19 @@ class UserResource extends Resource
                     ->headerActions([
                         Action::make('Permissão de Administração')
                             ->label('Salvar Permissão')
+                            ->disabled(function ($livewire, $get) {
+                                // Obter o usuário que está sendo editado
+                                $user = $livewire->record;
+                                
+                                // Obter o valor atual do toggle is_admin
+                                $currentToggleValue = $get('is_admin');
+                                
+                                // Verificar se o usuário tem a role "Administração"
+                                $originalHasAdminRole = $user->hasRole(EnumRole::Administracao->value);
+                                
+                                // Habilitar o botão apenas se o valor do toggle for diferente do estado atual da role
+                                return $currentToggleValue === $originalHasAdminRole;
+                            })
                             ->action(function ($livewire, $get): void {
 
                                 // Obter o usuário que está sendo editado
