@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Filament\Resources;
 
@@ -31,7 +31,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Validation\Rules\Enum;
 
 /**
  * Recurso do Filament para gerenciamento de usuários.
@@ -166,12 +165,12 @@ class UserResource extends Resource
                             ->extraInputAttributes(['inputmode' => 'numeric'])
                             ->unique('users', 'cpf', ignoreRecord: true)
                             ->rules([
-                                fn(): Closure => self::getCpfValidationRule(),
+                                fn (): Closure => self::getCpfValidationRule(),
                             ])
                             ->validationMessages([
                                 'unique' => 'Este CPF já está cadastrado no sistema.',
                             ])
-                            ->disabled(fn(string $operation): bool => $operation === 'edit'),
+                            ->disabled(fn (string $operation): bool => $operation === 'edit'),
                         TextInput::make('phone')
                             ->label('Fone')
                             ->mask('(99) 99999-9999')
@@ -193,13 +192,13 @@ class UserResource extends Resource
                             ->schema([
                                 Toggle::make('is_admin')
                                     ->dehydrated(false)
-                                    ->label((fn($state) => $state ? 'Habilitado' : 'Desabilitado'))
+                                    ->label((fn ($state) => $state ? 'Habilitado' : 'Desabilitado'))
                                     ->onColor('success')
                                     ->offColor('danger')
                                     ->onIcon('heroicon-c-check')
                                     ->offIcon('heroicon-c-x-mark')
                                     ->reactive()
-                                    ->helperText(fn($state) => $state
+                                    ->helperText(fn ($state) => $state
                                         ? 'O usuário tem acesso a administração do sistema'
                                         : 'O usuário não tem acesso a administração do sistema')
                                     ->columnSpanFull()
@@ -247,7 +246,7 @@ class UserResource extends Resource
                                 $adminRole = Role::where('name', EnumRole::Administracao->value)->first();
 
                                 // Se estiver tentando remover a role de administração, verificar se não ficará sem administradores
-                                if (!$isAdminToggleValue && $isAdmin) {
+                                if (! $isAdminToggleValue && $isAdmin) {
                                     // Contar quantos usuários têm a role de Administração (incluindo este)
                                     $adminUsersCount = User::whereHas('roles', function ($query) use ($adminRole) {
                                         $query->where('roles.id', $adminRole->id);
@@ -330,7 +329,7 @@ class UserResource extends Resource
                                     ->seconds(8)
                                     ->success()
                                     ->send();
-                            })
+                            }),
                     ])
                     ->schema([
                         Select::make('Funções')
@@ -338,7 +337,7 @@ class UserResource extends Resource
                             ->relationship(
                                 'roles',
                                 'name',
-                                modifyQueryUsing: fn($query) => $query->whereNotIn('name', [
+                                modifyQueryUsing: fn ($query) => $query->whereNotIn('name', [
                                     EnumRole::Administracao->value,
                                 ])
                             )

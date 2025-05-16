@@ -131,9 +131,9 @@ class TenantResource extends Resource
                     ->placeholder('CNPJ não cadastrado')
                     ->label('CNPJ')
                     ->dehydrated()
-                    ->required()
+                    ->required(fn (string $operation): bool => $operation === 'create')
                     ->mask('99.999.999/9999-99')
-                    ->unique('tenants', 'cnpj')
+                    ->unique('tenants', 'cnpj', ignoreRecord: true)
                     ->rules([
                         fn (): Closure => self::getCnpjValidationRule(),
                     ])
@@ -145,11 +145,11 @@ class TenantResource extends Resource
                 TextInput::make('phone')
                     ->placeholder('Fone não cadastrado')
                     ->label('Fone')
-                    ->required()
+                    ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated()
                     ->mask('(99) 99999-9999')
                     ->extraInputAttributes(['inputmode' => 'numeric'])
-                    ->unique('tenants', 'phone')
+                    ->unique('tenants', 'phone', ignoreRecord: true)
                     ->validationMessages([
                         'unique'   => 'Este Telefone já está cadastrado no sistema.',
                         'required' => 'O telefone é obrigatório.',
@@ -158,9 +158,9 @@ class TenantResource extends Resource
                     ->placeholder('Email não cadastrado')
                     ->email()
                     ->dehydrated()
-                    ->required()
+                    ->required(fn (string $operation): bool => $operation === 'create')
                     ->maxLength(255)
-                    ->unique('tenants', 'email')
+                    ->unique('tenants', 'email', ignoreRecord: true)
                     ->validationMessages([
                         'unique'   => 'Este email já está cadastrado no sistema.',
                         'required' => 'O email é obrigatório.',

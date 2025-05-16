@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Database\Seeders;
 
+use App\Enums\Role as EnumsRole;
 use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\User;
@@ -20,17 +21,17 @@ class AdminSeeder extends Seeder
         // Obtém todos os tenants ou cria um se não existir nenhum
         $tenants = Tenant::where('name', '!=', 'Elshamah Tecnologia LTDA')->get();
 
-        // Obtém todas as roles
-        $roles = Role::all();
+        // Obtém apenas a role de Administração
+        $adminRole = Role::where('name', EnumsRole::Administracao->value)->first();
 
         // Cria 1 admin para cada tenant
-        $tenants->each(function ($tenant) use ($roles): void {
+        $tenants->each(function ($tenant) use ($adminRole): void {
             $admin = User::factory()
                 ->forTenant($tenant)
                 ->create();
 
-            // Associa todas as roles ao admin
-            $admin->roles()->attach($roles->pluck('id')->toArray());
+            // Associa a role de admin ao usuário
+            $admin->roles()->attach([$adminRole->id]);
         });
     }
 }

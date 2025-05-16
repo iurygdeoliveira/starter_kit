@@ -103,6 +103,7 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('icon-dashboard')
                     ->items([
                         ...Indicadores\Indicadores::getNavigationItems(),
+                        ...Indicadores\Visao::getNavigationItems(),
                     ]),
                 NavigationGroup::make('Administração')
                     ->icon('icon-administracao')
