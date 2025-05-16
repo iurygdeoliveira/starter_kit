@@ -5,9 +5,9 @@ declare(strict_types = 1);
 namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Hash;
 
 class CreateUser extends CreateRecord
 {
@@ -16,8 +16,6 @@ class CreateUser extends CreateRecord
     #[\Override]
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        //Adiciona o campo verified como false (não verificado) por padrão
-        $data['password']          = Hash::make('password');
         $data['email_verified_at'] = now();
 
         return $data;
@@ -40,5 +38,26 @@ class CreateUser extends CreateRecord
             ->iconColor('success')
             ->seconds(8)
             ->success();
+    }
+
+    #[\Override]
+    protected function getFormActions(): array
+    {
+        parent::getFormActions();
+
+        return [
+            Action::make('voltar')
+                ->label('Voltar')
+                ->color('secondary')
+                ->icon('heroicon-s-arrow-long-left')
+                ->url(UserResource::getUrl('index')),
+            $this->getCreateFormAction()->label('Criar Funcionário'),
+            $this->getCreateAnotherFormAction()->label('Salvar e criar outro funcionário')
+                ->color('primary')
+                ->outlined(),
+            $this->getCancelFormAction()
+                ->color('danger')
+                ->outlined(),
+        ];
     }
 }

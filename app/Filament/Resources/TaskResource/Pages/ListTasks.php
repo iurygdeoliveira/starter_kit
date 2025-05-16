@@ -34,6 +34,9 @@ class ListTasks extends ListRecords
             ->color('warning')
             ->modalIconColor('warning')
             ->modalSubmitActionLabel('Cadastrar cliente')
+            ->closeModalByClickingAway(false) // Impede fechamento ao clicar fora
+            ->modalCancelAction(false) // Remove botão cancelar
+            ->modalCloseButton(false) // Remove o X de fechar
             ->action(function (): void {
                 $this->redirect(ClientResource::getUrl('create'));
             })

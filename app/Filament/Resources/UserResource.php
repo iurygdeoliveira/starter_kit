@@ -31,6 +31,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Recurso do Filament para gerenciamento de usuários.
@@ -107,7 +109,7 @@ class UserResource extends Resource
             ->schema([
                 Section::make('Dados do Funcionário')
                     ->icon('icon-dados-usuario')
-                    ->collapsible(fn ($livewire) => $livewire->record !== null)
+                    ->collapsible(fn ($livewire): bool => $livewire->record !== null)
                     ->description('São os dados do funcionário que serão utilizados para o login no sistema')
                     ->headerActions([
                         Action::make('Salvar Dados do Funcionário')
@@ -189,24 +191,54 @@ class UserResource extends Resource
                                 'unique' => 'Este telefone já está cadastrado no sistema.',
                             ])
                             ->extraInputAttributes(['inputmode' => 'numeric']),
+                        TextInput::make('password')
+                            ->password()
+                            ->revealable()
+                            // Obrigatório apenas na criação (quando record é null)
+                            ->required(fn ($livewire): bool => $livewire->record === null)
+                            // Só desidrata (envia para o banco) quando tem valor
+                            ->dehydrated(fn ($state) => filled($state))
+                            // Hash de senha só quando preenchido
+                            ->dehydrateStateUsing(
+                                fn ($state) => filled($state) ? Hash::make($state) : null
+                            )
+                            ->confirmed(),
+                        TextInput::make('password_confirmation')
+                            ->password()
+                            ->revealable()
+                            ->requiredWith('password')
+                            ->dehydrated(false),
 
                     ])->columns(2),
                 Section::make('Administrar Sistema')
                     ->icon('icon-administrar')
-                    ->collapsible(fn ($livewire) => $livewire->record !== null)
+                    ->collapsible(fn ($livewire): bool => $livewire->record !== null)
                     ->description('Habilitar administração do sistema para o funcionario')
+                    ->hidden(function ($livewire): bool {
+                        // Obter o usuário que está sendo editado
+                        $record = $livewire->record;
+
+                        // Se não tiver registro (criação), mostra normalmente
+                        if (! $record) {
+                            return false;
+                        }
+
+                        // Compara o ID do usuário logado com o do registro
+                        // Se for o mesmo usuário, esconde a seção
+                        return Auth::id() === $record->id;
+                    })
                     ->schema([
                         Grid::make()
                             ->schema([
                                 Toggle::make('is_admin')
                                     ->dehydrated(false)
-                                    ->label((fn ($state) => $state ? 'Habilitado' : 'Desabilitado'))
+                                    ->label((fn ($state): string => $state ? 'Habilitado' : 'Desabilitado'))
                                     ->onColor('success')
                                     ->offColor('danger')
                                     ->onIcon('heroicon-c-check')
                                     ->offIcon('heroicon-c-x-mark')
                                     ->reactive()
-                                    ->helperText(fn ($state) => $state
+                                    ->helperText(fn ($state): string => $state
                                         ? 'O usuário tem acesso a administração do sistema'
                                         : 'O usuário não tem acesso a administração do sistema')
                                     ->columnSpanFull()
@@ -237,7 +269,7 @@ class UserResource extends Resource
                                 }
                             })
                             ->label('Salvar Permissão')
-                            ->disabled(function ($livewire, $get) {
+                            ->disabled(function ($livewire, $get): bool {
                                 // Obter o usuário que está sendo editado
                                 $user = $livewire->record;
 
@@ -267,7 +299,7 @@ class UserResource extends Resource
                                 // Habilitar o botão apenas se o valor do toggle for diferente do estado atual da role
                                 return $currentToggleValue === $originalHasAdminRole;
                             })
-                            ->color(function ($livewire, $get) {
+                            ->color(function ($livewire, $get): string {
                                 // Mesma verificação usada no disabled
                                 $user = $livewire->record;
 
@@ -300,7 +332,7 @@ class UserResource extends Resource
                                 // Se estiver tentando remover a role de administração, verificar se não ficará sem administradores
                                 if (! $isAdminToggleValue && $isAdmin) {
                                     // Contar quantos usuários têm a role de Administração (incluindo este)
-                                    $adminUsersCount = User::whereHas('roles', function ($query) use ($adminRole) {
+                                    $adminUsersCount = User::whereHas('roles', function ($query) use ($adminRole): void {
                                         $query->where('roles.id', $adminRole->id);
                                     })->count();
 
@@ -354,7 +386,7 @@ class UserResource extends Resource
                     ]),
                 Section::make('Outras funções administrativas')
                     ->icon('heroicon-s-identification')
-                    ->collapsible(fn ($livewire) => $livewire->record !== null)
+                    ->collapsible(fn ($livewire): bool => $livewire->record !== null)
                     ->description('São as funções que o funcionário terá acesso no sistema')
                     ->hidden(function ($livewire, $get) {
                         // Obter o usuário que está sendo editado
@@ -363,10 +395,10 @@ class UserResource extends Resource
                         if ($user) {
                             // Para usuários existentes, esconder se tiver role de administração
                             return $user->hasRole(EnumRole::Administracao->value);
-                        } else {
-                            // Para novos usuários, esconder com base no estado atual do toggle
-                            return (bool) $get('is_admin');
                         }
+
+                        // Para novos usuários, esconder com base no estado atual do toggle
+                        return (bool) $get('is_admin');
                     })
                     ->headerActions([
                         Action::make('Salvar Funções do Funcionário')

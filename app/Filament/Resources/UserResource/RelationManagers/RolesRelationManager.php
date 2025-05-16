@@ -26,6 +26,7 @@ class RolesRelationManager extends RelationManager
     protected static ?string $icon = 'icon-permissoes';
 
     // Adicione este método
+    #[\Override]
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
         // Mostrar o RelationManager apenas se o usuário NÃO tiver a role de Administração
@@ -64,7 +65,7 @@ class RolesRelationManager extends RelationManager
 
                 $permissionColumns[] = ToggleColumn::make("permission_{$permissionId}")
                     ->label($permissionName)
-                    ->afterStateUpdated(function (RelationManager $livewire, Model $record, bool $state) use ($permissionId, $permissionName) {
+                    ->afterStateUpdated(function (RelationManager $livewire, Model $record, bool $state) use ($permissionId, $permissionName): void {
                         // $record é a Role atual
                         if ($state) {
                             // Adiciona a permissão à role se o toggle for ativado
@@ -79,7 +80,7 @@ class RolesRelationManager extends RelationManager
                         // Reload the record with permissions to avoid lazy loading
                         $record->load('permissions');
                     })
-                    ->getStateUsing(function (Model $record) use ($permissionId) {
+                    ->getStateUsing(function (Model $record) use ($permissionId): bool {
                         // Não acessa diretamente permissions() que causaria lazy loading
                         // Em vez disso, usa a coleção permissions já carregada pelo with()
                         $permissionIds = $record->getRelation('permissions')->pluck('id')->toArray();

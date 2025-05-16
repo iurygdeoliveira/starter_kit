@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Filament\Resources\TaskResource\Pages;
 
 use App\Filament\Resources\TaskResource;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
@@ -12,14 +13,28 @@ class CreateTask extends CreateRecord
 {
     protected static string $resource = TaskResource::class;
 
-    // #[\Override]
-    // protected function mutateFormDataBeforeCreate(array $data): array
-    // {
-    //     // Adiciona o campo verified como false (não verificado) por padrão
-    //     $data['verified'] = false;
+    #[\Override]
+    protected function getFormActions(): array
+    {
+        parent::getFormActions();
 
-    //     return $data;
-    // }
+        return [
+            Action::make('voltar')
+                ->label('Voltar')
+                ->color('secondary')
+                ->icon('heroicon-s-arrow-long-left')
+                ->url(TaskResource::getUrl('index')),
+            $this->getCreateFormAction()
+                ->label('Criar Tarefa'),
+            $this->getCreateAnotherFormAction()
+                ->label('Salvar e criar outra tarefa')
+                ->color('primary')
+                ->outlined(),
+            $this->getCancelFormAction()
+                ->color('danger')
+                ->outlined(),
+        ];
+    }
 
     #[\Override]
     protected function getRedirectUrl(): string

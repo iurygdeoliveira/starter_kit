@@ -6,8 +6,10 @@ namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Auth;
 
 class EditUser extends EditRecord
 {
@@ -15,7 +17,19 @@ class EditUser extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            Action::make('voltar')
+                ->label('Voltar')
+                ->color('secondary')
+                ->icon('heroicon-s-arrow-long-left')
+                ->url(UserResource::getUrl('index')),
+            DeleteAction::make()
+                ->label('Excluir Funcionário')
+                ->hidden(fn (): bool => Auth::id() === $this->record->id),
+            $this->getCancelFormAction()
+                ->color('danger')
+                ->outlined(),
+        ];
     }
 
     // Redireciona para a página de listagem (index) após editar o usuário
@@ -41,17 +55,18 @@ class EditUser extends EditRecord
     #[\Override]
     protected function getFormActions(): array
     {
-        parent::getFormActions();
+        // parent::getFormActions();
 
         return [
-            // $this->getSaveFormAction(),
             // Action::make('voltar')
             //     ->label('Voltar')
             //     ->color('secondary')
-            //     ->icon('heroicon-o-arrow-left')
+            //     ->icon('heroicon-s-arrow-long-left')
             //     ->url(UserResource::getUrl('index')),
-            // $this->getCancelFormAction(),
-
+            // $this->getSaveFormAction(),
+            // $this->getCancelFormAction()
+            //     ->color('danger')
+            //     ->outlined(),
         ];
     }
 }

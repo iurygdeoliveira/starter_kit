@@ -30,6 +30,7 @@ return new class () extends Migration
             $table->foreignId('client_id')->nullable()->constrained('clients')->cascadeOnDelete();
             $table->uuid('uuid')->unique();
             $table->string('name')->unique();
+            $table->string('periodicity');
             $table->string('description')->nullable();
             $table->boolean('done')->default(false);
             $table->string('status')->nullable();

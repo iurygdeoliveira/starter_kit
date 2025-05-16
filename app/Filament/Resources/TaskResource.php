@@ -4,17 +4,17 @@ declare(strict_types = 1);
 
 namespace App\Filament\Resources;
 
+use App\Enums\Periodicity;
 use App\Filament\Resources\TaskResource\Pages;
-use App\Filament\Resources\TaskResource\RelationManagers\RolesRelationManager;
-use App\Models\Client;
 use App\Models\Task;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\Action as TableAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -71,12 +71,6 @@ class TaskResource extends Resource
     }
 
     #[\Override]
-    public static function shouldRegisterNavigation(): bool
-    {
-        return Client::count() > 0;
-    }
-
-    #[\Override]
     public static function getModelLabel(): string
     {
         return __('Tasks');
@@ -93,40 +87,54 @@ class TaskResource extends Resource
     {
         return $form
             ->schema([
+                Section::make('Dados da Tarefa')
+                    ->icon('icon-tarefa')
+                    ->description('Preencha os dados da tarefa a ser realizada para a empresa.')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Nome da Tarefa :')
+                            ->required()
+                            ->rules(['regex:/^[\pL\s\-\'\.]+$/u'])
+                            ->validationMessages([
+                                'regex' => 'O nome deve conter apenas letras, espaços e caracteres especiais (como acentos ou hífens).',
+                            ]),
+                        // Campo de relacionamento com Role
+                        Select::make('role_id')
+                            ->label('Pertence a Função :')
+                            ->relationship(
+                                'role',
+                                'name',
+                                modifyQueryUsing: fn ($query) => $query->whereNotIn('name', [
+                                    'Administração',
+                                    'Cliente',
+                                    'Certidão Negativa de Débito (CND)',
+                                    'Suporte',
+                                    'Dashboard',
+                                    'Portal do Cliente',
+                                    'Financeiro',
+                                ])
+                            )
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        Select::make('client_id')
+                            ->label('Pertence ao Cliente :')
+                            ->relationship('client', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        Select::make('periodicity')
+                            ->label('Periodicidade :')
+                            ->enum(Periodicity::class)
+                            ->options([
+                                Periodicity::Mensal->value     => 'Mensal',
+                                Periodicity::Trimestral->value => 'Trimestral',
+                                Periodicity::Anual->value      => 'Anual',
+                            ])
+                            ->required(),
+                        //->native(),
 
-                TextInput::make('name')
-                    ->label('Nome da Tarefa :')
-                    ->required()
-                    ->rules(['regex:/^[\pL\s\-\'\.]+$/u'])
-                    ->validationMessages([
-                        'regex' => 'O nome deve conter apenas letras, espaços e caracteres especiais (como acentos ou hífens).',
-                    ]),
-                // Campo de relacionamento com Role
-                Select::make('role_id')
-                    ->label('Pertence a Função :')
-                    ->relationship(
-                        'role',
-                        'name',
-                        modifyQueryUsing: fn ($query) => $query->whereNotIn('name', [
-                            'Administração',
-                            'Cliente',
-                            'Certidão Negativa de Débito (CND)',
-                            'Suporte',
-                            'Dashboard',
-                            'Portal do Cliente',
-                            'Financeiro',
-                        ])
-                    )
-                    ->required()
-                    ->searchable()
-                    ->preload(),
-                Select::make('client_id')
-                    ->label('Pertence ao Cliente :')
-                    ->relationship('client', 'name')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
-
+                    ])->columns(2),
             ]);
     }
 
@@ -140,7 +148,7 @@ class TaskResource extends Resource
             ->emptyStateDescription('Uma vez que você cadastre sua primeira tarefa, ela aparecerá aqui.')
             ->emptyStateIcon('heroicon-s-exclamation-triangle')
             ->emptyStateActions([
-                Action::make('create')
+                TableAction::make('create')
                     ->label('Registrar Tarefa')
                     ->url(TaskResource::getUrl('create'))
                     ->icon('heroicon-m-plus')
@@ -155,17 +163,15 @@ class TaskResource extends Resource
                 TextColumn::make('role.name')
                     ->label('Função')
                     ->searchable()
-                    ->sortable()
-                    ->formatStateUsing(
-                        fn (string $state): string => $state !== '' ? $state : 'Nenhuma função atribuída'
-                    ),
+                    ->sortable(),
+                TextColumn::make('periodicity')
+                    ->label('Periodicidade')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('client.name')
                     ->label('Cliente')
                     ->searchable()
-                    ->sortable()
-                    ->formatStateUsing(
-                        fn (string $state): string => $state !== '' ? $state : 'Nenhum cliente atribuído'
-                    ),
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('role')
@@ -179,6 +185,14 @@ class TaskResource extends Resource
                     ->multiple()
                     ->preload()
                     ->label('Clientes'),
+
+                SelectFilter::make('periodicity')
+                    ->options([
+                        Periodicity::Mensal->value     => 'Mensal',
+                        Periodicity::Trimestral->value => 'Trimestral',
+                        Periodicity::Anual->value      => 'Anual',
+                    ])
+                    ->label('Periodicidade'),
             ])
             ->actions([
                 EditAction::make()
@@ -199,14 +213,6 @@ class TaskResource extends Resource
     #[\Override]
     public static function getRelations(): array
     {
-        // $currentUrl = request()->url();
-
-        // // Verificar se estamos na página de edição
-        // // evitar exibir a tabela de relacionamento na página de edição
-        // if (str_contains($currentUrl, '/edit')) {
-        //     return [];
-        // }
-
         return [
             // RolesRelationManager::class,
         ];

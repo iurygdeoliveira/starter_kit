@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Models;
 
+use App\Enums\Periodicity;
 use App\Trait\BelongsToTenantTrait;
 use App\Trait\UuidTrait;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +27,7 @@ class Task extends Model implements Auditable
         'uuid',
         'status',
         'name',
+        'periodicity',
         'done',
         'attach',
         'due',
@@ -35,6 +37,10 @@ class Task extends Model implements Auditable
         'description',
         'created_at',
         'updated_at',
+    ];
+
+    protected $casts = [
+        'periodicity' => Periodicity::class,
     ];
 
     #[\Override]

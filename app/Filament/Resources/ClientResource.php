@@ -24,6 +24,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Hash;
 
 class ClientResource extends Resource
 {
@@ -90,7 +91,7 @@ class ClientResource extends Resource
             ->schema([
                 Section::make('Dados da Empresa do Cliente')
                     ->icon('heroicon-s-building-office-2')
-                    ->collapsed()
+                    ->collapsible(fn ($livewire): bool => $livewire->record !== null)
                     ->description('São os dados da empresa do cliente, como razão social, CNPJ, atividade e regime.')
                     ->schema([
                         TextInput::make('name')
@@ -138,7 +139,7 @@ class ClientResource extends Resource
                     ->columns(2),
                 Section::make('Informações de Acesso do Cliente')
                     ->icon('icon-acesso-cliente')
-                    ->collapsed()
+                    ->collapsible(fn ($livewire): bool => $livewire->record !== null)
                     ->description('São as informações para que o cliente possa acessar o portal do cliente.')
                     ->schema([
                         TextInput::make('user')
@@ -156,6 +157,23 @@ class ClientResource extends Resource
                             ->validationMessages([
                                 'unique' => 'Este e-mail já está cadastrado no sistema.',
                             ]),
+                        TextInput::make('password')
+                            ->password()
+                            ->revealable()
+                        // Obrigatório apenas na criação (quando record é null)
+                            ->required(fn ($livewire): bool => $livewire->record === null)
+                        // Só desidrata (envia para o banco) quando tem valor
+                            ->dehydrated(fn ($state) => filled($state))
+                        // Hash de senha só quando preenchido
+                            ->dehydrateStateUsing(
+                                fn ($state) => filled($state) ? Hash::make($state) : null
+                            )
+                            ->confirmed(),
+                        TextInput::make('password_confirmation')
+                            ->password()
+                            ->revealable()
+                            ->requiredWith('password')
+                            ->dehydrated(false),
                     ])
                     ->columns(2),
             ]);
@@ -168,7 +186,9 @@ class ClientResource extends Resource
             ->extremePaginationLinks()
             ->defaultPaginationPageOption(20)
             ->paginated([20, 40, 60, 80, 'all'])
-            ->emptyStateDescription('Uma vez que você cadastre seus clientes, eles aparecerão aqui.')
+            ->emptyStateDescription(
+                'Uma vez que você cadastre seus clientes, eles aparecerão aqui.'
+            )
             ->emptyStateIcon('heroicon-s-exclamation-triangle')
             ->emptyStateActions([
                 Action::make('create')
