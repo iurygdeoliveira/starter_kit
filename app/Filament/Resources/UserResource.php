@@ -107,10 +107,19 @@ class UserResource extends Resource
             ->schema([
                 Section::make('Dados do Funcionário')
                     ->icon('icon-dados-usuario')
-                    ->collapsible()
+                    ->collapsible(fn ($livewire) => $livewire->record !== null)
                     ->description('São os dados do funcionário que serão utilizados para o login no sistema')
                     ->headerActions([
                         Action::make('Salvar Dados do Funcionário')
+                            ->hidden(function ($livewire) {
+                                // Obter o usuário que está sendo editado
+                                $user = $livewire->record;
+
+                                // Se for criação de usuário (record é null), sempre esconder o botão
+                                if (! $user) {
+                                    return true;
+                                }
+                            })
                             ->label('Salvar Dados')
                             ->action(function ($livewire): void {
                                 // Obter os dados do formulário
@@ -169,8 +178,7 @@ class UserResource extends Resource
                             ])
                             ->validationMessages([
                                 'unique' => 'Este CPF já está cadastrado no sistema.',
-                            ])
-                            ->disabled(fn (string $operation): bool => $operation === 'edit'),
+                            ]),
                         TextInput::make('phone')
                             ->label('Fone')
                             ->mask('(99) 99999-9999')
@@ -185,7 +193,7 @@ class UserResource extends Resource
                     ])->columns(2),
                 Section::make('Administrar Sistema')
                     ->icon('icon-administrar')
-                    ->collapsible()
+                    ->collapsible(fn ($livewire) => $livewire->record !== null)
                     ->description('Habilitar administração do sistema para o funcionario')
                     ->schema([
                         Grid::make()
@@ -219,6 +227,15 @@ class UserResource extends Resource
                     ])
                     ->headerActions([
                         Action::make('Permissão de Administração')
+                            ->hidden(function ($livewire) {
+                                // Obter o usuário que está sendo editado
+                                $user = $livewire->record;
+
+                                // Se for criação de usuário (record é null), sempre esconder o botão
+                                if (! $user) {
+                                    return true;
+                                }
+                            })
                             ->label('Salvar Permissão')
                             ->disabled(function ($livewire, $get) {
                                 // Obter o usuário que está sendo editado
@@ -227,11 +244,46 @@ class UserResource extends Resource
                                 // Obter o valor atual do toggle is_admin
                                 $currentToggleValue = $get('is_admin');
 
+                                // Na criação de usuário, habilitar o botão apenas se o toggle estiver ativado
+                                if (! $user) {
+                                    // Verificar se todos os campos obrigatórios estão preenchidos
+                                    $name  = $get('name');
+                                    $email = $get('email');
+                                    $cpf   = $get('cpf');
+                                    $phone = $get('phone');
+
+                                    // Se algum campo obrigatório não estiver preenchido, desabilitar o botão
+                                    if (empty($name) || empty($email) || empty($cpf) || empty($phone)) {
+                                        return true;
+                                    }
+
+                                    // Se todos os campos estiverem preenchidos, habilitar apenas se o toggle estiver ativado
+                                    return ! $currentToggleValue;
+                                }
+
                                 // Verificar se o usuário tem a role "Administração"
                                 $originalHasAdminRole = $user->hasRole(EnumRole::Administracao->value);
 
                                 // Habilitar o botão apenas se o valor do toggle for diferente do estado atual da role
                                 return $currentToggleValue === $originalHasAdminRole;
+                            })
+                            ->color(function ($livewire, $get) {
+                                // Mesma verificação usada no disabled
+                                $user = $livewire->record;
+
+                                // Obter o valor atual do toggle is_admin
+                                $currentToggleValue = $get('is_admin');
+
+                                // Na criação de usuário, usar cor primária se o toggle estiver ativado
+                                if (! $user) {
+                                    return $currentToggleValue ? 'primary' : 'secondary';
+                                }
+
+                                $currentToggleValue   = $get('is_admin');
+                                $originalHasAdminRole = $user->hasRole(EnumRole::Administracao->value);
+
+                                // Se estiver desabilitado, cor cinza; caso contrário, cor primária
+                                return $currentToggleValue === $originalHasAdminRole ? 'secondary' : 'primary';
                             })
                             ->action(function ($livewire, $get): void {
                                 // Obter o usuário que está sendo editado
@@ -263,8 +315,14 @@ class UserResource extends Resource
                                             ->seconds(8)
                                             ->send();
 
-                                        // Redefina o toggle para refletir o estado real da permissão
-                                        $livewire->form->fill(['is_admin' => true]);
+                                        // Obter o estado atual do formulário para preservar todos os valores
+                                        $currentFormState = $livewire->form->getState();
+
+                                        // Atualizar apenas o campo is_admin mantendo todos os outros valores
+                                        $currentFormState['is_admin'] = true;
+
+                                        // Recarregar o formulário com todos os valores originais + is_admin corrigido
+                                        $livewire->form->fill($currentFormState);
 
                                         // Encerra a execução da função
                                         return;
@@ -296,17 +354,31 @@ class UserResource extends Resource
                     ]),
                 Section::make('Outras funções administrativas')
                     ->icon('heroicon-s-identification')
-                    ->collapsible()
+                    ->collapsible(fn ($livewire) => $livewire->record !== null)
                     ->description('São as funções que o funcionário terá acesso no sistema')
-                    ->hidden(function ($livewire) {
+                    ->hidden(function ($livewire, $get) {
                         // Obter o usuário que está sendo editado
                         $user = $livewire->record;
 
-                        // Esconder a seção se o usuário tiver a role de administração
-                        return $user && $user->hasRole(EnumRole::Administracao->value);
+                        if ($user) {
+                            // Para usuários existentes, esconder se tiver role de administração
+                            return $user->hasRole(EnumRole::Administracao->value);
+                        } else {
+                            // Para novos usuários, esconder com base no estado atual do toggle
+                            return (bool) $get('is_admin');
+                        }
                     })
                     ->headerActions([
                         Action::make('Salvar Funções do Funcionário')
+                            ->hidden(function ($livewire) {
+                                // Obter o usuário que está sendo editado
+                                $user = $livewire->record;
+
+                                // Se for criação de usuário (record é null), sempre esconder o botão
+                                if (! $user) {
+                                    return true;
+                                }
+                            })
                             ->label('Salvar Funções')
                             ->action(function ($livewire): void {
                                 // Obter os dados do formulário
