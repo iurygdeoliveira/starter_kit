@@ -6,7 +6,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Register;
 use App\Filament\Pages\CND;
-use App\Filament\Pages\Contabil;
+// use App\Filament\Pages\Contabil;
 use App\Filament\Pages\Financeiro;
 use App\Filament\Pages\Fiscal;
 use App\Filament\Pages\Indicadores;
@@ -15,6 +15,7 @@ use App\Filament\Pages\Portal;
 use App\Filament\Pages\Processos;
 use App\Filament\Pages\Suporte;
 use App\Filament\Resources\ClientResource;
+use App\Filament\Resources\Contabil;
 use App\Filament\Resources\TaskResource;
 use App\Filament\Resources\TenantResource;
 use App\Filament\Resources\UserResource;
@@ -121,11 +122,11 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Contábil')
                     ->icon('icon-contabil')
                     ->items([
-                        ...Contabil\LucroArbitrado::getNavigationItems(),
-                        ...Contabil\LucroPresumido::getNavigationItems(),
-                        ...Contabil\LucroReal::getNavigationItems(),
-                        ...Contabil\Mei::getNavigationItems(),
-                        ...Contabil\SimplesNacional::getNavigationItems(),
+                        ...Contabil\ArbitradoTaskResource::getNavigationItems(),
+                        // ...Contabil\LucroPresumido::getNavigationItems(),
+                        // ...Contabil\LucroReal::getNavigationItems(),
+                        // ...Contabil\Mei::getNavigationItems(),
+                        // ...Contabil\SimplesNacional::getNavigationItems(),
                     ]),
                 // NavigationGroup::make('Financeiro')
                 //     ->icon('icon-financeiro')

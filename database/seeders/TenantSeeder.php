@@ -15,7 +15,7 @@ class TenantSeeder extends Seeder
     public function run(): void
     {
         Tenant::factory()
-            ->count(20)
+            ->count(5)
             ->create();
     }
 }

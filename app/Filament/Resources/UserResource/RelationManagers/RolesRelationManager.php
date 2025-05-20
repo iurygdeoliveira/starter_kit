@@ -25,11 +25,10 @@ class RolesRelationManager extends RelationManager
 
     protected static ?string $icon = 'icon-permissoes';
 
-    // Adicione este método
     #[\Override]
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
-        // Mostrar o RelationManager apenas se o usuário NÃO tiver a role de Administração
+        // Comportamento padrão: mostrar apenas se o usuário NÃO tiver a role de Administração
         return ! $ownerRecord->hasRole(EnumRole::Administracao->value);
     }
 

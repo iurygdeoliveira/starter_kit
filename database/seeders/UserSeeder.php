@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
         // Cria 2 usuários para cada tenant
         $tenants->each(function ($tenant): void {
             User::factory()
-                ->count(2)
+                ->count(10)
                 ->forTenant($tenant)
                 ->create();
         });
