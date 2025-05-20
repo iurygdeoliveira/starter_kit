@@ -10,6 +10,7 @@ use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class EmployeeDataSection
@@ -103,6 +104,10 @@ class EmployeeDataSection
                 TextInput::make('password')
                     ->password()
                     ->revealable()
+                    // Visível apenas para o próprio usuário
+                    ->visible(
+                        fn ($livewire): bool => $livewire->record && $livewire->record->id === Auth::id()
+                    )
                     // Obrigatório apenas na criação (quando record é null)
                     ->required(fn ($livewire): bool => $livewire->record === null)
                     // Só desidrata (envia para o banco) quando tem valor
@@ -113,6 +118,10 @@ class EmployeeDataSection
                     )
                     ->confirmed(),
                 TextInput::make('password_confirmation')
+                // Visível apenas para o próprio usuário
+                    ->visible(
+                        fn ($livewire): bool => $livewire->record && $livewire->record->id === Auth::id()
+                    )
                     ->password()
                     ->revealable()
                     ->requiredWith('password')
