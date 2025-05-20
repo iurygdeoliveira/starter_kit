@@ -185,7 +185,17 @@ class UserResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->successNotification(null)
+                        ->after(function (): void {
+                            Notification::make()
+                                ->title('Usuários excluídos com sucesso')
+                                ->success()
+                                ->icon('heroicon-s-check-circle')
+                                ->iconColor('success')
+                                ->seconds(8)
+                                ->send();
+                        }),
                 ]),
             ]);
     }

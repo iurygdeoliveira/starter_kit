@@ -11,6 +11,7 @@ use App\Notifications\WelcomeUserNotification;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class CreateUser extends CreateRecord
 {
@@ -21,44 +22,105 @@ class CreateUser extends CreateRecord
         // Enviar email de boas-vindas para o usuário recém-criado
         $this->record->notify(new WelcomeUserNotification());
 
-        // Verifica se o toggle is_admin está habilitado
+        // Atribuir roles com base na configuração do formulário
+        $this->assignRolesToUser();
+    }
+
+    /**
+    * Atribui roles ao usuário com base na configuração do formulário
+    */
+    protected function assignRolesToUser(): void
+    {
         if ($this->data['is_admin'] ?? false) {
-            // Se estiver habilitado, atribui a role de Administração
-            $adminRole = Role::where('name', EnumRole::Administracao->value)->first();
-
-            if ($adminRole) {
-                // Use sync() em vez de attach() para evitar duplicatas
-                $this->record->roles()->sync([$adminRole->id]);
-
-                // Envia notificação de sucesso para atribuição da role de administrador
-                Notification::make()
-                    ->title('Role de Administração atribuída com sucesso!')
-                    ->body('O usuário ' . $this->record->name . ' agora tem permissões de administrador.')
-                    ->color('success')
-                    ->icon('heroicon-s-shield-check')
-                    ->iconColor('success')
-                    ->seconds(8)
-                    ->send();
-            }
-        } elseif (isset($this->data['Funções']) && ! empty($this->data['Funções'])) {
-            // Se is_admin estiver desabilitado, verifica se há roles selecionadas
-            // Use sync() em vez de attach() para evitar duplicatas
-            $this->record->roles()->sync($this->data['Funções']);
-            // Obter os nomes das roles para exibir na notificação
-            $roleNames = Role::whereIn('id', $this->data['Funções'])->pluck('name')->toArray();
-            $rolesText = count($roleNames) > 1
-                ? implode(', ', array_slice($roleNames, 0, -1)) . ' e ' . end($roleNames)
-                : $roleNames[0];
-            // Envia notificação de sucesso para atribuição das roles
-            Notification::make()
-                ->title('Funções atribuídas com sucesso!')
-                ->body('O usuário ' . $this->record->name . ' agora tem acesso às funções: ' . $rolesText)
-                ->color('success')
-                ->icon('heroicon-s-identification')
-                ->iconColor('success')
-                ->seconds(8)
-                ->send();
+            $this->assignAdminRole();
+        } else {
+            $this->assignOtherRoles();
         }
+    }
+
+    /**
+     * Atribui a role de administrador ao usuário
+     */
+    protected function assignAdminRole(): void
+    {
+        $adminRole = $this->getAdminRole();
+
+        if ($adminRole instanceof Model) {
+            // Use sync() para evitar duplicatas
+            $this->record->roles()->sync([$adminRole->id]);
+
+            // Enviar notificação
+            $this->sendRoleAssignmentNotification(
+                'Role de Administração atribuída com sucesso!',
+                "O usuário {$this->record->name} agora tem permissões de administrador.",
+                'heroicon-s-shield-check'
+            );
+        }
+    }
+
+    /**
+     * Busca a role de administrador no banco de dados
+     */
+    protected function getAdminRole(): ?Model
+    {
+        return Role::where('name', EnumRole::Administracao->value)->first();
+    }
+
+    /**
+    * Atribui as roles selecionadas ao usuário (exceto admin)
+    */
+    protected function assignOtherRoles(): void
+    {
+        if (isset($this->data['Funções']) && ! empty($this->data['Funções'])) {
+            // Use sync() para evitar duplicatas
+            $this->record->roles()->sync($this->data['Funções']);
+
+            // Buscar os nomes das roles para exibição
+            $roleNames = $this->getRoleNames($this->data['Funções']);
+            $rolesText = $this->formatRoleNames($roleNames);
+
+            // Enviar notificação
+            $this->sendRoleAssignmentNotification(
+                'Funções atribuídas com sucesso!',
+                "O usuário {$this->record->name} agora tem acesso às funções: {$rolesText}",
+                'heroicon-s-user-group'
+            );
+        }
+    }
+
+    /**
+     * Busca os nomes das roles pelos IDs
+     */
+    protected function getRoleNames(array $roleIds): array
+    {
+        return Role::whereIn('id', $roleIds)->pluck('name')->toArray();
+    }
+
+    /**
+     * Formata uma lista de nomes de roles para exibição
+     */
+    protected function formatRoleNames(array $roleNames): string
+    {
+        if (count($roleNames) <= 1) {
+            return $roleNames[0] ?? '';
+        }
+
+        return implode(', ', array_slice($roleNames, 0, -1)) . ' e ' . end($roleNames);
+    }
+
+    /**
+     * Envia uma notificação de atribuição de roles
+     */
+    protected function sendRoleAssignmentNotification(string $title, string $body, string $icon): void
+    {
+        Notification::make()
+            ->title($title)
+            ->body($body)
+            ->color('success')
+            ->icon($icon)
+            ->iconColor('success')
+            ->seconds(8)
+            ->send();
     }
 
     #[\Override]
