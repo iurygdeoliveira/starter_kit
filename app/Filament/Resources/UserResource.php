@@ -147,7 +147,6 @@ class UserResource extends Resource
                     ->placeholder('Usuário não verificado'),
 
             ])
-
             ->defaultSort('name', 'asc')
             ->filters([
                 SelectFilter::make('roles')
@@ -171,7 +170,6 @@ class UserResource extends Resource
                 DeleteAction::make()
                     ->label('')
                     ->tooltip('Excluir')
-
                     ->successNotification(null)
                     ->after(function (): void {
                         Notification::make()
