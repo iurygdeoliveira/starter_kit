@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
+use App\Notifications\WelcomeUserNotification;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -13,9 +14,16 @@ class CreateUser extends CreateRecord
 {
     protected static string $resource = UserResource::class;
 
+    protected function afterCreate(): void
+    {
+        // Enviar email de boas-vindas para o usuário recém-criado
+        $this->record->notify(new WelcomeUserNotification());
+    }
+
     #[\Override]
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        $data['password']          = bcrypt('password');
         $data['email_verified_at'] = now();
 
         return $data;
