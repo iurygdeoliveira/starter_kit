@@ -55,11 +55,13 @@ class OtherRolesSection
         // Obter o usuário que está sendo editado
         $user = $livewire->record;
 
+        $currentToggleValue = $get('is_admin');
+
         if ($user) {
             // Para usuários existentes, esconder esta seção se:
             // 1. Já tiver a role de administração, OU
             // 2. O toggle is_admin estiver ativado (indicando que receberá a role)
-            if ($user->hasRole(EnumRole::Administracao->value)) {
+            if ($user->hasRole(EnumRole::Administracao->value) || $currentToggleValue === true) {
                 return true;
             }
 
@@ -83,8 +85,8 @@ class OtherRolesSection
     }
 
     /**
-    * Manipula a ação de salvar as funções do funcionário
-    */
+     * Manipula a ação de salvar as funções do funcionário
+     */
     private static function handleActionCallback($livewire): void
     {
         // Obter os dados do formulário
@@ -103,8 +105,8 @@ class OtherRolesSection
     }
 
     /**
-    * Sincroniza as funções selecionadas com o usuário
-    */
+     * Sincroniza as funções selecionadas com o usuário
+     */
     private static function syncUserRoles(User $user, array $roles): void
     {
         $user->roles()->sync($roles);
