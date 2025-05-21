@@ -44,56 +44,53 @@ class RolesRelationManager extends RelationManager
     }
 
     /**
-    * Gera uma coluna toggle para cada permissão existente
-    */
-    /**
      * Gera uma coluna toggle para cada permissão existente
      */
-    public static function getPermissionToggleColumns(): array
-    {
-        // Cache para as permissões para evitar múltiplas consultas
-        static $permissionColumns = null;
+    // public static function getPermissionToggleColumns(): array
+    // {
+    //     // Cache para as permissões para evitar múltiplas consultas
+    //     static $permissionColumns = null;
 
-        if ($permissionColumns === null) {
-            $permissions       = Permission::orderBy('name')->get();
-            $permissionColumns = [];
+    //     if ($permissionColumns === null) {
+    //         $permissions       = Permission::orderBy('name')->get();
+    //         $permissionColumns = [];
 
-            foreach ($permissions as $permission) {
-                $permissionId   = $permission->id; // Store the ID in a variable
-                $permissionName = $permission->name; // Store the name in a variable
+    //         foreach ($permissions as $permission) {
+    //             $permissionId   = $permission->id; // Store the ID in a variable
+    //             $permissionName = $permission->name; // Store the name in a variable
 
-                $permissionColumns[] = ToggleColumn::make("permission_{$permissionId}")
-                    ->label($permissionName)
-                    ->afterStateUpdated(function (RelationManager $livewire, Model $record, bool $state) use ($permissionId, $permissionName): void {
-                        // $record é a Role atual
-                        if ($state) {
-                            // Adiciona a permissão à role se o toggle for ativado
-                            $record->permissions()->syncWithoutDetaching([$permissionId]);
-                            $livewire->notify('success', "Permissão '{$permissionName}' adicionada à role '{$record->name}'");
-                        } else {
-                            // Remove a permissão da role se o toggle for desativado
-                            $record->permissions()->detach($permissionId);
-                            $livewire->notify('success', "Permissão '{$permissionName}' removida da role '{$record->name}'");
-                        }
+    //             $permissionColumns[] = ToggleColumn::make("permission_{$permissionId}")
+    //                 ->label($permissionName)
+    //                 ->afterStateUpdated(function (RelationManager $livewire, Model $record, bool $state) use ($permissionId, $permissionName): void {
+    //                     // $record é a Role atual
+    //                     if ($state) {
+    //                         // Adiciona a permissão à role se o toggle for ativado
+    //                         $record->permissions()->syncWithoutDetaching([$permissionId]);
+    //                         $livewire->notify('success', "Permissão '{$permissionName}' adicionada à role '{$record->name}'");
+    //                     } else {
+    //                         // Remove a permissão da role se o toggle for desativado
+    //                         $record->permissions()->detach($permissionId);
+    //                         $livewire->notify('success', "Permissão '{$permissionName}' removida da role '{$record->name}'");
+    //                     }
 
-                        // Reload the record with permissions to avoid lazy loading
-                        $record->load('permissions');
-                    })
-                    ->getStateUsing(function (Model $record) use ($permissionId): bool {
-                        // Não acessa diretamente permissions() que causaria lazy loading
-                        // Em vez disso, usa a coleção permissions já carregada pelo with()
-                        $permissionIds = $record->getRelation('permissions')->pluck('id')->toArray();
+    //                     // Reload the record with permissions to avoid lazy loading
+    //                     $record->load('permissions');
+    //                 })
+    //                 ->getStateUsing(function (Model $record) use ($permissionId): bool {
+    //                     // Não acessa diretamente permissions() que causaria lazy loading
+    //                     // Em vez disso, usa a coleção permissions já carregada pelo with()
+    //                     $permissionIds = $record->getRelation('permissions')->pluck('id')->toArray();
 
-                        return in_array($permissionId, $permissionIds);
-                    })
-                    ->alignCenter()
-                    ->onColor('primary')
-                    ->offColor('danger');
-            }
-        }
+    //                     return in_array($permissionId, $permissionIds);
+    //                 })
+    //                 ->alignCenter()
+    //                 ->onColor('primary')
+    //                 ->offColor('danger');
+    //         }
+    //     }
 
-        return $permissionColumns;
-    }
+    //     return $permissionColumns;
+    // }
 
     public function table(Table $table): Table
     {

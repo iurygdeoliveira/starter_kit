@@ -40,7 +40,8 @@ class AdminSection
                             ->columnSpanFull()
                             ->afterStateHydrated(
                                 fn ($livewire, $set): bool => self::afterToggleStateHydratedCallback($livewire, $set)
-                            ),
+                            )
+                            ->afterStateUpdated(function ($livewire, $state, $set): void {}),
                     ])
                     ->columns(1),
             ])
@@ -127,12 +128,11 @@ class AdminSection
         $originalHasAdminRole = $user->hasRole(EnumRole::Administracao->value);
 
         // Habilitar o botão apenas se o valor do toggle for diferente do estado atual da role
-        return $currentToggleValue === $originalHasAdminRole;
+        return $currentToggleValue === $originalHasAdminRole; // Retorna true (desabilitado) se forem iguais
     }
 
     private static function colorActionCallback($livewire, $get): string
     {
-        // Mesma verificação usada no disabled
         $user = $livewire->record;
 
         // Obter o valor atual do toggle is_admin
@@ -145,8 +145,13 @@ class AdminSection
 
         $originalHasAdminRole = $user->hasRole(EnumRole::Administracao->value);
 
-        // Se estiver desabilitado, cor cinza; caso contrário, cor primária
-        return $currentToggleValue === $originalHasAdminRole ? 'secondary' : 'primary';
+        // Verificar se o toggle foi alterado
+        if ($currentToggleValue === $originalHasAdminRole) {
+            return 'secondary';
+        }
+
+        // Se não houve alteração, usar cor secundária
+        return 'primary';
     }
 
     private static function handleActionCallback($livewire, $get): void
@@ -207,10 +212,13 @@ class AdminSection
     private static function updateAdminRole($user, $adminRole, $isAdminToggleValue): void
     {
         if ($isAdminToggleValue) {
-            // Se o toggle estiver ativado, adiciona a role se não existir
-            $user->roles()->syncWithoutDetaching([$adminRole->id]);
+            // Se o toggle estiver ativado:
+            // 1. Remove TODAS as roles do usuário
+            // 2. Adiciona apenas a role de administração
+            $user->roles()->sync([$adminRole->id]);
         } else {
-            // Se o toggle estiver desativado, remove a role
+            // Se o toggle estiver desativado, remove apenas a role de administração
+            // As outras roles serão gerenciadas pelo OtherRolesSection
             $user->roles()->detach($adminRole->id);
         }
 
