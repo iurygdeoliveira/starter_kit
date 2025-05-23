@@ -139,12 +139,6 @@ class UserResource extends Resource
                         // Caso contrário, retorna todas as roles normalmente
                         return $record->roles->pluck('name')->toArray();
                     }),
-                TextColumn::make('email_verified_at')
-                    ->label('Email Verificado')
-                    ->sortable()
-                    ->searchable()
-                    ->dateTime('d/m/Y H:i')
-                    ->placeholder('Usuário não verificado'),
 
             ])
             ->defaultSort('name', 'asc')

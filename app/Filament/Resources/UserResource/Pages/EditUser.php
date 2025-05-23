@@ -30,6 +30,14 @@ class EditUser extends EditRecord
         $this->dispatch('refresh');
     }
 
+    #[On('roles-changed')]
+    public function handleRolesChanged($changed): void
+    {
+        if ($changed) {
+            $this->redirect(request()->header('Referer'));
+        }
+    }
+
     // Sobrescreva o método getRelationManagers para controlar quais são exibidos
     #[\Override]
     public function getRelationManagers(): array

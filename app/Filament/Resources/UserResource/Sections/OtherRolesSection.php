@@ -28,7 +28,11 @@ class OtherRolesSection
                 Action::make('Salvar Funções do Funcionário')
                     ->hidden(fn ($livewire): bool => self::hideActionCallback($livewire))
                     ->label('Salvar Funções')
-                    ->action(fn ($livewire) => self::handleActionCallback($livewire)),
+                    ->action(fn ($livewire) => self::handleActionCallback($livewire))
+                    ->after(function ($livewire): void {
+                        // Disparar evento quando o estado das roles mudar
+                        $livewire->dispatch('roles-changed', changed: true);
+                    }),
             ])
             ->schema([
                 Select::make('Funções')
@@ -41,7 +45,6 @@ class OtherRolesSection
                         ])
                     )
                     ->preload()
-                    ->required()
                     ->columnSpan(2),
             ])
             ->columns(2);
@@ -93,13 +96,12 @@ class OtherRolesSection
         $data = $livewire->form->getState();
 
         // Obter o registro atual
-        $record = $livewire->record ?? new User();
+        $record = $livewire->record;
 
         // Sincronizar as funções selecionadas com o usuário
         if (isset($data['Funções'])) {
             self::syncUserRoles($record, $data['Funções']);
         }
-
         // Notificar sucesso
         self::sendSuccessNotification();
     }
