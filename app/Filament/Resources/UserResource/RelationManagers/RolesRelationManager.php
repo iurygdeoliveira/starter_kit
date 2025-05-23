@@ -6,6 +6,7 @@ namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Enums\Role as EnumRole;
 use App\Models\Permission;
+use App\Models\UserRolePermission;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -46,51 +47,55 @@ class RolesRelationManager extends RelationManager
     /**
      * Gera uma coluna toggle para cada permissão existente
      */
-    // public static function getPermissionToggleColumns(): array
-    // {
-    //     // Cache para as permissões para evitar múltiplas consultas
-    //     static $permissionColumns = null;
+    public function getPermissionToggleColumns(): array
+    {
+        $columns = [];
 
-    //     if ($permissionColumns === null) {
-    //         $permissions       = Permission::orderBy('name')->get();
-    //         $permissionColumns = [];
+        // Busca todas as permissões do banco de dados
+        $permissions = Permission::all();
 
-    //         foreach ($permissions as $permission) {
-    //             $permissionId   = $permission->id; // Store the ID in a variable
-    //             $permissionName = $permission->name; // Store the name in a variable
+        // Itera sobre cada permissão do banco
+        foreach ($permissions as $permission) {
+            $columns[] = ToggleColumn::make("permissions.{$permission->id}")
+                ->label($permission->name)
+                ->onColor('success')
+                ->offColor('danger')
+                ->onIcon('heroicon-c-check')
+                ->offIcon('heroicon-c-x-mark')
+                ->alignCenter()
+                ->getStateUsing(function ($record) use ($permission) {
+                    // Verifica se existe uma associação user + role + permission na tabela user_role_permissions
+                    $userId = $this->getOwnerRecord()->id; // Obtém o ID do usuário sendo editado
 
-    //             $permissionColumns[] = ToggleColumn::make("permission_{$permissionId}")
-    //                 ->label($permissionName)
-    //                 ->afterStateUpdated(function (RelationManager $livewire, Model $record, bool $state) use ($permissionId, $permissionName): void {
-    //                     // $record é a Role atual
-    //                     if ($state) {
-    //                         // Adiciona a permissão à role se o toggle for ativado
-    //                         $record->permissions()->syncWithoutDetaching([$permissionId]);
-    //                         $livewire->notify('success', "Permissão '{$permissionName}' adicionada à role '{$record->name}'");
-    //                     } else {
-    //                         // Remove a permissão da role se o toggle for desativado
-    //                         $record->permissions()->detach($permissionId);
-    //                         $livewire->notify('success', "Permissão '{$permissionName}' removida da role '{$record->name}'");
-    //                     }
+                    return UserRolePermission::where('user_id', $userId)
+                        ->where('role_id', $record->id) // ID da role atual na linha
+                        ->where('permission_id', $permission->id)
+                        ->exists();
+                })
+                ->updateStateUsing(function ($record, $state) use ($permission) {
+                    $userId = $this->getOwnerRecord()->id; // Obtém o ID do usuário sendo editado
 
-    //                     // Reload the record with permissions to avoid lazy loading
-    //                     $record->load('permissions');
-    //                 })
-    //                 ->getStateUsing(function (Model $record) use ($permissionId): bool {
-    //                     // Não acessa diretamente permissions() que causaria lazy loading
-    //                     // Em vez disso, usa a coleção permissions já carregada pelo with()
-    //                     $permissionIds = $record->getRelation('permissions')->pluck('id')->toArray();
+                    if ($state) {
+                        // Adicionar permissão: criar registro na tabela user_role_permissions
+                        UserRolePermission::firstOrCreate([
+                            'user_id'       => $userId,
+                            'role_id'       => $record->id,
+                            'permission_id' => $permission->id,
+                        ]);
+                    } else {
+                        // Remover permissão: deletar registro da tabela user_role_permissions
+                        UserRolePermission::where('user_id', $userId)
+                            ->where('role_id', $record->id)
+                            ->where('permission_id', $permission->id)
+                            ->delete();
+                    }
 
-    //                     return in_array($permissionId, $permissionIds);
-    //                 })
-    //                 ->alignCenter()
-    //                 ->onColor('primary')
-    //                 ->offColor('danger');
-    //         }
-    //     }
+                    return $state;
+                });
+        }
 
-    //     return $permissionColumns;
-    // }
+        return $columns;
+    }
 
     public function table(Table $table): Table
     {
@@ -107,10 +112,10 @@ class RolesRelationManager extends RelationManager
                     ->sortable()
                     ->weight('bold'),
                 // Adicionamos uma coluna para cada permissão existente
-                //...self::getPermissionToggleColumns(),
+                ...$this->getPermissionToggleColumns(),
             ])
             ->filters([
-                //
+                //S
             ])
             ->headerActions([
                 //AttachAction::make()

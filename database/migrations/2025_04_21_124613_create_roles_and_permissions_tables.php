@@ -56,6 +56,16 @@ return new class () extends Migration
             $table->unique(['permission_id', 'task_id']);
         });
 
+        Schema::create('user_role_permissions', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
+            $table->foreignId('permission_id')->constrained('permissions')->cascadeOnDelete();
+            $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
+            $table->unique(['user_id', 'role_id', 'permission_id', 'tenant_id']);
+            $table->timestamps();
+        });
+
         Schema::create('task_user', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
@@ -113,5 +123,6 @@ return new class () extends Migration
         Schema::dropIfExists('tasks');
         Schema::dropIfExists('permissions');
         Schema::dropIfExists('roles');
+        Schema::dropIfExists('user_role_permissions');
     }
 };
