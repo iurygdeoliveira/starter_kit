@@ -40,8 +40,10 @@ class AdminSection
                             ->columnSpanFull()
                             ->afterStateHydrated(
                                 fn ($livewire, $set): bool => self::afterToggleStateHydratedCallback($livewire, $set)
-                            )
-                            ->afterStateUpdated(function ($livewire, $state, $set): void {}),
+                            )->afterStateUpdated(function ($livewire, $state): void {
+                                // Disparar evento quando o estado do toggle mudar
+                                $livewire->dispatch('admin-toggle-changed', state: $state);
+                            }),
                     ])
                     ->columns(1),
             ])

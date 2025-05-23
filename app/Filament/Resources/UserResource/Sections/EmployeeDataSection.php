@@ -35,6 +35,7 @@ class EmployeeDataSection
             ->schema([
                 TextInput::make('name')
                     ->required()
+                    ->maxLength(255)
                     ->rules(['regex:/^[\pL\s\-\'\.]+$/u'])
                     ->validationMessages([
                         'regex' => 'O nome deve conter apenas letras, espaços e caracteres especiais (como acentos ou hífens).',

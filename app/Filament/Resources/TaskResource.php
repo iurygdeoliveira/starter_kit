@@ -93,6 +93,7 @@ class TaskResource extends Resource
                     ->schema([
                         TextInput::make('name')
                             ->label('Nome da Tarefa :')
+                            ->alpha()
                             ->required()
                             ->rules(['regex:/^[\pL\s\-\'\.]+$/u'])
                             ->validationMessages([

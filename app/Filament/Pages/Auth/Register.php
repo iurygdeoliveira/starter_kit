@@ -31,9 +31,9 @@ class Register extends BaseRegister
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255)
-                    ->rule('regex:/^[^\d]*$/')
+                    ->rules(['regex:/^[\pL\s\-\'\.]+$/u']) // Mais completa
                     ->validationMessages([
-                        'regex' => 'O nome não pode conter números.',
+                        'regex' => 'O nome deve conter apenas letras, espaços e caracteres especiais válidos.',
                     ]),
                 TextInput::make('email')
                     ->email()

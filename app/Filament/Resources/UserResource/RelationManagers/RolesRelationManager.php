@@ -28,7 +28,7 @@ class RolesRelationManager extends RelationManager
     #[\Override]
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
-        // Comportamento padrão: mostrar apenas se o usuário NÃO tiver a role de Administração
+        // Apenas verificar se o usuário já tem a role de Administração
         return ! $ownerRecord->hasRole(EnumRole::Administracao->value);
     }
 

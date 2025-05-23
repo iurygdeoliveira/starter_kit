@@ -144,6 +144,7 @@ class ClientResource extends Resource
                     ->schema([
                         TextInput::make('user')
                             ->label('Nome')
+                            ->alpha()
                             ->required()
                             ->rules(['regex:/^[\pL\s\-\'\.]+$/u'])
                             ->validationMessages([
