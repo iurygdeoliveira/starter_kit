@@ -46,6 +46,12 @@ class OtherRolesSection
                         'name',
                         modifyQueryUsing: fn ($query) => $query->whereNotIn('name', [
                             EnumRole::Administracao->value,
+                            EnumRole::Cliente->value,
+                            EnumRole::Pessoal->value,
+                            EnumRole::Processos->value,
+                            EnumRole::Financeiro->value,
+                            EnumRole::CND->value,
+                            EnumRole::Suporte->value,
                         ])
                     )
                     ->preload()

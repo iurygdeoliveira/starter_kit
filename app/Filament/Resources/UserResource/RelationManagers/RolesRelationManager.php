@@ -9,22 +9,32 @@ use App\Models\Permission;
 use App\Models\UserRolePermission;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class RolesRelationManager extends RelationManager
 {
     protected static string $relationship = 'roles';
 
-    protected static ?string $title = 'Permissões de cada Função';
+    protected static ?string $title = 'Permissões';
 
     protected static ?string $icon = 'icon-permissoes';
+
+    public array $pendingPermissionChanges = [];
+
+    private array $originalPermissions = []; // Para comparar mudanças
+
+    #[\Override]
+    public function mount(): void
+    {
+        parent::mount();
+        $this->loadCurrentPermissions();
+    }
 
     #[\Override]
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
@@ -38,10 +48,77 @@ class RolesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                // Forms\Components\TextInput::make('name')
+                //     ->required()
+                //     ->maxLength(255),
             ]);
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->recordTitleAttribute('name')
+            ->defaultPaginationPageOption(11)
+            ->paginated([11, 'all'])
+            ->emptyStateDescription('Uma vez que você defina funções de acesso, elas poderão ser configuradas aqui.')
+            ->emptyStateIcon('heroicon-s-exclamation-triangle')
+            ->columns([
+                TextColumn::make('name')
+                    ->label('Função')
+                    ->sortable()
+                    ->weight('bold'),
+                ...$this->getPermissionToggleColumns(),
+            ])
+            ->filters([
+
+            ])
+            ->headerActions([
+                Action::make('savePermissions')
+                    ->label('Salvar Permissões')
+                    ->color('success')
+                    ->color(fn (): string => $this->getActionColor())
+                    ->disabled(fn (): bool => $this->isActionDisabled())
+                    ->action(fn () => $this->savePermissionChanges()),
+            ])
+            ->actions([
+
+            ])
+            ->bulkActions([
+
+            ])
+            ->defaultSort('name', 'asc');
+    }
+
+    /**
+     * Carrega o estado atual das permissões do banco para o buffer
+     */
+    private function loadCurrentPermissions(): void
+    {
+        $userId      = $this->getOwnerRecord()->id;
+        $permissions = Permission::all();
+        $userRoles   = $this->getOwnerRecord()->roles;
+
+        // Inicializa o buffer com o estado atual do banco
+        foreach ($userRoles as $role) {
+            foreach ($permissions as $permission) {
+                $key = "{$role->id}_{$permission->id}";
+
+                $hasPermission = UserRolePermission::where('user_id', $userId)
+                    ->where('role_id', $role->id)
+                    ->where('permission_id', $permission->id)
+                    ->exists();
+
+                $this->pendingPermissionChanges[$key] = [
+                    'user_id'       => $userId,
+                    'role_id'       => $role->id,
+                    'permission_id' => $permission->id,
+                    'state'         => $hasPermission,
+                ];
+
+                // Armazena o estado original para comparação
+                $this->originalPermissions[$key] = $hasPermission;
+            }
+        }
     }
 
     /**
@@ -64,31 +141,21 @@ class RolesRelationManager extends RelationManager
                 ->offIcon('heroicon-c-x-mark')
                 ->alignCenter()
                 ->getStateUsing(function ($record) use ($permission) {
-                    // Verifica se existe uma associação user + role + permission na tabela user_role_permissions
-                    $userId = $this->getOwnerRecord()->id; // Obtém o ID do usuário sendo editado
+                    // Sempre usa o estado do buffer pendingPermissionChanges
+                    $key = "{$record->id}_{$permission->id}";
 
-                    return UserRolePermission::where('user_id', $userId)
-                        ->where('role_id', $record->id) // ID da role atual na linha
-                        ->where('permission_id', $permission->id)
-                        ->exists();
+                    return $this->pendingPermissionChanges[$key]['state'] ?? false;
                 })
                 ->updateStateUsing(function ($record, $state) use ($permission) {
-                    $userId = $this->getOwnerRecord()->id; // Obtém o ID do usuário sendo editado
+                    // Atualiza apenas o buffer, não o banco
+                    $key = "{$record->id}_{$permission->id}";
 
-                    if ($state) {
-                        // Adicionar permissão: criar registro na tabela user_role_permissions
-                        UserRolePermission::firstOrCreate([
-                            'user_id'       => $userId,
-                            'role_id'       => $record->id,
-                            'permission_id' => $permission->id,
-                        ]);
-                    } else {
-                        // Remover permissão: deletar registro da tabela user_role_permissions
-                        UserRolePermission::where('user_id', $userId)
-                            ->where('role_id', $record->id)
-                            ->where('permission_id', $permission->id)
-                            ->delete();
-                    }
+                    $this->pendingPermissionChanges[$key] = [
+                        'user_id'       => $this->getOwnerRecord()->id,
+                        'role_id'       => $record->id,
+                        'permission_id' => $permission->id,
+                        'state'         => $state,
+                    ];
 
                     return $state;
                 });
@@ -97,43 +164,83 @@ class RolesRelationManager extends RelationManager
         return $columns;
     }
 
-    public function table(Table $table): Table
+    /**
+     * Salva todas as mudanças de permissões pendentes
+     */
+    public function savePermissionChanges(): void
     {
-        return $table
-            ->recordTitleAttribute('name')
-            ->defaultPaginationPageOption(11)
-            ->paginated([11, 'all'])
-            ->emptyStateDescription('Uma vez que você defina funções de acesso, elas poderão ser configuradas aqui.')
-            ->emptyStateIcon('heroicon-s-exclamation-triangle')
-           // ->modifyQueryUsing(fn (Builder $query) => $query->with('permissions'))
-            ->columns([
-                TextColumn::make('name')
-                    ->label('Função')
-                    ->sortable()
-                    ->weight('bold'),
-                // Adicionamos uma coluna para cada permissão existente
-                ...$this->getPermissionToggleColumns(),
-            ])
-            ->filters([
-                //S
-            ])
-            ->headerActions([
-                //AttachAction::make()
-                //    ->label('Adicionar Função')
-                //    ->preloadRecordSelect(),
-                // Action::make('saveChanges')
-                // ->label('Salvar alterações')
-                //     ->button()
-                //     ->color('primary')
-                //     ->action(fn (RelationManager $livewire) => $livewire->savePermissionChanges())
-                //     ->disabled(fn (RelationManager $livewire) => empty($livewire->pendingPermissionChanges)),
-            ])
-            ->actions([
+        foreach ($this->pendingPermissionChanges as $change) {
+            if ($change['state']) {
+                // Adicionar permissão: criar registro na tabela user_role_permissions
+                UserRolePermission::firstOrCreate([
+                    'user_id'       => $change['user_id'],
+                    'role_id'       => $change['role_id'],
+                    'permission_id' => $change['permission_id'],
+                ]);
+            } else {
+                // Remover permissão: deletar registro da tabela user_role_permissions
+                UserRolePermission::where('user_id', $change['user_id'])
+                    ->where('role_id', $change['role_id'])
+                    ->where('permission_id', $change['permission_id'])
+                    ->delete();
+            }
+        }
 
-            ])
-            ->bulkActions([
+        // Atualiza o estado original após salvar
+        $this->updateOriginalPermissions();
 
-            ])
-            ->defaultSort('name', 'asc');
+        // Notificação de sucesso
+        Notification::make()
+            ->title('Permissões salvas com sucesso!')
+            ->success()
+            ->icon('heroicon-s-check-circle')
+            ->iconColor('success')
+            ->seconds(8)
+            ->send();
+    }
+
+    /**
+    * Atualiza o estado original após salvar
+    */
+    private function updateOriginalPermissions(): void
+    {
+        foreach ($this->pendingPermissionChanges as $key => $change) {
+            $this->originalPermissions[$key] = $change['state'];
+        }
+    }
+
+    /**
+     * Verifica se há mudanças em relação ao estado original
+     */
+    private function hasChanges(): bool
+    {
+        foreach ($this->pendingPermissionChanges as $key => $change) {
+            $originalState = $this->originalPermissions[$key] ?? false;
+
+            if ($change['state'] !== $originalState) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+    * Determina se o botão deve estar desabilitado
+    */
+    private function isActionDisabled(): bool
+    {
+        // Desabilita se não há mudanças em relação ao estado original
+        return ! $this->hasChanges();
+    }
+
+    /**
+    * Determina a cor do botão baseado no estado
+    */
+    private function getActionColor(): string
+    {
+        // Se há mudanças pendentes, usar cor primária
+        // Caso contrário, usar cor secundária
+        return $this->hasChanges() ? 'primary' : 'secondary';
     }
 }

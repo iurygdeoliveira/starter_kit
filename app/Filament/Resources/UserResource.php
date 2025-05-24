@@ -25,7 +25,6 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 
@@ -148,13 +147,6 @@ class UserResource extends Resource
                     ->multiple()
                     ->preload()
                     ->label('Funções'),
-
-                TernaryFilter::make('verificado')
-                    ->label('Email Verificado')
-                    ->attribute('email_verified_at')
-                    ->trueLabel('Usuários Verificados')
-                    ->falseLabel('Usários não verificados')
-                    ->nullable(),
             ])
             ->actions([
                 EditAction::make()
